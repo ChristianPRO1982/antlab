@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/ChristianPRO1982/antlab/compare/v1.3.0...v1.4.0) (2026-11-10)
+
+
+### Features
+
+* implement execution controller and simulation client with worker support ([3a58f1e](https://github.com/ChristianPRO1982/antlab/commit/3a58f1e2da6382e01cc74e1a0ba12cb01112e017))
+
 # [1.3.0](https://github.com/ChristianPRO1982/antlab/compare/v1.2.0...v1.3.0) (2026-11-10)
 
 
