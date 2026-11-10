@@ -5,17 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Socle du laboratoire web AntLab, inspiré de la fourmi de Langton."
+      content="Explorez le pavage en croix du laboratoire AntLab, inspiré de la fourmi de Langton."
     />
     <link rel="icon" href="data:," />
-    <title>AntLab — Socle technique</title>
+    <title>AntLab — Pavage en croix</title>
   </head>
   <body>
     <main>
-      <h1>AntLab</h1>
-      <p>Laboratoire d’expérimentation autour de la fourmi de Langton.</p>
-      <p role="status">Chargement du socle technique…</p>
-      <p>La simulation sera développée dans les prochaines étapes.</p>
+      <header>
+        <h1>AntLab</h1>
+        <p>Le laboratoire de fourmis · Pavage en croix</p>
+      </header>
+      <p id="navigation-help" class="help">
+        Maintenez le bouton gauche et glissez pour déplacer le pavage. Utilisez
+        la molette pour zoomer ou dézoomer autour du pointeur. Le point gris
+        repère le bas à gauche de la case (0, 0).
+      </p>
+      <div class="viewport">
+        <canvas
+          role="img"
+          aria-label="Pavage en croix navigable"
+          aria-describedby="navigation-help"
+        >
+          Votre navigateur doit prendre en charge Canvas 2D pour afficher le
+          pavage.
+        </canvas>
+      </div>
+      <footer>
+        <p role="status">Chargement du pavage…</p>
+        <p>
+          Une fourmi, deux couleurs, des règles à explorer. La simulation
+          viendra ensuite.
+        </p>
+      </footer>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -15,14 +15,18 @@ pour les résultats scientifiques. Tester cas limites, invariants et reproductib
 
 ## Tests actuels
 
-Le test navigateur du socle vérifie la réponse HTTP, le titre et le contenu,
-l'exécution du JavaScript, le chargement CSS et l'absence d'erreurs navigateur.
-Il doit fonctionner aussi bien sur Vite que sur l'image Nginx.
+Les tests unitaires couvrent le pavage (couverture unique, coordonnées négatives,
+limites numériques), le stockage clairsemé (blanc implicite, suppressions,
+inversions, validation sans mutation) et la caméra (conversions, déplacements,
+ancrage du zoom et limites). `passWithNoTests` a été retiré.
 
-Il n'existe encore **aucun test unitaire ou d'intégration scientifique**.
-Vitest signale explicitement cette absence et utilise temporairement
-`passWithNoTests`. Retirer cette option au premier test de ces catégories.
-Ne pas ajouter de calcul factice pour remplir la suite.
+Les parcours Chromium vérifient le chargement, les couleurs réellement dessinées,
+le repère d'origine, la différence d'épaisseur des frontières, le glissement hors
+zone, la fin/annulation du geste, le zoom avec retour depuis son minimum de
+1 pixel par case, le redimensionnement et une densité
+de pixels de 2 sur fenêtre étroite. Ils peuvent cibler Vite ou l'image Nginx.
+Les captures `test-results/pavage.png` et `test-results/pavage-densite-2.png`
+permettent une inspection visuelle sans figer un instantané de référence.
 
 ```sh
 docker compose run --rm test

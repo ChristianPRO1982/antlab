@@ -3,7 +3,18 @@
 ## Socle actuel
 
 Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
-Il affiche uniquement le statut de chargement du socle. Il ne simule aucune fourmi.
+Il affiche le pavage en croix dans un Canvas 2D navigable. La géométrie et le monde
+clairsemé sont implémentés ; aucune fourmi n'est encore simulée.
+
+`geometry.js` définit les croix, `world.js` stocke les cases noires et
+`coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
+ni du navigateur ni du rendu. `camera.js` calcule les conversions et la navigation
+sans DOM ; `renderer.js` dessine la fenêtre visible et `paving-view.js` relie
+les événements du navigateur au rendu. L'interface ne modifie pas le monde.
+
+La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
+l'utilisateur, sans clôturer ce lot : fourmi, suivi, recentrage et navigation
+tactile complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md).
 
 Vite lance le serveur de développement et construit `dist`. Nginx sert ce dossier
 dans l'image de production, sur le port interne 8080, sous l'utilisateur 101.
@@ -24,7 +35,7 @@ de release (`.github`). Aucun module scientifique vide n'est créé.
 | Rendu et interface | Canvas, caméra, formulaires ; aucune décision scientifique                      |
 | Formats            | Validation, rapport Markdown et JSON embarqué ; import/export explicites        |
 
-Ces ensembles seront créés au moment des lots concernés. Les modules communiquent
+Les ensembles encore absents seront créés au moment des lots concernés. Les modules communiquent
 par des données explicites ; leurs interfaces seront définies par les tests.
 Il n'y a pas de moteur Python ou de calcul serveur à maintenir en parallèle.
 

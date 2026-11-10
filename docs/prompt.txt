@@ -1,6 +1,8 @@
-Voici le projet `antlab`.
-C'est un développement d'un laboratoire de test HTML/JS/CSS basé sur la `fourmi de Langton`.
+Tu travailles dans le dépôt `antlab` ouvert dans VSCode.
 
-lis en prends concscience du projet ici `./docs` et particulièrement `docs/CONTEXTE_LABORATOIRE_FOURMIS.md`.
+Lis `AGENTS.md` à la racine, puis `docs/CONTEXTE_LABORATOIRE_FOURMIS.md` et suis son parcours de lecture, notamment la roadmap dans `docs`.
+Vérifie en lecture seule l'état Git, le code et l'avancement documenté.
 
-NE MODIFE AUCUN FICHIER
+Résume brièvement l'objectif, l'état actuel, la prochaine étape et les contraintes essentielles.
+Pour cette prise de connaissance, ne modifie aucun fichier, ne change pas de branche et ne lance ni développement, ni tests/builds, ni publication.
+Attends ensuite ma demande de travail ; ne commence pas automatiquement la prochaine étape.

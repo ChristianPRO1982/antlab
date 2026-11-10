@@ -2,7 +2,9 @@
 
 ## État du projet
 
-Le dépôt prépare le laboratoire ; seule une page technique de démarrage existe.
+Le socle (étape 01) et la géométrie avec monde clairsemé (étape 02) sont implémentés.
+Une vue du pavage permet le glissement à la souris et le zoom à la molette ;
+cette extension demandée anticipe partiellement l'étape 06, qui reste ouverte.
 Le moteur, les règles, le Worker, les graphiques, les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
@@ -11,12 +13,14 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Contexte](CONTEXTE_LABORATOIRE_FOURMIS.md)        | Intention et principes scientifiques    |
 | [Roadmap](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md) | Lots et critères de réception           |
 | [Architecture](ARCHITECTURE.md)                    | Responsabilités et décisions techniques |
+| [Géométrie et monde](GEOMETRIE_MONDE.md)           | Conventions, API et navigation          |
 | [Développement](DEVELOPPEMENT.md)                  | Commandes Docker et conventions         |
 | [Tests](TESTS.md)                                  | Cycle TDD et contrôles disponibles      |
 | [Releases](RELEASES.md)                            | Branches, Conventional Commits et robot |
 | [Déploiement](DEPLOIEMENT.md)                      | Image, Docker Hub et contrat VPS        |
 | [Changelog](CHANGELOG.md)                          | Historique produit par semantic-release |
 | [Réception du socle](RECEPTION_SOCLE.md)           | Vérifications réalisées et limites      |
+| [Réception de l'étape 02](RECEPTION_ETAPE_02.md)   | Géométrie, monde et pavage navigable    |
 
 ## Décisions validées
 
