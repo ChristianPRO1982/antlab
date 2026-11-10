@@ -91,10 +91,16 @@ export class Camera {
   }
 
   zoomAt(x, y, factor) {
+    this.panZoomAt({ x, y }, { x, y }, factor);
+  }
+
+  panZoomAt(from, to, factor) {
     finite(factor, 'facteur de zoom');
     if (factor <= 0)
       throw new RangeError('Le facteur de zoom doit être positif.');
-    const anchor = this.screenToWorld(x, y);
+    const anchor = this.screenToWorld(from.x, from.y);
+    const x = finite(to.x, 'x écran');
+    const y = finite(to.y, 'y écran');
     const scale = Math.min(
       MAX_SCALE,
       Math.max(this.#minimumScale, this.#scale * factor),

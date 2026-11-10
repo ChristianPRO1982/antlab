@@ -78,6 +78,8 @@ export function drawPaving(
   context.fillRect(0, 0, width, height);
   const topLeft = camera.screenToWorld(0, 0);
   const bottomRight = camera.screenToWorld(width, height);
+  const densityX = context.canvas.width / width;
+  const densityY = context.canvas.height / height;
   context.fillStyle = '#000000';
   for (const { x, y } of world.blackCells()) {
     if (
@@ -88,7 +90,19 @@ export function drawPaving(
     )
       continue;
     const point = camera.worldToScreen(x, y + 1);
-    context.fillRect(point.x, point.y, scale, scale);
+    if (scale * densityX < 1 || scale * densityY < 1) {
+      // Aperçu de présence : conserver les pixels touchés par une case sous-pixel.
+      const left = Math.floor(point.x * densityX);
+      const top = Math.floor(point.y * densityY);
+      const right = Math.ceil((point.x + scale) * densityX);
+      const bottom = Math.ceil((point.y + scale) * densityY);
+      context.fillRect(
+        left / densityX,
+        top / densityY,
+        Math.max(1, right - left) / densityX,
+        Math.max(1, bottom - top) / densityY,
+      );
+    } else context.fillRect(point.x, point.y, scale, scale);
   }
 
   const origin = camera.worldToScreen(0, 0);
@@ -110,16 +124,26 @@ export function drawPaving(
     context.fillRect(0, 0, width, height);
   }
 
-  if (lanto && sprite?.complete && sprite.naturalWidth > 0) {
+  if (
+    lanto &&
+    sprite?.complete &&
+    sprite.naturalWidth > 0 &&
+    ant.x + 1 >= topLeft.x &&
+    ant.x <= bottomRight.x &&
+    ant.y + 1 >= bottomRight.y &&
+    ant.y <= topLeft.y
+  ) {
     const center = camera.worldToScreen(ant.x + 0.5, ant.y + 0.5);
     const size = 0.9 * scale;
-    context.drawImage(
-      sprite,
-      center.x - size / 2,
-      center.y - size / 2,
-      size,
-      size,
+    const direction = ['north', 'east', 'south', 'west'].indexOf(
+      ant.orientation ?? 'north',
     );
+    if (direction < 0) throw new TypeError('Orientation de Lanto invalide.');
+    context.save();
+    context.translate(center.x, center.y);
+    context.rotate((direction * Math.PI) / 2);
+    context.drawImage(sprite, -size / 2, -size / 2, size, size);
+    context.restore();
   }
 
   if (showOrigin) {

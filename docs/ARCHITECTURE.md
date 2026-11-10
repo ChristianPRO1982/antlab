@@ -4,8 +4,8 @@
 
 Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
 Il affiche le pavage en croix dans un Canvas 2D navigable. La géométrie et le monde
-clairsemé sont implémentés. Le moteur de Langton peut simuler une fourmi sans
-affichage ; il n'est pas encore relié à cette interface.
+clairsemé sont implémentés. Le moteur peut simuler sans affichage ou alimenter
+le Canvas via le Worker ; les boutons scientifiques restent réservés au lot 07.
 
 `geometry.js` définit les croix, `world.js` stocke les cases noires et
 `coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
@@ -36,9 +36,16 @@ Il ne dépend ni du DOM ni du Worker et peut être appelé sans affichage.
 `simulation-client.js` offre la même API asynchrone par messages corrélés,
 gère les abonnements et libère le Worker à la fermeture. La progression utilise
 `LangtonEngine.getProgress()` en coût constant, sans copier le monde.
-Voir le [contrat de pilotage](EXECUTION.md). Le raccordement à `main.js` et au
-Canvas reste futur : les fixtures Playwright sous Vite exercent cette API
-sans l'ajouter au build du site avant l'assemblage de l'interface.
+Voir le [contrat de pilotage](EXECUTION.md). Le client est maintenant importé
+par `main.js`, et Vite embarque le Worker dans le build du site.
+
+`simulation-view.js` coalesce les demandes d'instantanés complets, avec une
+requête en vol et dix demandes par seconde au maximum. `scene.js` valide et
+copie une scène immuable : fourmi, couleurs et numéro d'étape restent cohérents.
+Le masquage arrête les demandes et dessins sans arrêter le calcul.
+`navigation-gestures.js` calcule les transformations à un/deux contacts sans
+DOM ; `Camera.panZoomAt` les valide avant modification. Les pannes du client,
+y compris au repos, sont observables via `subscribeErrors`.
 
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite
@@ -47,10 +54,10 @@ page. Les réglages et la caméra restent intacts lors de la navigation.
 `panel-state.js` contient les transitions du panneau sans DOM ; `options-panel.js`
 relie son redimensionnement, son repli et le mode mobile aux événements.
 
-La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
-l'utilisateur, sans clôturer ce lot. La refonte visuelle ajoute le recentrage et
-une représentation de Lanto à l'origine et des modes de suivi côté vue. L'intégration
-du moteur à la vue et la navigation tactile complète restent à réaliser.
+La vue applique maintenant centrage, suivi et cadrage aux instantanés du moteur.
+Lanto est orienté selon l'état simulé. Une session unique reste en mémoire entre
+les pages ; `getGameSession()` donne accès à son client et sa vue sous Vite.
+Le [rendu et ses limites](VISUALISATION.md) restent indépendants du moteur.
 Voir les [conventions et API](GEOMETRIE_MONDE.md)
 et le [périmètre de l'interface](INTERFACE.md).
 

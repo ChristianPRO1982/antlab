@@ -44,18 +44,17 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01 à 05 sont clôturées ; le lot 05 ajoute le pilotage asynchrone et
-le Worker sur `feat/worker-execution`, sans nouvelle release. Sur demande
-explicite, une vue du pavage avec glissement souris, zoom et repère d'origine
-anticipe partiellement l'étape 06, qui reste ouverte. Une refonte visuelle ajoute
-les pages Accueil, Jeu et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
+Les étapes 01 à 06 sont clôturées ; le lot 06 raccorde le Worker au Canvas et
+complète les gestes tactiles sur `feat/world-visualization`, sans nouvelle release.
+Les pages Accueil, Jeu et Aide, Lanto et le panneau redimensionnable sont présents ; les commandes de
 simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
 Le moteur calcule les cinq règles centrales et la rotation horaire facultative
-des branches, sans affichage ; son intégration à l'interface reste future.
+des branches, sans affichage ou avec la vue synchronisée et Lanto orienté.
 Le pilotage des calculs longs est disponible par API, avec pause, reprise et
-annulation conservant l'état. La prochaine étape est la visualisation (06).
+annulation conservant l'état. La prochaine étape est le poste de pilotage (07).
 Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
-[pilotage](EXECUTION.md) et le [bilan du lot 05](RECEPTION_ETAPE_05.md). Ce repère est une
+[pilotage](EXECUTION.md), la [visualisation](VISUALISATION.md) et le
+[bilan du lot 06](RECEPTION_ETAPE_06.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
 ## 1. Origine et intention
@@ -77,7 +76,7 @@ retenue comme référence pour la conception visuelle du site.
 Les images de référence sont regroupées dans `src/assets/lanto/` :
 [`Lanto.png`](../src/assets/lanto/Lanto.png) et
 [`Lanto-top.webp`](../src/assets/lanto/Lanto-top.webp). Le PNG sert de logo, de
-favicon et d'illustration d'accueil ; le WebP représente la future fourmi dans
+favicon et d'illustration d'accueil ; le WebP représente la fourmi affichée dans
 la grille. Le fichier `Lanto-top.origin.png` reste la source originale de la vue
 de dessus. Les ressources utilisées sont importées par Vite lors du build.
 

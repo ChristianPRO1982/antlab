@@ -109,7 +109,7 @@ défaut et les seuils invalides ; pour les dix couples règle/seuil, ils compare
 10 000 pas individuels à un lot unique et à plusieurs lots.
 
 Le pilotage ajoute 26 tests du contrôleur (timers virtuels et états scientifiques
-réels) et neuf tests du client (transport simulé, corrélation et erreurs).
+réels) et dix tests du client (transport simulé, corrélation, erreurs et panne au repos).
 Les 19 nouveaux parcours Chromium utilisent un véritable Worker sous Vite :
 14 configurations scientifiques comparées au moteur synchrone, paliers exacts
 jusqu'au million et cible libre, navigation/zoom pendant calcul continu,
@@ -117,8 +117,27 @@ pause/reprise, annulation, erreur partielle et validation du protocole.
 Les attentes utilisent les acquittements et le nombre exact de pas atteint,
 sans supposer une vitesse de calcul. Voir la [réception de l'étape 05](RECEPTION_ETAPE_05.md).
 
-Les fixtures Worker importent les sources sous Vite : elles sont explicitement
-ignorées avec `TEST_BASE_URL` sur une image de production tant que le client
-n'est pas raccordé au site. Les parcours de l'interface existante continuent
-à viser Vite ou Nginx. L'équivalence des futures campagnes et les KPI restent
-à vérifier lors de leurs lots.
+Le lot 06 ajoute 34 tests unitaires : gestes/caméra (4), scènes et rendu (6),
+synchronisation (21), panne au repos du client (1) et aperçu sous-pixel (2).
+Les 14 configurations
+scientifiques sont comparées à état final exact avec la vue active, ralentie
+ou masquée. Les tests de synchronisation utilisent des timers virtuels et des
+lectures contrôlées, sans remplacer la fourmi depuis la progression compacte.
+
+Les neuf nouveaux parcours de visualisation vérifient les états effectivement
+dessinés, le suivi, les bornes, le million de pas masqué, la visibilité du
+document, la fermeture pendant capture et les gestes multitactiles réellement
+injectés dans Chromium. L'audit ajoute la navigation après fermeture et le rendu
+sans image de Lanto disponible, ainsi que la protection de la cadence minimale.
+Les captures `visualisation-*.png` ne sont pas des
+instantanés de référence. Voir la [réception du lot 06](RECEPTION_ETAPE_06.md).
+
+L'inspection du premier aperçu au million a détecté la disparition des cases
+sous-pixel. Deux tests couvrent leur projection sur les pixels physiques aux
+densités 1 et 2 ; le parcours du million vérifie aussi des pixels sombres avant
+la capture, après application du cadrage.
+
+Les fixtures qui importent les sources sont ignorées avec `TEST_BASE_URL` sur
+Nginx. Les parcours du site, y compris le chargement de son Worker compilé et
+la navigation tactile, s'y exécutent sans ces imports. Les futures campagnes
+et les KPI restent à vérifier lors de leurs lots.
