@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/ChristianPRO1982/antlab/compare/v1.4.0...v1.5.0) (2026-11-10)
+
+
+### Features
+
+* add visualisation documentation and implement navigation gestures ([03812d5](https://github.com/ChristianPRO1982/antlab/commit/03812d599a1ddbf03b7c435355dac4381acb82f8))
+
 # [1.4.0](https://github.com/ChristianPRO1982/antlab/compare/v1.3.0...v1.4.0) (2026-11-10)
 
 
