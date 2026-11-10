@@ -5,6 +5,9 @@
 Le socle (étape 01) et la géométrie avec monde clairsemé (étape 02) sont implémentés.
 Une vue du pavage permet le glissement à la souris et le zoom à la molette ;
 cette extension demandée anticipe partiellement l'étape 06, qui reste ouverte.
+Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
+Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
+les commandes de simulation sont désactivées tant que le moteur manque.
 Le moteur, les règles, le Worker, les graphiques, les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
@@ -24,6 +27,11 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 
 ## Décisions validées
 
+Le fonctionnement des trois pages et du panneau est décrit dans
+[Interface](INTERFACE.md).
+
+- Mascotte : **Lanto**, une **fourmi bleu électrique**, dont le nom associe
+  **Langton** et **Ant** ; référence pour l'identité visuelle du site.
 - HTML/CSS/JavaScript sans framework ; Vite est un outil de développement/build.
 - Un moteur JavaScript unique, indépendant du rendu, pour les deux modes futurs.
 - Calcul navigateur dans un Web Worker ; aucun développement Python parallèle.

@@ -78,6 +78,10 @@ export class Camera {
     this.#update(this.#x, this.#y, this.#scale, width, height);
   }
 
+  recenter() {
+    this.#update(0.5, 0.5, this.#scale, this.#width, this.#height);
+  }
+
   zoomAt(x, y, factor) {
     finite(factor, 'facteur de zoom');
     if (factor <= 0)

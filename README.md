@@ -2,8 +2,8 @@
 
 Laboratoire web d'expérimentation autour de la fourmi de Langton.
 
-**État actuel :** pavage en croix navigable à la souris et monde clairsemé testés.
-La simulation et les fonctions d'expérimentation restent à développer.
+**État actuel :** pages Accueil, Jeu et Aide, pavage navigable et panneau d'options
+autour de Lanto. La simulation et les fonctions d'expérimentation restent à développer.
 
 ## Préparer les commandes locales
 

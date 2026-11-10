@@ -217,6 +217,11 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md, 
 
 ## 06 — Visualiser un monde théoriquement sans limite
 
+**Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
+pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
+l'origine. Le moteur et le suivi manquent encore ; cette étape reste ouverte.
+Voir [Interface](INTERFACE.md).
+
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.
 
 **Points à réaliser**
@@ -244,6 +249,11 @@ Lis les deux documents et réalise uniquement l'étape 06. Crée une visualisati
 - [ ] **Étape 06 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
 
 ## 07 — Assembler l'interface du laboratoire
+
+**Anticipation visuelle demandée :** la refonte Lanto ajoute Accueil, Jeu, Aide,
+un bandeau commun et un panneau d'options redimensionnable. Les commandes
+scientifiques restent explicitement désactivées en l'absence de moteur.
+Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Transformer les fonctionnalités techniques existantes en une interface agréable et compréhensible : panneau de configuration des règles, commandes du moteur, paliers et cible libre, statut, compteurs, vitesse, contrôles de caméra et aide courte. Empêcher les choix incompatibles ; rendre les contrôles cohérents avec le véritable état du Worker.
 

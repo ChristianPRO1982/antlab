@@ -31,13 +31,15 @@ test('pavage chargé, point origine et frontières des croix', async ({
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text());
   });
-  const response = await page.goto('/');
+  const response = await page.goto('/#/jeu');
   expect(response.status()).toBe(200);
-  await expect(page).toHaveTitle('AntLab — Pavage en croix');
+  await expect(page).toHaveTitle('AntLab — Jeu');
   await expect(
-    page.getByRole('heading', { name: 'AntLab', exact: true }),
+    page.getByRole('heading', { name: 'Jeu', exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+  await expect(page.getByRole('status', { name: 'État du pavage' })).toHaveText(
+    'Pavage prêt.',
+  );
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
   const box = await canvas.boundingBox();
   await expectMarker(canvas, box.width / 2 - 10, box.height / 2 + 10);
@@ -50,7 +52,8 @@ test('pavage chargé, point origine et frontières des croix', async ({
       let weight = 0;
       for (let offset = -3; offset <= 3; offset++) {
         const [red] = context.getImageData(
-          Math.round((width / 2 + 4) * ratio),
+          // Croix voisine identique (période 5), à l'écart du sprite de Lanto.
+          Math.round((width / 2 + 5 * 32 + 4) * ratio),
           Math.round((cy + offset) * ratio),
           1,
           1,
@@ -66,17 +69,18 @@ test('pavage chargé, point origine et frontières des croix', async ({
   expect(bands.outer / (255 - 85)).toBeGreaterThan(
     (bands.inner / (255 - 204)) * 1.6,
   );
-  expect(await pixel(canvas, box.width / 2, box.height / 2)).toEqual([
-    255, 255, 255, 255,
-  ]);
+  const [red, , blue] = await pixel(canvas, box.width / 2, box.height / 2);
+  expect(blue).toBeGreaterThan(red);
   expect(errors).toEqual([]);
   await page.screenshot({ path: 'test-results/pavage.png' });
 });
 
 test('glissement, capture hors zone et fin du geste', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#/jeu');
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
-  await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+  await expect(page.getByRole('status', { name: 'État du pavage' })).toHaveText(
+    'Pavage prêt.',
+  );
   const box = await canvas.boundingBox();
   const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
@@ -99,9 +103,11 @@ test('glissement, capture hors zone et fin du geste', async ({ page }) => {
 });
 
 test('molette dans les deux sens et redimensionnement', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#/jeu');
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
-  await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+  await expect(page.getByRole('status', { name: 'État du pavage' })).toHaveText(
+    'Pavage prêt.',
+  );
   let box = await canvas.boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.wheel(0, -Math.log(2) * 1000);
@@ -117,9 +123,11 @@ test('molette dans les deux sens et redimensionnement', async ({ page }) => {
 test('annulation du pointeur et autres boutons sans déplacement', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/#/jeu');
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
-  await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+  await expect(page.getByRole('status', { name: 'État du pavage' })).toHaveText(
+    'Pavage prêt.',
+  );
   const box = await canvas.boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down({ button: 'right' });
@@ -143,9 +151,11 @@ test('annulation du pointeur et autres boutons sans déplacement', async ({
 });
 
 test('dézoom étendu puis retour à la vue initiale', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/#/jeu');
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
-  await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+  await expect(page.getByRole('status', { name: 'État du pavage' })).toHaveText(
+    'Pavage prêt.',
+  );
   const box = await canvas.boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   const before = await canvas.evaluate((element) => element.toDataURL());
@@ -167,8 +177,10 @@ test('rendu à forte densité et fenêtre étroite', async ({ browser }) => {
   });
   try {
     const page = await context.newPage();
-    await page.goto('/');
-    await expect(page.getByRole('status')).toHaveText('Pavage prêt.');
+    await page.goto('/#/jeu');
+    await expect(
+      page.getByRole('status', { name: 'État du pavage' }),
+    ).toHaveText('Pavage prêt.');
     const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
     const box = await canvas.boundingBox();
     expect(box.x + box.width).toBeLessThanOrEqual(480);

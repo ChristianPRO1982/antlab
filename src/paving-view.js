@@ -1,19 +1,33 @@
 import { Camera } from './camera.js';
 import { drawPaving } from './renderer.js';
 
-export function mountPaving(canvas, status, world) {
+export function mountPaving(
+  canvas,
+  status,
+  world,
+  { sprite = null, onScaleChange = () => {} } = {},
+) {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Le rendu Canvas 2D est indisponible.');
   const initial = canvas.getBoundingClientRect();
   const camera = new Camera(initial.width, initial.height);
   let frame = null;
   let drag = null;
+  let active = true;
+  const options = { grid: true, outlines: true, origin: true, lanto: true };
 
   function requestDraw() {
-    if (frame !== null) return;
+    if (!active || frame !== null) return;
     frame = requestAnimationFrame(() => {
       frame = null;
       const { width, height } = canvas.getBoundingClientRect();
+      if (!active || width <= 0 || height <= 0) return;
+      if (sprite && !sprite.complete) return;
+      if (sprite && sprite.naturalWidth === 0) {
+        status.textContent = 'Impossible de charger l’image de Lanto.';
+        return;
+      }
+      camera.resize(width, height);
       const ratio = window.devicePixelRatio || 1;
       const pixelWidth = Math.round(width * ratio);
       const pixelHeight = Math.round(height * ratio);
@@ -30,11 +44,8 @@ export function mountPaving(canvas, status, world) {
         0,
         0,
       );
-      drawPaving(context, camera, world);
-      if (
-        !status.textContent ||
-        status.textContent === 'Chargement du pavage…'
-      ) {
+      drawPaving(context, camera, world, options, sprite);
+      if (status.textContent !== 'Pavage prêt.') {
         status.textContent = 'Pavage prêt.';
       }
     });
@@ -43,7 +54,7 @@ export function mountPaving(canvas, status, world) {
   function navigate(operation) {
     try {
       operation();
-      status.textContent = 'Pavage prêt.';
+      onScaleChange(camera.scale);
       requestDraw();
     } catch (error) {
       // Une limite de navigation est visible ; les autres erreurs restent explicites.
@@ -53,7 +64,7 @@ export function mountPaving(canvas, status, world) {
   }
 
   canvas.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0 || drag) return;
+    if (!active || event.button !== 0 || drag) return;
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -101,7 +112,7 @@ export function mountPaving(canvas, status, world) {
 
   const resizeObserver = new ResizeObserver(() => {
     const rect = canvas.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0)
+    if (active && rect.width > 0 && rect.height > 0)
       navigate(() => camera.resize(rect.width, rect.height));
   });
   resizeObserver.observe(canvas);
@@ -120,5 +131,45 @@ export function mountPaving(canvas, status, world) {
     );
   }
   watchDensity();
+  if (sprite) {
+    sprite.addEventListener('load', requestDraw);
+    sprite.addEventListener('error', () => {
+      status.textContent = 'Impossible de charger l’image de Lanto.';
+      console.error(status.textContent);
+    });
+  }
+  onScaleChange(camera.scale);
   requestDraw();
+  return {
+    setActive(value) {
+      active = value;
+      if (!active) {
+        if (drag) stopDrag({ pointerId: drag.id });
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+      } else requestDraw();
+    },
+    setZoom(scale) {
+      if (typeof scale !== 'number' || !Number.isFinite(scale))
+        throw new TypeError('Zoom invalide.');
+      navigate(() =>
+        camera.zoomAt(
+          camera.width / 2,
+          camera.height / 2,
+          scale / camera.scale,
+        ),
+      );
+    },
+    recenter() {
+      navigate(() => camera.recenter());
+    },
+    updateOptions(changes) {
+      for (const [key, value] of Object.entries(changes)) {
+        if (!Object.hasOwn(options, key) || typeof value !== 'boolean')
+          throw new TypeError('Réglage visuel invalide.');
+      }
+      Object.assign(options, changes);
+      requestDraw();
+    },
+  };
 }

@@ -72,7 +72,8 @@ disponible et de cette représentation numérique. Aucune persistance n'est ajou
 La vue utilise un Canvas 2D et une caméra distincte du monde. `Camera(width,
 height, { x, y })` reçoit les dimensions CSS et éventuellement le centre du monde
 affiché (par défaut `(0.5, 0.5)`). Ses opérations sont `screenToWorld`,
-`worldToScreen`, `moveBy(dx, dy)`, `zoomAt(x, y, factor)` et `resize(width, height)`.
+`worldToScreen`, `moveBy(dx, dy)`, `zoomAt(x, y, factor)`, `resize(width, height)`
+et `recenter()` (retour au centre de `(0, 0)` sans changer l'échelle).
 `scale`, `width` et `height` sont en lecture seule.
 
 - Vue initiale : 32 pixels CSS par case, centrée sur la case `(0, 0)`.
@@ -103,5 +104,8 @@ regroupées avec `requestAnimationFrame`, sans boucle au repos. Les changements
 de taille et de densité de pixels reconstruisent le tampon Canvas ; le centre
 du monde affiché est conservé lors du redimensionnement.
 
-Cette vue ne change aucune couleur. Le moteur, l'édition des cases, la fourmi,
-son suivi, le recentrage et les gestes tactiles complets restent hors de ce lot.
+Cette vue ne change aucune couleur. La [refonte de l'interface](INTERFACE.md)
+ajoute des interrupteurs visuels, le recentrage et Lanto, fixe à l'origine,
+dessiné au centre de la case à 90 % de son côté. Le moteur, l'édition des cases,
+le déplacement et le suivi de la fourmi et les gestes tactiles complets restent
+à développer.

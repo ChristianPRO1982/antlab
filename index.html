@@ -3,41 +3,329 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="Explorez le pavage en croix du laboratoire AntLab, inspiré de la fourmi de Langton."
+      content="AntLab, un laboratoire de règles et de fourmis. Explorez le pavage en croix avec Lanto."
     />
-    <link rel="icon" href="data:," />
-    <title>AntLab — Pavage en croix</title>
+    <link rel="icon" type="image/png" href="/src/assets/lanto/Lanto.png" />
+    <title>AntLab — Accueil</title>
   </head>
   <body>
-    <main>
-      <header>
-        <h1>AntLab</h1>
-        <p>Le laboratoire de fourmis · Pavage en croix</p>
-      </header>
-      <p id="navigation-help" class="help">
-        Maintenez le bouton gauche et glissez pour déplacer le pavage. Utilisez
-        la molette pour zoomer ou dézoomer autour du pointeur. Le point gris
-        repère le bas à gauche de la case (0, 0).
-      </p>
-      <div class="viewport">
-        <canvas
-          role="img"
-          aria-label="Pavage en croix navigable"
-          aria-describedby="navigation-help"
-        >
-          Votre navigateur doit prendre en charge Canvas 2D pour afficher le
-          pavage.
-        </canvas>
-      </div>
-      <footer>
-        <p role="status">Chargement du pavage…</p>
-        <p>
-          Une fourmi, deux couleurs, des règles à explorer. La simulation
-          viendra ensuite.
+    <svg
+      class="icon-library"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="arrow" viewBox="0 0 24 24">
+        <path d="M4 12h15m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="play" viewBox="0 0 24 24">
+        <path d="m8 5 11 7-11 7Z" />
+      </symbol>
+      <symbol id="reset" viewBox="0 0 24 24">
+        <path d="M4 10a8 8 0 1 1 0 5m0-11v6h6" />
+      </symbol>
+      <symbol id="target" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="7" />
+        <path d="M12 2v6m0 8v6M2 12h6m8 0h6" />
+      </symbol>
+      <symbol id="chevron" viewBox="0 0 24 24">
+        <path d="m9 6 6 6-6 6" />
+      </symbol>
+    </svg>
+    <header class="site-header">
+      <a class="brand" href="#/accueil" aria-label="Lanto — Accueil">
+        <img src="/src/assets/lanto/Lanto.png" alt="" width="34" height="34" />
+      </a>
+      <nav aria-label="Navigation principale">
+        <a href="#/accueil" data-route="accueil" aria-current="page">Accueil</a>
+        <a href="#/jeu" data-route="jeu">Jeu</a>
+        <a href="#/aide" data-route="aide">Aide</a>
+      </nav>
+      <span class="header-name" aria-hidden="true">ANTLAB</span>
+    </header>
+    <main id="main-content">
+      <section data-page="accueil" class="home-page">
+        <div class="hero-copy">
+          <p class="eyebrow">UN LABORATOIRE DE FOURMIS</p>
+          <h1 tabindex="-1">
+            AntLab<span class="blue-dot" aria-hidden="true">.</span>
+          </h1>
+          <p class="hero-lead">
+            De petites règles.<br />Des mondes à explorer.
+          </p>
+          <p class="hero-description">
+            Un quadrillage, une fourmi, et toute la curiosité que vous y
+            apportez. Explorez un pavage en croix, point de départ d’expériences
+            inspirées de la fourmi de Langton.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#/jeu"
+              >Explorer le jeu
+              <svg class="icon" aria-hidden="true"><use href="#arrow" /></svg
+            ></a>
+            <a class="text-link" href="#/aide">Comment ça marche ?</a>
+          </div>
+          <p class="hero-note">
+            Le terrain est prêt. La simulation arrive ensuite.
+          </p>
+        </div>
+        <figure class="hero-mascot">
+          <img
+            src="/src/assets/lanto/Lanto.png"
+            alt="Lanto, la mascotte d’AntLab"
+            width="1254"
+            height="1254"
+          />
+          <figcaption>
+            <span class="mascot-name">Lanto</span> <span>Langton + Ant</span>
+          </figcaption>
+        </figure>
+        <p class="home-footer">Une fourmi. Deux couleurs. Mille questions.</p>
+      </section>
+
+      <section data-page="jeu" class="game-page" hidden>
+        <h1 class="sr-only" tabindex="-1">Jeu</h1>
+        <p role="status" aria-label="État du pavage" class="sr-only">
+          Chargement du pavage…
         </p>
-      </footer>
+        <p id="navigation-help" class="sr-only">
+          Maintenez le bouton gauche et glissez pour déplacer le pavage. La
+          molette zoome autour du pointeur. Le point gris repère le bas à gauche
+          de la case (0, 0).
+        </p>
+        <div class="game-layout">
+          <div class="grid-stage">
+            <canvas
+              role="img"
+              aria-label="Pavage en croix navigable"
+              aria-describedby="navigation-help"
+              >Votre navigateur doit prendre en charge Canvas 2D.</canvas
+            >
+            <button
+              class="floating-play"
+              aria-label="Lecture / pause flottante"
+              title="Simulation à venir"
+              disabled
+              hidden
+            >
+              <svg class="icon" aria-hidden="true"><use href="#play" /></svg>
+            </button>
+          </div>
+          <div class="sidebar">
+            <button
+              class="panel-handle"
+              aria-label="Redimensionner ou replier les options"
+              aria-controls="game-options"
+              aria-expanded="true"
+            >
+              <svg class="handle-chevron icon" aria-hidden="true">
+                <use href="#chevron" />
+              </svg>
+              <span class="handle-grip" aria-hidden="true">⠿</span>
+              <span class="handle-arrows" aria-hidden="true">↔</span>
+            </button>
+            <aside id="game-options" aria-label="Options du jeu">
+              <div class="panel-heading">
+                <span class="eyebrow">LE TERRAIN D’EXPLORATION</span>
+                <h2>Options<span class="blue-dot">.</span></h2>
+              </div>
+              <div
+                class="options-scroll"
+                role="region"
+                aria-label="Réglages visuels"
+                tabindex="0"
+              >
+                <fieldset>
+                  <legend>Vue</legend>
+                  <div class="zoom-label">
+                    <label for="zoom">Zoom</label>
+                    <output
+                      for="zoom"
+                      id="zoom-value"
+                      aria-label="Échelle de la vue"
+                      >32 px / case</output
+                    >
+                  </div>
+                  <input
+                    id="zoom"
+                    type="range"
+                    min="1"
+                    max="160"
+                    step="0.1"
+                    value="32"
+                  />
+                  <div class="range-endpoints" aria-hidden="true">
+                    <span>Vue d’ensemble</span><span>Détail</span>
+                  </div>
+                  <button class="recenter secondary-action" type="button">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="#target" /></svg
+                    >Recentrer la vue
+                  </button>
+                </fieldset>
+                <fieldset>
+                  <legend>Affichage</legend>
+                  <label class="check-row"
+                    ><span>Afficher le quadrillage</span
+                    ><input type="checkbox" data-option="grid" checked
+                  /></label>
+                  <label class="check-row"
+                    ><span>Renforcer les contours des croix</span
+                    ><input type="checkbox" data-option="outlines" checked
+                  /></label>
+                  <label class="check-row"
+                    ><span>Repérer l’origine</span
+                    ><input type="checkbox" data-option="origin" checked
+                  /></label>
+                  <label class="check-row"
+                    ><span>Afficher Lanto</span
+                    ><input type="checkbox" data-option="lanto" checked
+                  /></label>
+                </fieldset>
+                <div class="panel-tip">
+                  <p>Un geste pour explorer.</p>
+                  <p>
+                    Glissez pour déplacer le monde. Utilisez la molette pour
+                    prendre du recul.
+                  </p>
+                  <a class="text-link" href="#/aide"
+                    >Les repères du laboratoire
+                    <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </div>
+              <div
+                class="simulation-controls"
+                role="group"
+                aria-label="Commandes de simulation"
+              >
+                <div class="simulation-heading">
+                  <h3>Simulation</h3>
+                  <span class="coming-soon">À venir</span>
+                </div>
+                <label class="speed-label" for="speed"
+                  >Vitesse d’exécution</label
+                >
+                <input
+                  id="speed"
+                  type="range"
+                  min="1"
+                  max="100"
+                  value="30"
+                  disabled
+                  aria-describedby="simulation-note"
+                />
+                <div class="transport">
+                  <button
+                    class="transport-play"
+                    aria-label="Lecture / pause"
+                    disabled
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="#play" /></svg
+                    ><span>Lancer</span>
+                  </button>
+                  <button
+                    class="transport-reset"
+                    aria-label="Réinitialiser la simulation"
+                    title="Réinitialiser la simulation"
+                    disabled
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="#reset" />
+                    </svg>
+                  </button>
+                </div>
+                <p id="simulation-note">Simulation à venir</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section data-page="aide" class="help-page" hidden>
+        <p class="eyebrow">LE GUIDE DU LABORATOIRE</p>
+        <h1 tabindex="-1">
+          Quelques repères<br />pour explorer<span class="blue-dot">.</span>
+        </h1>
+        <p class="help-intro">
+          Bienvenue dans AntLab. Pour commencer, prenez le temps de découvrir le
+          terrain de jeu de Lanto.
+        </p>
+        <div class="help-sections">
+          <section>
+            <span class="help-number">01</span>
+            <div>
+              <h2>Un monde en croix</h2>
+              <p>
+                Chaque croix réunit cinq cases : un centre et quatre branches.
+                Les contours foncés séparent les croix ; les traits fins
+                distinguent leurs cases.
+              </p>
+            </div>
+          </section>
+          <section>
+            <span class="help-number">02</span>
+            <div>
+              <h2>Gardez un point de repère</h2>
+              <p>
+                Le petit point gris se trouve en bas à gauche de la case (0, 0).
+                L’axe X va vers la droite et Y vers le haut. Lanto attend au
+                centre de cette case, tourné vers le nord.
+              </p>
+            </div>
+          </section>
+          <section>
+            <span class="help-number">03</span>
+            <div>
+              <h2>Déplacez votre regard</h2>
+              <p>
+                Maintenez le bouton gauche de la souris et glissez. La molette
+                zoome ou dézoome autour du pointeur, de la vue d’ensemble au
+                détail. « Recentrer la vue » ramène à l’origine en conservant le
+                zoom.
+              </p>
+            </div>
+          </section>
+          <section>
+            <span class="help-number">04</span>
+            <div>
+              <h2>Faites de la place</h2>
+              <p>
+                Glissez la poignée du panneau droit pour ajuster sa largeur, ou
+                cliquez dessus pour le replier. Au clavier : Entrée ou Espace
+                pour ouvrir et fermer, flèches gauche et droite pour
+                redimensionner. Sur téléphone, les options s’ouvrent par-dessus
+                le jeu ; Échap les referme.
+              </p>
+            </div>
+          </section>
+          <section>
+            <span class="help-number">05</span>
+            <div>
+              <h2>Et la fourmi de Langton ?</h2>
+              <p>
+                Son principe : lire la couleur d’une case, tourner, transformer
+                les couleurs, puis avancer. La simulation n’est pas encore
+                disponible. Les commandes sont donc désactivées et Lanto reste à
+                l’origine.
+              </p>
+            </div>
+          </section>
+        </div>
+        <div class="help-ending">
+          <a class="primary-action" href="#/jeu"
+            >À vous d’explorer
+            <svg class="icon" aria-hidden="true"><use href="#arrow" /></svg
+          ></a>
+          <p>
+            Tout reste dans l’onglet. Recharger la page réinitialise la vue et
+            les réglages.
+          </p>
+        </div>
+      </section>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>

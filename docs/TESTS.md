@@ -20,6 +20,11 @@ limites numériques), le stockage clairsemé (blanc implicite, suppressions,
 inversions, validation sans mutation) et la caméra (conversions, déplacements,
 ancrage du zoom et limites). `passWithNoTests` a été retiré.
 
+Les tests du panneau vérifient les bornes 15–50 %, le seuil clic/glissement,
+l'annulation d'un geste, la restauration de largeur, le clavier et les états
+mobile/ordinateur séparés. La caméra teste aussi le recentrage sans changement
+d'échelle.
+
 Les parcours Chromium vérifient le chargement, les couleurs réellement dessinées,
 le repère d'origine, la différence d'épaisseur des frontières, le glissement hors
 zone, la fin/annulation du geste, le zoom avec retour depuis son minimum de
@@ -27,6 +32,13 @@ zone, la fin/annulation du geste, le zoom avec retour depuis son minimum de
 de pixels de 2 sur fenêtre étroite. Ils peuvent cibler Vite ou l'image Nginx.
 Les captures `test-results/pavage.png` et `test-results/pavage-densite-2.png`
 permettent une inspection visuelle sans figer un instantané de référence.
+
+Les parcours de la [refonte](INTERFACE.md) couvrent aussi les trois pages,
+l'historique, le logo/favicon, les réglages visuels, la conservation de la caméra
+et du panneau, le défilement des options sans déplacement des commandes, le
+panneau à 15 % et le tiroir mobile. Les commandes de simulation sont vérifiées
+comme désactivées. Les captures `test-results/design-*.png` présentent les pages
+sur ordinateur et mobile.
 
 ```sh
 docker compose run --rm test

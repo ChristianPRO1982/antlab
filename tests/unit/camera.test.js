@@ -49,6 +49,15 @@ test('dézoome jusqu’à un pixel par case et conserve le point visé', () => {
   expect(camera.screenToWorld(123, 456)).toEqual(anchor);
 });
 
+test('recentrer conserve l’échelle', () => {
+  const camera = new Camera(800, 600);
+  camera.moveBy(100, -200);
+  camera.zoomAt(123, 456, 2);
+  camera.recenter();
+  expect(camera.scale).toBe(64);
+  expect(camera.screenToWorld(400, 300)).toEqual({ x: 0.5, y: 0.5 });
+});
+
 test('erreurs et dépassements de caméra sans changement partiel', () => {
   const camera = new Camera(800, 600);
   const before = camera.screenToWorld(0, 0);

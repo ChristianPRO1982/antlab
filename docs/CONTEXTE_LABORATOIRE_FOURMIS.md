@@ -47,7 +47,10 @@ prendre une décision qui changerait le sens scientifique de l'expérience.
 Les étapes 01 et 02 sont clôturées ; le lot 02 est présent localement sur
 `feat/geometry-world`, sans nouvelle release. Sur demande explicite, une vue du
 pavage avec glissement souris, zoom et repère d'origine anticipe partiellement
-l'étape 06, qui reste ouverte. La prochaine étape est le moteur déterministe
+l'étape 06, qui reste ouverte. Une refonte visuelle ajoute les pages Accueil, Jeu
+et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
+simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
+La prochaine étape scientifique est le moteur déterministe
 (03). Voir le [bilan du lot 02](RECEPTION_ETAPE_02.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
@@ -60,6 +63,19 @@ L'objectif n'est pas de reproduire uniquement cet automate, ni de complexifier a
 L'ambition est exploratoire : expérimenter librement, découvrir des motifs ou des dynamiques intéressants, et pouvoir les reproduire. L'originalité d'une règle ou d'un résultat ne doit pas être présumée sans recherche documentaire. Le projet ne vise pas à formuler d'emblée des théories mathématiques avancées.
 
 Principes directeurs : **simplicité, déterminisme, lisibilité, reproductibilité et extensibilité progressive**. Éviter l'« usine à gaz ».
+
+### Mascotte et identité visuelle
+
+La mascotte d'AntLab s'appelle **Lanto**, un nom formé à partir de **Langton**
+et **Ant** (« fourmi » en anglais). Lanto est une **fourmi bleu électrique**,
+retenue comme référence pour la conception visuelle du site.
+
+Les images de référence sont regroupées dans `src/assets/lanto/` :
+[`Lanto.png`](../src/assets/lanto/Lanto.png) et
+[`Lanto-top.webp`](../src/assets/lanto/Lanto-top.webp). Le PNG sert de logo, de
+favicon et d'illustration d'accueil ; le WebP représente la future fourmi dans
+la grille. Le fichier `Lanto-top.origin.png` reste la source originale de la vue
+de dessus. Les ressources utilisées sont importées par Vite lors du build.
 
 ## 2. Monde expérimental initial
 

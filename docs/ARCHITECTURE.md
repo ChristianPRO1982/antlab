@@ -12,9 +12,18 @@ ni du navigateur ni du rendu. `camera.js` calcule les conversions et la navigati
 sans DOM ; `renderer.js` dessine la fenêtre visible et `paving-view.js` relie
 les événements du navigateur au rendu. L'interface ne modifie pas le monde.
 
+`main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
+sans routeur ni rechargement de page. Le Canvas est monté à la première visite
+du jeu puis conservé en mémoire ; son contrôleur suspend les rendus hors de cette
+page. Les réglages et la caméra restent intacts lors de la navigation.
+`panel-state.js` contient les transitions du panneau sans DOM ; `options-panel.js`
+relie son redimensionnement, son repli et le mode mobile aux événements.
+
 La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
-l'utilisateur, sans clôturer ce lot : fourmi, suivi, recentrage et navigation
-tactile complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md).
+l'utilisateur, sans clôturer ce lot. La refonte visuelle ajoute le recentrage et
+une représentation fixe de Lanto à l'origine. Moteur, suivi et navigation tactile
+complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md)
+et le [périmètre de l'interface](INTERFACE.md).
 
 Vite lance le serveur de développement et construit `dist`. Nginx sert ce dossier
 dans l'image de production, sur le port interne 8080, sous l'utilisateur 101.
