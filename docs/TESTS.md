@@ -108,5 +108,17 @@ de majorité vérifient les métadonnées, les versions, les copies, la valeur p
 défaut et les seuils invalides ; pour les dix couples règle/seuil, ils comparent
 10 000 pas individuels à un lot unique et à plusieurs lots.
 
-L'équivalence du pilotage par Worker et des campagnes sera testée lorsque ces
-modes existeront ; aucun KPI n'est encore validé.
+Le pilotage ajoute 26 tests du contrôleur (timers virtuels et états scientifiques
+réels) et neuf tests du client (transport simulé, corrélation et erreurs).
+Les 19 nouveaux parcours Chromium utilisent un véritable Worker sous Vite :
+14 configurations scientifiques comparées au moteur synchrone, paliers exacts
+jusqu'au million et cible libre, navigation/zoom pendant calcul continu,
+pause/reprise, annulation, erreur partielle et validation du protocole.
+Les attentes utilisent les acquittements et le nombre exact de pas atteint,
+sans supposer une vitesse de calcul. Voir la [réception de l'étape 05](RECEPTION_ETAPE_05.md).
+
+Les fixtures Worker importent les sources sous Vite : elles sont explicitement
+ignorées avec `TEST_BASE_URL` sur une image de production tant que le client
+n'est pas raccordé au site. Les parcours de l'interface existante continuent
+à viser Vite ou Nginx. L'équivalence des futures campagnes et les KPI restent
+à vérifier lors de leurs lots.

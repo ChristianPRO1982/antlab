@@ -107,8 +107,9 @@ Ce lot est une refonte visuelle demandée après l'étape 02. Il anticipe des
 réinitialisation et bouton flottant sont désactivés avec la mention
 « Simulation à venir ». Le [moteur autonome de l'étape 03](MOTEUR.md) est désormais
 disponible et possède un [catalogue de règles](REGLES.md) configurable à la
-construction par API. Leur intégration à l'interface reste future ; il n'existe
-ni Worker ni export/import. La prochaine étape est le pilotage en Worker (05).
+construction par API. Le [pilotage en Worker](EXECUTION.md) est disponible et
+testé sous Vite ; son raccordement aux commandes et au rendu reste futur.
+Il n'existe pas d'export/import. La prochaine étape est la visualisation (06).
 
 Les tests TDD ont d'abord échoué sur l'absence du panneau, du recentrage et de
 la navigation. Vitest couvre les transitions et limites du panneau ainsi que

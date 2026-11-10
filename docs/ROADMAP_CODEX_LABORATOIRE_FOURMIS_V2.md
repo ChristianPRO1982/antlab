@@ -197,12 +197,12 @@ Bilan : [réception de l'étape 04](RECEPTION_ETAPE_04.md),
 
 **Points à réaliser**
 
-- [ ] Isoler le calcul intensif dans un Web Worker, en gardant le moteur exécutable sans Worker ni rendu.
-- [ ] Exposer des commandes déterministes : pas, N pas, étape cible, lancement, pause, reprise et annulation.
-- [ ] Découpler transitions, vitesse de calcul, progression communiquée et fréquence d’affichage.
-- [ ] Gérer les cibles exactes 10 000 / 100 000 / 1 000 000 et une valeur personnalisée.
-- [ ] Préparer une API « calcul sans affichage » réutilisable par une future campagne de simulations.
-- [ ] Tester réactivité, interruption et équivalence stricte des résultats entre modes de pilotage.
+- [x] Isoler le calcul intensif dans un Web Worker, en gardant le moteur exécutable sans Worker ni rendu.
+- [x] Exposer des commandes déterministes : pas, N pas, étape cible, lancement, pause, reprise et annulation.
+- [x] Découpler transitions, vitesse de calcul, progression communiquée et fréquence d’affichage.
+- [x] Gérer les cibles exactes 10 000 / 100 000 / 1 000 000 et une valeur personnalisée.
+- [x] Préparer une API « calcul sans affichage » réutilisable par une future campagne de simulations.
+- [x] Tester réactivité, interruption et équivalence stricte des résultats entre modes de pilotage.
 
 **Livrable attendu.** Un moteur et un contrôleur qui atteignent des paliers de 10 000, 100 000 et 1 000 000 d’étapes sans figer la page, dans les limites de l’appareil, avec une API d’exécution utilisable sans Canvas.
 
@@ -210,8 +210,8 @@ Bilan : [réception de l'étape 04](RECEPTION_ETAPE_04.md),
 
 **Vérifications de réception**
 
-- [ ] 1 et N étapes donnent le même résultat logique, quelle que soit la vitesse.
-- [ ] La page reste réactive, la pause et l’annulation n’entraînent ni doublon ni perte de pas.
+- [x] 1 et N étapes donnent le même résultat logique, quelle que soit la vitesse.
+- [x] La page reste réactive, la pause et l’annulation n’entraînent ni doublon ni perte de pas.
 
 **Prompt Codex**
 
@@ -219,13 +219,19 @@ Bilan : [réception de l'étape 04](RECEPTION_ETAPE_04.md),
 Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md, et réalise uniquement l’étape 05. Isole le calcul dans un Web Worker pour l’usage web, tout en gardant le moteur scientifique autonome du DOM, du Canvas et du Worker. Définis une API minimale permettant de calculer N transitions ou d’atteindre une étape cible exacte, avec commandes de démarrage, pause, reprise et annulation propre entre lots. Différencie clairement nombre d’étapes, débit de calcul et fréquence de rafraîchissement. Transmets une progression compacte sans recopier tout le monde à chaque pas. Prépare la possibilité d’un appel « sans rendu » en vue des campagnes à l’étape 13, sans implémenter celles-ci maintenant. Prouve par tests l’égalité stricte des résultats pas à pas et en exécution intensive ; documente les limites numériques et mémoire.
 ```
 
-- [ ] **Étape 05 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 05 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+
+Bilan : [réception de l'étape 05](RECEPTION_ETAPE_05.md),
+[API de pilotage et protocole Worker](EXECUTION.md). La pause conserve la cible ;
+l'annulation conserve l'état atteint et abandonne la cible. Le raccordement
+aux commandes et au rendu du site reste aux étapes suivantes.
 
 ## 06 — Visualiser un monde théoriquement sans limite
 
 **Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
 pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
-l'origine. Le moteur et le suivi manquent encore ; cette étape reste ouverte.
+l'origine, ainsi que les modes de cadrage côté vue. Le raccordement au Worker
+et la navigation tactile complète restent à réaliser ; cette étape reste ouverte.
 Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.
@@ -258,7 +264,7 @@ Lis les deux documents et réalise uniquement l'étape 06. Crée une visualisati
 
 **Anticipation visuelle demandée :** la refonte Lanto ajoute Accueil, Jeu, Aide,
 un bandeau commun et un panneau d'options redimensionnable. Les commandes
-scientifiques restent explicitement désactivées en l'absence de moteur.
+scientifiques restent explicitement désactivées avant leur raccordement au Worker.
 Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Transformer les fonctionnalités techniques existantes en une interface agréable et compréhensible : panneau de configuration des règles, commandes du moteur, paliers et cible libre, statut, compteurs, vitesse, contrôles de caméra et aide courte. Empêcher les choix incompatibles ; rendre les contrôles cohérents avec le véritable état du Worker.

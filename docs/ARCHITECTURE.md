@@ -30,6 +30,16 @@ calcul. Les centres utilisent la règle sélectionnée ; les branches conservent
 l'inversion simple. Aucun langage de règles ni chargement de code externe
 n'est introduit.
 
+`execution-controller.js` pilote ce moteur par lots séparés par des timers.
+Il ne dépend ni du DOM ni du Worker et peut être appelé sans affichage.
+`simulation-worker.js` héberge un contrôleur et reçoit les commandes ;
+`simulation-client.js` offre la même API asynchrone par messages corrélés,
+gère les abonnements et libère le Worker à la fermeture. La progression utilise
+`LangtonEngine.getProgress()` en coût constant, sans copier le monde.
+Voir le [contrat de pilotage](EXECUTION.md). Le raccordement à `main.js` et au
+Canvas reste futur : les fixtures Playwright sous Vite exercent cette API
+sans l'ajouter au build du site avant l'assemblage de l'interface.
+
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite
 du jeu puis conservé en mémoire ; son contrôleur suspend les rendus hors de cette

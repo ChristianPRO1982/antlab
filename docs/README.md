@@ -14,7 +14,9 @@ cette extension demandée anticipe partiellement l'étape 06, qui reste ouverte.
 Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
 Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
 les commandes de simulation restent désactivées en attendant l'intégration du moteur.
-Le Worker, les graphiques, les campagnes et les formats
+L'étape 05 fournit un contrôleur asynchrone et une API Worker testée sous Vite,
+avec calcul par lots, pause, reprise, annulation et progression compacte.
+Le branchement de cette API au jeu, les graphiques, les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
 | Document                                           | Usage                                   |
@@ -25,6 +27,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Géométrie et monde](GEOMETRIE_MONDE.md)           | Conventions, API et navigation          |
 | [Moteur déterministe](MOTEUR.md)                   | API, transitions et limites numériques  |
 | [Catalogue de règles](REGLES.md)                   | Définitions, versions et compatibilités |
+| [Pilotage et Worker](EXECUTION.md)                 | API asynchrone, protocole et limites    |
 | [Développement](DEVELOPPEMENT.md)                  | Commandes Docker et conventions         |
 | [Tests](TESTS.md)                                  | Cycle TDD et contrôles disponibles      |
 | [Releases](RELEASES.md)                            | Branches, Conventional Commits et robot |
@@ -34,6 +37,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Réception de l'étape 02](RECEPTION_ETAPE_02.md)   | Géométrie, monde et pavage navigable    |
 | [Réception de l'étape 03](RECEPTION_ETAPE_03.md)   | Moteur et reproductibilité              |
 | [Réception de l'étape 04](RECEPTION_ETAPE_04.md)   | Règles et combinaisons testées          |
+| [Réception de l'étape 05](RECEPTION_ETAPE_05.md)   | Calculs longs et interruptions          |
 
 ## Décisions validées
 
