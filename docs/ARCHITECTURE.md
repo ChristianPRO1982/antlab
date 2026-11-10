@@ -4,7 +4,8 @@
 
 Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
 Il affiche le pavage en croix dans un Canvas 2D navigable. La géométrie et le monde
-clairsemé sont implémentés ; aucune fourmi n'est encore simulée.
+clairsemé sont implémentés. Le moteur de Langton peut simuler une fourmi sans
+affichage ; il n'est pas encore relié à cette interface.
 
 `geometry.js` définit les croix, `world.js` stocke les cases noires et
 `coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
@@ -13,6 +14,12 @@ sans DOM ; `renderer.js` dessine la fenêtre visible et `paving-view.js` relie
 les événements du navigateur au rendu. `view-framing.js` calcule les bornes noires
 courantes et les modes de centrage/suivi sans DOM, horloge ou écriture du monde.
 L'interface ne modifie pas le monde.
+
+`engine.js` expose `LangtonEngine` : état privé de la fourmi, monde clairsemé,
+compteur exact, transition atomique et calcul de N pas. Il réutilise `world.js`
+et `coordinates.js`, sans dépendance au rendu, au temps ou au Worker. Les
+conditions initiales et les copies d'état sont indépendantes du stockage privé.
+Voir l'[API et les conventions du moteur](MOTEUR.md).
 
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite
@@ -23,8 +30,9 @@ relie son redimensionnement, son repli et le mode mobile aux événements.
 
 La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
 l'utilisateur, sans clôturer ce lot. La refonte visuelle ajoute le recentrage et
-une représentation de Lanto à l'origine et des modes de suivi côté vue. Moteur et navigation tactile
-complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md)
+une représentation de Lanto à l'origine et des modes de suivi côté vue. L'intégration
+du moteur à la vue et la navigation tactile complète restent à réaliser.
+Voir les [conventions et API](GEOMETRIE_MONDE.md)
 et le [périmètre de l'interface](INTERFACE.md).
 
 Vite lance le serveur de développement et construit `dist`. Nginx sert ce dossier

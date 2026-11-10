@@ -79,5 +79,17 @@ Ne cocher les critères de roadmap qu'après vérification réelle. Distinguer t
 automatisés, contrôles manuels et limitations de l'environnement. Ne jamais changer
 une valeur attendue uniquement pour obtenir un test vert.
 
-Le lot présent ne valide aucune trajectoire de fourmi ni résultat de KPI.
-Les scénarios scientifiques arriveront avec leurs implémentations.
+Les 25 tests du moteur vérifient le départ standard et les conditions initiales
+personnalisées, les huit rotations couleur/orientation, les cinq premiers pas
+connus et le retour au blanc, l'inversion simple d'un centre, l'indépendance des
+instances et des copies d'état, les entrées invalides et les limites numériques.
+Ils comparent une séquence complète répétée et 10 000 transitions calculées
+pas à pas, en un lot ou en plusieurs lots depuis deux configurations.
+Le calcul s'exécute en environnement Node sans DOM ; les appels à `Date.now`,
+`performance.now` et `Math.random` sont rendus interdits dans un test dédié.
+L'absence de mutation lors d'un pas refusé et la conservation des pas achevés
+dans un lot interrompu sont vérifiées. Le cycle TDD et les résultats figurent
+dans la [réception de l'étape 03](RECEPTION_ETAPE_03.md).
+
+L'équivalence du pilotage par Worker et des campagnes sera testée lorsque ces
+modes existeront ; aucun KPI n'est validé dans le lot 03.

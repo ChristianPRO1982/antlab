@@ -111,5 +111,6 @@ du monde affiché est conservé lors du redimensionnement.
 Cette vue ne change aucune couleur. La [refonte de l'interface](INTERFACE.md)
 ajoute les trois modes de grille, les centrages et suivis, et Lanto, dessiné au
 centre de sa case à 90 % de son côté. Lanto reste à l'origine dans l'application
-actuelle. Le moteur, l'édition des cases, le déplacement effectif de la fourmi
-et les gestes tactiles complets restent à développer.
+actuelle. Le [moteur autonome](MOTEUR.md) est disponible ; son intégration au
+rendu, l'édition des cases, le déplacement visible de la fourmi et les gestes
+tactiles complets restent à développer.

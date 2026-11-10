@@ -2,13 +2,15 @@
 
 ## État du projet
 
-Le socle (étape 01) et la géométrie avec monde clairsemé (étape 02) sont implémentés.
+Le socle (étape 01), la géométrie avec monde clairsemé (étape 02) et le moteur
+déterministe de Langton (étape 03) sont implémentés. Le moteur calcule un ou N pas
+sans affichage depuis des conditions initiales configurables.
 Une vue du pavage permet le glissement à la souris et le zoom à la molette ;
 cette extension demandée anticipe partiellement l'étape 06, qui reste ouverte.
 Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
 Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
-les commandes de simulation sont désactivées tant que le moteur manque.
-Le moteur, les règles, le Worker, les graphiques, les campagnes et les formats
+les commandes de simulation restent désactivées en attendant l'intégration du moteur.
+Le catalogue de règles, le Worker, les graphiques, les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
 | Document                                           | Usage                                   |
@@ -17,6 +19,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Roadmap](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md) | Lots et critères de réception           |
 | [Architecture](ARCHITECTURE.md)                    | Responsabilités et décisions techniques |
 | [Géométrie et monde](GEOMETRIE_MONDE.md)           | Conventions, API et navigation          |
+| [Moteur déterministe](MOTEUR.md)                   | API, transitions et limites numériques  |
 | [Développement](DEVELOPPEMENT.md)                  | Commandes Docker et conventions         |
 | [Tests](TESTS.md)                                  | Cycle TDD et contrôles disponibles      |
 | [Releases](RELEASES.md)                            | Branches, Conventional Commits et robot |
@@ -24,6 +27,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Changelog](CHANGELOG.md)                          | Historique produit par semantic-release |
 | [Réception du socle](RECEPTION_SOCLE.md)           | Vérifications réalisées et limites      |
 | [Réception de l'étape 02](RECEPTION_ETAPE_02.md)   | Géométrie, monde et pavage navigable    |
+| [Réception de l'étape 03](RECEPTION_ETAPE_03.md)   | Moteur et reproductibilité              |
 
 ## Décisions validées
 
