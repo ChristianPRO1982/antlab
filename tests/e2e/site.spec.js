@@ -69,14 +69,14 @@ test('panneau redimensionnable, seuil, commandes et clavier', async ({
   );
   await page.screenshot({ path: 'test-results/design-jeu-initial.png' });
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause', exact: true }),
-  ).toBeDisabled();
+    page.getByRole('button', { name: 'Lancer', exact: true }),
+  ).toBeEnabled();
   await expect(
     page.getByRole('button', { name: 'Réinitialiser la simulation' }),
-  ).toBeDisabled();
-  await expect(page.getByLabel('Vitesse d’exécution')).toBeDisabled();
+  ).toBeEnabled();
+  await expect(page.getByLabel('Vitesse d’exécution')).toBeEnabled();
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause flottante' }),
+    page.getByRole('button', { name: 'Lancer flottante' }),
   ).toBeHidden();
   const handleBox = await handle.boundingBox();
   await page.mouse.move(handleBox.x + 7, handleBox.y + 150);
@@ -90,7 +90,7 @@ test('panneau redimensionnable, seuil, commandes et clavier', async ({
   await handle.click();
   await expect(panel).toBeHidden();
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause flottante' }),
+    page.getByRole('button', { name: 'Lancer flottante' }),
   ).toBeVisible();
   await handle.press('Enter');
   await expect(panel).toBeVisible();

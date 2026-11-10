@@ -23,6 +23,9 @@
       <symbol id="play" viewBox="0 0 24 24">
         <path d="m8 5 11 7-11 7Z" />
       </symbol>
+      <symbol id="pause" viewBox="0 0 24 24">
+        <path d="M8 5v14M16 5v14" />
+      </symbol>
       <symbol id="reset" viewBox="0 0 24 24">
         <path d="M4 10a8 8 0 1 1 0 5m0-11v6h6" />
       </symbol>
@@ -77,7 +80,7 @@
             <a class="text-link" href="#/aide">Comment ça marche ?</a>
           </div>
           <p class="hero-note">
-            Le terrain est prêt. La simulation arrive ensuite.
+            Choisissez une règle, avancez d’un pas ou lancez votre expérience.
           </p>
         </div>
         <figure class="hero-mascot">
@@ -102,11 +105,13 @@
         <p id="navigation-help" class="sr-only">
           Maintenez le bouton gauche et glissez pour déplacer le pavage. La
           molette zoome autour du pointeur. Le point gris repère le bas à gauche
-          de la case (0, 0).
+          de la case (0, 0). Au clavier sur le Canvas : flèches pour déplacer, +
+          et − pour zoomer.
         </p>
         <div class="game-layout">
           <div class="grid-stage">
             <canvas
+              tabindex="0"
               role="img"
               aria-label="Pavage en croix navigable"
               aria-describedby="navigation-help"
@@ -114,8 +119,9 @@
             >
             <button
               class="floating-play"
-              aria-label="Lecture / pause flottante"
-              title="Simulation à venir"
+              data-action="floating"
+              aria-label="Lancer flottante"
+              title="Lancer"
               disabled
               hidden
             >
@@ -147,9 +153,65 @@
                 tabindex="0"
               >
                 <h3>Règles du jeu</h3>
-                <p class="rules-placeholder">
-                  Les règles seront disponibles avec la simulation.
+                <fieldset id="rules-fields" disabled>
+                  <legend class="sr-only">Configuration scientifique</legend>
+                  <label for="central-rule">Règle centrale</label>
+                  <select
+                    id="central-rule"
+                    aria-describedby="rule-description"
+                  ></select>
+                  <p id="rule-description"></p>
+                  <div id="threshold-row" hidden>
+                    <label for="majority-threshold">Seuil de majorité</label>
+                    <select id="majority-threshold"></select>
+                    <p>Nombre minimal de cases noires, centre inclus.</p>
+                  </div>
+                  <label class="check-row"
+                    ><input id="branch-rotation" type="checkbox" /><span
+                      >Rotation horaire des branches</span
+                    ></label
+                  >
+                  <p id="rotation-description"></p>
+                </fieldset>
+                <p
+                  id="rules-notice"
+                  role="status"
+                  aria-label="Compatibilité des règles"
+                ></p>
+                <p id="rules-lock"></p>
+                <p>
+                  Départ : monde blanc, case (0, 0), nord. Blanc : tourner à
+                  droite ; noir : tourner à gauche. Sur une branche, seule la
+                  case visitée s’inverse.
                 </p>
+                <form id="target-form" novalidate>
+                  <h3>Calculer jusqu’à une étape</h3>
+                  <label for="target-step">Étape cible</label>
+                  <input
+                    id="target-step"
+                    type="number"
+                    min="0"
+                    max="9007199254740991"
+                    step="1"
+                    value="10000"
+                    aria-describedby="target-help target-error"
+                  />
+                  <div class="target-presets" aria-label="Paliers d’étapes">
+                    <button type="button" data-target="10000">10 000</button>
+                    <button type="button" data-target="100000">100 000</button>
+                    <button type="button" data-target="1000000">
+                      1 000 000
+                    </button>
+                  </div>
+                  <button type="submit" id="reach-target" disabled>
+                    Atteindre
+                  </button>
+                  <p id="target-help">
+                    Étape absolue, sans retour dans le passé. En pause, reprenez
+                    ou annulez la tâche avant un nouveau calcul.
+                  </p>
+                  <p id="target-error" role="alert"></p>
+                </form>
               </div>
               <div class="fixed-controls">
                 <div
@@ -249,24 +311,49 @@
                 >
                   <div class="simulation-heading">
                     <h3>Simulation</h3>
-                    <span class="coming-soon">À venir</span>
+                    <span
+                      id="simulation-status"
+                      role="status"
+                      aria-label="État de la simulation"
+                      >Préparation…</span
+                    >
                   </div>
+                  <div class="simulation-counts">
+                    <span
+                      >Étape calculée
+                      <output id="step-count" aria-live="off">—</output></span
+                    >
+                    <span
+                      >Cases noires
+                      <output id="black-count" aria-live="off">—</output></span
+                    >
+                  </div>
+                  <p id="displayed-step"></p>
+                  <progress
+                    id="target-progress"
+                    aria-label="Progression vers la cible"
+                    hidden
+                  ></progress>
                   <label class="speed-label" for="speed"
                     >Vitesse d’exécution</label
                   >
-                  <input
+                  <select
                     id="speed"
-                    type="range"
-                    min="1"
-                    max="100"
-                    value="30"
-                    disabled
                     aria-describedby="simulation-note"
-                  />
+                    disabled
+                  >
+                    <option value="1">1 pas/s</option>
+                    <option value="10">10 pas/s</option>
+                    <option value="100" selected>100 pas/s</option>
+                    <option value="1000">1 000 pas/s</option>
+                    <option value="10000">10 000 pas/s</option>
+                    <option value="maximum">Maximum</option>
+                  </select>
                   <div class="transport">
                     <button
                       class="transport-play"
-                      aria-label="Lecture / pause"
+                      data-action="play"
+                      aria-label="Lancer"
                       disabled
                     >
                       <svg class="icon" aria-hidden="true">
@@ -274,7 +361,16 @@
                       ><span>Lancer</span>
                     </button>
                     <button
+                      data-action="step"
+                      aria-label="Un pas"
+                      title="Un pas"
+                      disabled
+                    >
+                      +1
+                    </button>
+                    <button
                       class="transport-reset"
+                      data-action="reset"
                       aria-label="Réinitialiser la simulation"
                       title="Réinitialiser la simulation"
                       disabled
@@ -284,7 +380,19 @@
                       </svg>
                     </button>
                   </div>
-                  <p id="simulation-note">Simulation à venir</p>
+                  <button
+                    class="cancel-calculation"
+                    data-action="cancel"
+                    disabled
+                  >
+                    Annuler le calcul
+                  </button>
+                  <p id="simulation-note">
+                    Cadence demandée, débit réel selon l’appareil. La pause
+                    prend effet entre deux lots. Fermer ou recharger perd la
+                    session.
+                  </p>
+                  <p id="simulation-error" role="alert"></p>
                 </div>
               </div>
             </aside>
@@ -299,7 +407,25 @@
         </h1>
         <p class="help-intro">
           Bienvenue dans AntLab. Pour commencer, prenez le temps de découvrir le
-          terrain de jeu de Lanto.
+          laboratoire : choisissez une règle dans Jeu, puis utilisez Un pas ou
+          Lancer. Pause suspend le calcul ; Reprendre conserve sa cible. Annuler
+          abandonne la cible et garde le monde. Réinitialiser revient au départ
+          avec les règles choisies.
+        </p>
+        <p class="help-intro">
+          Les règles sont exclusives sur le centre. Les majorités proposent un
+          seuil de 1 à 5. La rotation des branches est compatible uniquement
+          avec l’inversion simple. Après le premier pas, réinitialisez pour
+          modifier les règles. Les décisions utilisent les couleurs avant
+          transformation.
+        </p>
+        <p class="help-intro">
+          Une cible est un numéro d’étape exact. La vitesse règle la cadence
+          demandée, sans changer les résultats. Flèches sur le Canvas :
+          déplacement ; + et − : zoom. Les calculs peuvent continuer sur les
+          autres pages ; fermer ou recharger perd l’état en mémoire. Le monde
+          reste limité par la mémoire et les entiers sûrs JavaScript ; la caméra
+          a ses propres limites de précision.
         </p>
         <div class="help-sections">
           <section>
@@ -319,8 +445,8 @@
               <h2>Gardez un point de repère</h2>
               <p>
                 Le petit point gris se trouve en bas à gauche de la case (0, 0).
-                L’axe X va vers la droite et Y vers le haut. Lanto attend au
-                centre de cette case, tourné vers le nord.
+                L’axe X va vers la droite et Y vers le haut. Lanto démarre au
+                centre de cette case, tourné vers le nord, dans un monde blanc.
               </p>
             </div>
           </section>
@@ -368,9 +494,9 @@
               <h2>Et la fourmi de Langton ?</h2>
               <p>
                 Son principe : lire la couleur d’une case, tourner, transformer
-                les couleurs, puis avancer. La simulation n’est pas encore
-                disponible. Les commandes sont donc désactivées et Lanto reste à
-                l’origine.
+                les couleurs, puis avancer et compter une étape. Un pas effectue
+                exactement cette transition. Les vitesses et la caméra ne
+                changent pas les résultats scientifiques.
               </p>
             </div>
           </section>

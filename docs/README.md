@@ -13,11 +13,11 @@ La vue de l'étape 06 est raccordée au Worker : position et orientation de Lant
 cases noires, suivi, cadrage du monde et navigation souris/tactile.
 Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
 Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
-les commandes de simulation restent désactivées en attendant l'étape 07.
+les commandes de simulation pilotent le Worker depuis le lot 07.
 L'étape 05 fournit un contrôleur asynchrone et une API Worker testée sous Vite,
 avec calcul par lots, pause, reprise, annulation et progression compacte.
-La session du jeu se pilote par API sous Vite et son Worker est inclus dans le
-build statique. Les commandes graphiques, les campagnes et les formats
+La session du jeu se pilote par interface ou API sous Vite et son Worker est inclus dans le
+build statique. Les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
 | Document                                           | Usage                                    |
@@ -41,6 +41,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Réception de l'étape 04](RECEPTION_ETAPE_04.md)   | Règles et combinaisons testées           |
 | [Réception de l'étape 05](RECEPTION_ETAPE_05.md)   | Calculs longs et interruptions           |
 | [Réception de l'étape 06](RECEPTION_ETAPE_06.md)   | Monde simulé et navigation tactile       |
+| [Réception de l'étape 07](RECEPTION_ETAPE_07.md)   | Poste de pilotage et commandes réelles   |
 
 ## Décisions validées
 
@@ -64,3 +65,7 @@ Le fonctionnement des trois pages et du panneau est décrit dans
 Toutes les explications détaillées sur le fonctionnement et le développement
 restent ici. Le README racine est un point d'entrée ; `AGENTS.md` contient les
 instructions pour les contributeurs et agents.
+
+Le [poste de pilotage du lot 07](INTERFACE.md#poste-de-pilotage--étape-07)
+propose les règles à zéro, pas/lecture/pause/reprise, annulation, réinitialisation,
+vitesses et cibles exactes. Voir sa [réception](RECEPTION_ETAPE_07.md).

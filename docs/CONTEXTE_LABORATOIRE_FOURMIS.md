@@ -44,17 +44,19 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01 à 06 sont clôturées ; le lot 06 raccorde le Worker au Canvas et
-complète les gestes tactiles sur `feat/world-visualization`, sans nouvelle release.
-Les pages Accueil, Jeu et Aide, Lanto et le panneau redimensionnable sont présents ; les commandes de
-simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
-Le moteur calcule les cinq règles centrales et la rotation horaire facultative
-des branches, sans affichage ou avec la vue synchronisée et Lanto orienté.
-Le pilotage des calculs longs est disponible par API, avec pause, reprise et
-annulation conservant l'état. La prochaine étape est le poste de pilotage (07).
-Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
+Les étapes 01 à 07 sont clôturées ; le lot 07 assemble le poste de pilotage sur
+`feat/laboratory-interface`, sans nouvelle release. Les pages Accueil, Jeu et
+Aide, Lanto, le panneau redimensionnable, la navigation souris/tactile et les
+commandes scientifiques sont présents. Le formulaire choisit les cinq règles
+centrales, les seuils et la rotation compatible à zéro, puis se verrouille.
+Pas, lecture/pause/reprise, vitesse, annulation, reset et cibles exactes pilotent
+le même moteur dans le Worker. Une réinitialisation conserve règles, vitesse et
+vue et recrée une expérience à zéro ; aucune continuation avec nouvelle règle
+n’est encore disponible. La prochaine étape est le changement de règles avec
+dialogue et journal (08). Voir [l’interface](INTERFACE.md), les
+[conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
 [pilotage](EXECUTION.md), la [visualisation](VISUALISATION.md) et le
-[bilan du lot 06](RECEPTION_ETAPE_06.md). Ce repère est une
+[bilan du lot 07](RECEPTION_ETAPE_07.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
 ## 1. Origine et intention

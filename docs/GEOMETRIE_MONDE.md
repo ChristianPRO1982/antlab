@@ -125,5 +125,4 @@ ajoute les trois modes de grille, les centrages et suivis, et Lanto, dessiné au
 centre de sa case à 90 % de son côté, orienté selon l'état du moteur. La
 [synchronisation visuelle](VISUALISATION.md) reçoit des copies cohérentes du
 Worker, sans dépendance scientifique envers la caméra ou le rendu. Les gestes
-tactiles sont disponibles ; les commandes graphiques de simulation restent au
-lot 07. L'édition des cases n'est pas ajoutée dans ce lot.
+tactiles et les commandes graphiques de simulation du lot 07 sont disponibles. L'édition des cases n'est pas ajoutée dans ce lot.

@@ -275,11 +275,11 @@ Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFA
 
 **Points à réaliser**
 
-- [ ] Assembler les panneaux de sélection des règles, avec exclusivités et options compatibles.
-- [ ] Relier les commandes visibles au moteur réel : lecture, pause, pas, vitesse et cible exacte.
-- [ ] Présenter clairement étape, calcul en cours, progression et commandes de caméra.
-- [ ] Rendre l’interface utilisable au clavier, sur ordinateur et sur mobile.
-- [ ] Expliquer les incompatibilités et les erreurs utilisateur sans afficher de faux résultats.
+- [x] Assembler les panneaux de sélection des règles, avec exclusivités et options compatibles.
+- [x] Relier les commandes visibles au moteur réel : lecture, pause, pas, vitesse et cible exacte.
+- [x] Présenter clairement étape, calcul en cours, progression et commandes de caméra.
+- [x] Rendre l’interface utilisable au clavier, sur ordinateur et sur mobile.
+- [x] Expliquer les incompatibilités et les erreurs utilisateur sans afficher de faux résultats.
 
 **Livrable attendu.** Un premier MVP utilisable sans connaissances techniques, sur ordinateur comme sur mobile.
 
@@ -287,8 +287,8 @@ Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFA
 
 **Vérifications de réception**
 
-- [ ] Chaque commande visible agit réellement et reflète l’état actuel.
-- [ ] L’interface explique les incompatibilités et ne masque pas les limites du calcul.
+- [x] Chaque commande visible agit réellement et reflète l’état actuel.
+- [x] L’interface explique les incompatibilités et ne masque pas les limites du calcul.
 
 **Prompt Codex**
 
@@ -296,7 +296,12 @@ Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFA
 Lis les deux documents et réalise uniquement l'étape 07. Assemble une interface web claire autour du moteur existant : choix exclusif de la règle centrale, paramètres du déplacement disponibles, pilotage pas à pas/lecture/pause/reprise, vitesse, étape cible et presets, état d'avancement, commandes de zoom et de caméra. Préserve la simplicité de la page et rends-la responsive et accessible au clavier. Les actions doivent piloter réellement le Web Worker et respecter les incompatibilités ; pas de maquettes décoratives. N'implémente pas encore le dialogue de changement de règle en cours d'expérience, qui constitue l'étape suivante. Termine par une courte démonstration de parcours utilisateur.
 ```
 
-- [ ] **Étape 07 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 07 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+
+Bilan : [réception de l’étape 07](RECEPTION_ETAPE_07.md),
+[poste de pilotage et parcours utilisateur](INTERFACE.md#poste-de-pilotage--étape-07).
+Les règles restent fixes après le premier pas ; le dialogue et le journal des
+changements en cours d’expérience restent au lot 08.
 
 ## 08 — Changer les règles pendant une expérience, sans perdre l'historique
 

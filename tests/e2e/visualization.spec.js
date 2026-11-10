@@ -7,6 +7,10 @@ async function openSession(page) {
   await page.evaluate(async () => {
     const { getGameSession } = await import('/src/main.js');
     window.sceneSession = await getGameSession();
+    await window.sceneSession.simulation.setExecutionOptions({
+      batchSize: 1000,
+      batchDelayMs: 0,
+    });
   });
   await expect
     .poll(() => page.evaluate(() => window.sceneSession.view.stepCount))
@@ -401,6 +405,10 @@ test('le monde reste visible si le chargement de Lanto est retardé puis échoue
   await page.evaluate(async () => {
     const { getGameSession } = await import('/src/main.js');
     window.sceneSession = await getGameSession();
+    await window.sceneSession.simulation.setExecutionOptions({
+      batchSize: 1000,
+      batchDelayMs: 0,
+    });
     window.sceneSession.view.updateOptions({ gridMode: 'none', origin: false });
     await window.sceneSession.simulation.advance(5);
   });

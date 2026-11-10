@@ -96,9 +96,8 @@ Le monde reste limité par la mémoire disponible. Le calcul est synchrone ;
 `advance` sur un grand nombre de pas peut monopoliser son thread. Le
 [contrôleur asynchrone et son Worker](EXECUTION.md) calculent par lots et
 permettent les interruptions entre lots. Le Worker alimente maintenant le
-[Canvas synchronisé](VISUALISATION.md) ; les commandes visibles restent au lot 07.
-Le catalogue de l'étape 04 est disponible par API ; la
-sélection des règles dans l'interface reste à développer.
+[Canvas synchronisé](VISUALISATION.md). Les commandes et règles sont maintenant
+accessibles dans le [poste de pilotage](INTERFACE.md).
 
 ## Vérification via Docker
 

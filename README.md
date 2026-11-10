@@ -5,8 +5,9 @@ Laboratoire web d'expérimentation autour de la fourmi de Langton.
 **État actuel :** pages Accueil, Jeu et Aide, pavage navigable et panneau d'options
 autour de Lanto. Le moteur déterministe et son catalogue de règles sont utilisables
 sans affichage ou avec le Canvas raccordé au Worker. Le suivi de Lanto et les
-gestes tactiles sont disponibles ; les commandes de simulation visibles et
-les fonctions d'expérimentation restent à développer.
+gestes tactiles sont disponibles ; les commandes de simulation et le choix des
+règles sont accessibles dans Jeu. Les changements en cours d’expérience, KPI,
+campagnes et formats d’échange restent aux lots suivants.
 
 ## Préparer les commandes locales
 

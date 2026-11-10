@@ -120,7 +120,7 @@ test('bouton flottant agrandi en bas à droite et suivi conservé au repli', asy
   });
   await handle.click();
   const button = page.getByRole('button', {
-    name: 'Lecture / pause flottante',
+    name: 'Lancer flottante',
   });
   await expect(button).toBeVisible();
   const box = await button.boundingBox();

@@ -358,11 +358,7 @@ aside {
   font-weight: 600;
   margin-bottom: 9px;
 }
-.rules-placeholder {
-  font-size: 11px;
-  color: var(--muted);
-  line-height: 1.7;
-}
+
 .fixed-controls {
   flex: 0 0 auto;
   min-width: 0;
@@ -496,13 +492,7 @@ input[type='range'] {
   font-size: 12px;
   font-weight: 600;
 }
-.coming-soon {
-  font-size: 8px;
-  text-transform: uppercase;
-  color: #888;
-  letter-spacing: 0.09em;
-  white-space: nowrap;
-}
+
 .speed-label {
   font-size: 10px;
   color: #888;
@@ -763,5 +753,188 @@ input[type='range'] {
   a,
   button {
     transition: box-shadow 120ms ease;
+  }
+}
+
+/* Le poste de pilotage garde les commandes fixes et la configuration défilante. */
+.options-scroll fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.options-scroll label {
+  display: block;
+  font-size: 11px;
+  margin-block: 8px 4px;
+}
+.options-scroll .check-row {
+  display: flex;
+}
+.options-scroll select,
+.options-scroll input[type='number'],
+.simulation-controls select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 5px;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.options-scroll p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #555;
+  margin-block: 6px 12px;
+  overflow-wrap: anywhere;
+}
+#target-form {
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+  padding-top: 12px;
+}
+.target-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-block: 6px;
+}
+.target-presets button,
+#reach-target,
+.cancel-calculation {
+  font: inherit;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  padding: 5px;
+  color: #222;
+}
+#reach-target {
+  width: 100%;
+}
+.simulation-heading {
+  flex-wrap: wrap;
+}
+#simulation-status {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.simulation-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  font-size: 10px;
+}
+.simulation-counts output {
+  font-weight: 650;
+}
+#displayed-step:empty,
+#simulation-error:empty,
+#rules-notice:empty,
+#target-error:empty,
+#rules-lock:empty {
+  display: none;
+}
+#simulation-error,
+#target-error {
+  color: #a12525;
+  overflow-wrap: anywhere;
+}
+#rules-lock {
+  color: #333;
+}
+#target-progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-block: 4px;
+}
+.simulation-controls select {
+  font-size: 11px;
+  padding: 3px;
+  margin-block: 3px 6px;
+}
+.transport button {
+  color: #111;
+  background: #fff;
+}
+.transport button:disabled,
+.cancel-calculation:disabled {
+  color: #888;
+}
+.cancel-calculation {
+  width: 100%;
+  margin-top: 5px;
+}
+#simulation-note {
+  line-height: 1.3;
+}
+canvas:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -3px;
+}
+@media (max-height: 600px) {
+  #simulation-note {
+    font-size: 8px;
+    margin-top: 3px;
+  }
+  .cancel-calculation {
+    padding-block: 3px;
+    margin-top: 3px;
+  }
+  .simulation-controls select {
+    margin-block: 2px 4px;
+    padding-block: 1px;
+  }
+}
+@container (max-width: 220px) {
+  .simulation-counts {
+    display: block;
+  }
+  .simulation-counts span {
+    display: block;
+  }
+  .transport {
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+  .transport button {
+    min-width: 24px;
+    padding-inline: 3px;
+  }
+  #simulation-note {
+    font-size: 8px;
+  }
+}
+@media (max-height: 600px) {
+  .panel-heading {
+    padding-block: 4px;
+  }
+  .display-controls,
+  .view-controls,
+  .simulation-controls {
+    padding-block: 4px;
+  }
+  .display-toggles {
+    margin-top: 3px;
+  }
+  .view-controls input {
+    margin-block: 2px;
+  }
+  #simulation-note {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+@media (max-height: 600px) {
+  .panel-heading {
+    display: none;
   }
 }

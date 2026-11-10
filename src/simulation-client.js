@@ -186,6 +186,9 @@ class SimulationClient {
   getRules() {
     return this.#request('getRules');
   }
+  setExecutionOptions(options) {
+    return this.#request('setExecutionOptions', { options });
+  }
 
   subscribe(callback) {
     if (this.#failure) throw this.#failure;

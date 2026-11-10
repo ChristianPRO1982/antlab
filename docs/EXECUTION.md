@@ -16,28 +16,29 @@ La configuration initiale est celle du [moteur](MOTEUR.md), y compris les
 
 Depuis le lot 06, le client est importé par la page Jeu et raccordé au Canvas.
 Vite construit aussi le Worker référencé par
-`new Worker(new URL(..., import.meta.url))`. Les commandes graphiques restent au
-lot 07 ; la [session et sa visualisation](VISUALISATION.md) se pilotent par API
-sous Vite. Les expériences indépendantes utilisent toujours cette fabrique.
+`new Worker(new URL(..., import.meta.url))`. Depuis le lot 07, les commandes
+graphiques pilotent ce client. La [session et sa visualisation](VISUALISATION.md)
+restent accessibles par API sous Vite. Les expériences indépendantes utilisent toujours cette fabrique.
 
 ## API commune
 
 Toutes les méthodes ci-dessous renvoient des promesses, sauf `subscribe`.
 
-| Opération              | Résultat et effet                                                              |
-| ---------------------- | ------------------------------------------------------------------------------ |
-| `step()`               | Effectue exactement un pas supplémentaire ; progression finale.                |
-| `advance(count)`       | Effectue exactement N pas supplémentaires ; progression finale.                |
-| `runUntil(targetStep)` | Atteint une étape absolue exacte ; progression finale.                         |
-| `start()`              | Lance le calcul continu sans cible ; progression après acceptation.            |
-| `pause()`              | Suspend entre lots, conserve cible et tâche ; progression acquittée.           |
-| `resume()`             | Reprend une tâche suspendue ; progression acquittée.                           |
-| `cancel()`             | Abandonne tâche et cible en conservant l'état atteint ; progression acquittée. |
-| `getProgress()`        | Lit une copie compacte de la progression.                                      |
-| `getState()`           | Copie le monde complet et la fourmi, sur demande explicite.                    |
-| `getRules()`           | Copie la sélection normalisée et le seuil effectif des majorités.              |
-| `subscribe(callback)`  | Observe la progression ; retourne une fonction de désabonnement.               |
-| `dispose()`            | Libère les ressources et rejette les tâches/demandes en attente.               |
+| Opération                      | Résultat et effet                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `step()`                       | Effectue exactement un pas supplémentaire ; progression finale.                |
+| `advance(count)`               | Effectue exactement N pas supplémentaires ; progression finale.                |
+| `runUntil(targetStep)`         | Atteint une étape absolue exacte ; progression finale.                         |
+| `start()`                      | Lance le calcul continu sans cible ; progression après acceptation.            |
+| `pause()`                      | Suspend entre lots, conserve cible et tâche ; progression acquittée.           |
+| `resume()`                     | Reprend une tâche suspendue ; progression acquittée.                           |
+| `cancel()`                     | Abandonne tâche et cible en conservant l'état atteint ; progression acquittée. |
+| `getProgress()`                | Lit une copie compacte de la progression.                                      |
+| `getState()`                   | Copie le monde complet et la fourmi, sur demande explicite.                    |
+| `getRules()`                   | Copie la sélection normalisée et le seuil effectif des majorités.              |
+| `setExecutionOptions(options)` | Ajuste les options de pilotage entre lots ; retourne les options effectives.   |
+| `subscribe(callback)`          | Observe la progression ; retourne une fonction de désabonnement.               |
+| `dispose()`                    | Libère les ressources et rejette les tâches/demandes en attente.               |
 
 La promesse d'un calcul fini reste en attente pendant une pause. Elle est résolue
 avec `status: 'completed'` à la cible, ou `status: 'cancelled'` après annulation.
@@ -67,7 +68,13 @@ Le deuxième argument du constructeur ou de la fabrique configure le pilotage :
 
 Une option omise ou `undefined` prend sa valeur par défaut. Les champs inconnus,
 structures et types invalides sont refusés ; un nombre hors domaine provoque
-une `RangeError`. Ces options sont copiées et fixes pendant la vie du contrôleur.
+une `RangeError`. Ces options sont copiées ; elles peuvent être ajustées par
+`setExecutionOptions(options)`. Cette méthode accepte un objet partiel, conserve
+les valeurs omises ou `undefined`, valide tout avant application et renvoie
+une copie des trois options effectives. Elle est disponible sur le contrôleur
+et le client, y compris pendant un calcul ou une pause. Le timer précédent est
+invalidé ; le prochain lot utilise la nouvelle cadence, sans changer état,
+cible, statut ni promesse de calcul. Une commande invalide ne modifie rien.
 
 Chaque lot calcule au plus `batchSize` pas et s'arrête exactement à la cible si
 elle est plus proche. Un `setTimeout` cède la main avant le lot suivant, même
@@ -106,6 +113,7 @@ Une requête contient `{ id, command }`, complété uniquement par ses arguments
 
 - `initialize` : `configuration`, `execution` ; accepté une seule fois.
 - `advance` : `count` ; `runUntil` : `targetStep`.
+- `setExecutionOptions` : `options` (objet partiel).
 - Les autres commandes n'ont pas d'argument. `subscribe` est local au client ;
   sa fermeture termine directement le Worker.
 
@@ -168,8 +176,7 @@ Cet exemple crée une expérience indépendante. Pour afficher la simulation dan
 Jeu, utiliser [getGameSession](VISUALISATION.md). La page doit rester utilisable.
 Après l'acquittement de pause, le compteur reste
 stable jusqu'à reprise ; après annulation, la cible vaut `null` et le monde est
-conservé. Le pavage affiché reste celui de l'interface actuelle : il n'est pas
-encore relié à l'expérience de cette console.
+conservé.
 
 ## Limites
 

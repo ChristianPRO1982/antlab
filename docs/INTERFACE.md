@@ -33,8 +33,7 @@ flèches horizontales.
 - Entrée/Espace bascule l'ouverture. Flèche gauche agrandit et flèche droite
   réduit, par pas de deux points de pourcentage. Flèche gauche rouvre un panneau
   replié. Le focus reste sur la poignée.
-- Seule la zone supérieure des règles défile. En l'absence de catalogue, elle
-  indique que les règles seront disponibles avec la simulation. Tous les
+- Seule la zone supérieure des règles et de la cible défile. Tous les
   réglages sont fixes en bas, dans l'ordre affichage, zoom/cadrage puis
   vitesse/lecture/pause/réinitialisation.
 - Une fois replié, seule la poignée subsiste, avec un bouton lecture/pause
@@ -93,7 +92,8 @@ Les couleurs du monde restent dans `SparseWorld`. Les réglages, le panneau et
 la caméra ne font aucun appel en écriture sur ce monde. Le contrôleur de vue
 fournit `setActive`, `setZoom`, `selectFraming`, `updateOptions`, `updateScene`,
 `setError`, `dispose` et `refresh`, avec
-les rappels `onScaleChange(scale, minimumScale)` et `onFramingChange(mode)`.
+les rappels `onScaleChange(scale, minimumScale)`, `onFramingChange(mode)`
+et `onSceneChange()` après dessin. `drawnStepCount` lit l’étape dessinée.
 `updateScene` valide puis remplace fourmi, étape et couleurs ensemble ;
 `stepCount` lit l'étape de cette scène. `refresh` redessine le cache courant.
 `view-framing.js` calcule les cadrages sans DOM ni
@@ -102,17 +102,13 @@ Le masquage du jeu annule le rendu en attente et termine le glissement éventuel
 le retour reprend la même caméra et son mode. Il n'y a aucune boucle au repos.
 Les limites numériques sont conservées ; un cadrage refusé affiche son erreur.
 
-## Périmètre et vérification
+## Historique des lots de design et de visualisation
 
-Ce lot est une refonte visuelle demandée après l'étape 02. Il anticipe des
-éléments des étapes 06 et 07 **sans les clôturer**. Vitesse, lecture/pause,
-réinitialisation et bouton flottant sont désactivés avec la mention
-« Simulation à venir ». Le [moteur autonome de l'étape 03](MOTEUR.md) est désormais
-disponible et possède un [catalogue de règles](REGLES.md) configurable à la
-construction par API. Le [pilotage en Worker](EXECUTION.md) est disponible et
-testé sous Vite, et son raccordement au rendu est disponible depuis le lot 06,
-avec [navigation tactile et suivi](VISUALISATION.md). Les commandes scientifiques
-visibles restent désactivées pour le lot 07. Il n'existe pas d'export/import.
+La refonte visuelle demandée après l’étape 02 a anticipé des éléments des
+étapes 06 et 07 sans les clôturer. La visualisation du lot 06 a ensuite relié
+le Worker au Canvas. Les commandes scientifiques sont désormais raccordées
+par le [lot 07](#poste-de-pilotage--étape-07), décrit plus bas. Les bilans datés
+qui suivent conservent les limites constatées à chaque réception historique.
 
 Les tests TDD ont d'abord échoué sur l'absence du panneau, du recentrage et de
 la navigation. Vitest couvre les transitions et limites du panneau ainsi que
@@ -160,8 +156,76 @@ du zoom avant/après, sans supposer un arrondi du delta de molette du navigateur
 Le défilement est testé avec du contenu long ajouté seulement dans une fixture
 de règles ; aucun catalogue fictif n'est présent dans l'application.
 
-Lanto reste à l'origine et le monde reste blanc dans l'interface sans moteur.
+Lors de cette réception historique, Lanto restait à l'origine et le monde
+restait blanc dans l'interface sans moteur.
 Les variations de position et de couleurs sont vérifiées dans les tests de
 cadrage, sans animation scientifique. Le confort sur souris et écran tactile
 réels et les autres navigateurs restent à vérifier. Aucune publication ni
 clôture d'étape scientifique supplémentaire n'a été effectuée.
+
+## Poste de pilotage — étape 07
+
+Les commandes scientifiques sont désormais actives. Les réceptions de design
+ci-dessus décrivent les états historiques des lots 02 et 06.
+
+Le formulaire présente les cinq règles centrales du catalogue, leurs descriptions,
+les seuils 1 à 5 pour les majorités et la rotation horaire des branches. Le seuil
+par défaut vaut 3. La rotation n’est disponible qu’avec l’inversion simple ;
+choisir une autre règle la retire avec un message explicite. Chaque choix à zéro
+recrée le Worker avec sa configuration validée, sans changer la vue. Dès le
+lancement, le formulaire est verrouillé. Réinitialiser revient au monde blanc,
+case `(0, 0)`, nord, conserve les règles choisies et les rend modifiables.
+Aucun changement de règles avec conservation du monde n’est proposé avant le lot 08.
+
+| Commande          | Comportement                                                               |
+| ----------------- | -------------------------------------------------------------------------- |
+| Lancer            | Calcul continu depuis l’état courant                                       |
+| Pause             | Suspension acquittée entre deux lots, cible conservée                      |
+| Reprendre         | Même tâche et même cible                                                   |
+| Un pas            | Une transition exacte, hors tâche active ou suspendue                      |
+| Annuler le calcul | Abandon de la tâche et de sa cible, état atteint conservé                  |
+| Réinitialiser     | Nouvelle expérience à zéro, règles et vitesse conservées                   |
+| Atteindre         | Calcul jusqu’au numéro absolu saisi ; paliers 10 000, 100 000 et 1 000 000 |
+
+Une tâche en pause doit être reprise ou annulée avant Un pas ou une nouvelle
+cible. Une cible passée est refusée, une cible égale au compteur termine sans
+transition. Les champs refusent vide, fraction, négatif et entier non sûr.
+Les commandes sont bloquées pendant leurs acquittements et les remplacements,
+mais pause/annulation restent accessibles pendant les calculs longs.
+Le bouton flottant reflète exactement Lancer, Pause ou Reprendre.
+
+La vitesse propose 1, 10, 100, 1 000, 10 000 pas/s demandés et Maximum ;
+100 pas/s est le défaut du jeu. Elle change taille et délai des lots dans le
+Worker sans modifier la logique scientifique. Le débit réel dépend de l’appareil,
+du navigateur et des règles ; aucun débit mesuré n’est affiché. Les couples
+`batchSize/batchDelayMs` sont `1/1000`, `1/100`, `10/100`, `100/100`,
+`1000/100` et `1000/0`. Les notifications restent à 100 ms.
+
+Le statut, le compteur calculé et les cases noires proviennent d’une progression
+réelle. Une barre indique le numéro atteint sur la cible absolue ; son texte
+accessible précise aussi l’étape de départ. L’étape dessinée est indiquée
+séparément lorsqu’elle diffère du calcul. Aucun maximum ni nouveau KPI n’est ajouté.
+Une erreur utilisateur reste près du champ ; une erreur scientifique ou une panne
+reste visible. En panne, le dernier compteur connu est conservé, ou `—` si le
+Worker n’a jamais répondu. Seul un reset explicite crée un nouveau Worker.
+
+Règles et cible défilent dans la partie haute ; affichage, cadrage, statut,
+vitesse et transport restent fixes. À faible hauteur, les explications de
+cadence restent accessibles via le libellé et l’aide, avec un pied compact.
+Le Canvas focalisable accepte les flèches (40 pixels CSS de déplacement) et
+`+`/`−` (facteur 1,2). Ces touches ne sont écoutées que sur le Canvas. Les contrôles
+HTML natifs restent utilisables au clavier ; les états et erreurs ont des libellés.
+
+### Démonstration sans console
+
+1. Ouvrir Jeu, choisir Majorité inversée et un seuil de 2 ; lire l’explication.
+2. Appuyer sur Un pas : compteur 1, règles verrouillées, scène actualisée.
+3. Réinitialiser, choisir Inversion simple et Maximum.
+4. Choisir le palier 10 000 puis Atteindre : arrêt exact à 10 000.
+5. Choisir 100 pas/s, Lancer puis Pause. Reprendre conserve la tâche ; Annuler
+   conserve le monde. Tester le bouton flottant après repli du panneau.
+6. Déplacer/zoomer la vue, naviguer sur Aide puis revenir : l’expérience et la
+   caméra sont conservées. Sur mobile, ouvrir le tiroir et faire défiler la
+   configuration jusqu’à la cible ; Échap referme le tiroir.
+
+Le [bilan du lot 07](RECEPTION_ETAPE_07.md) donne les contrôles et limites.

@@ -42,8 +42,8 @@ permettent une inspection visuelle sans figer un instantané de référence.
 Les parcours de la [refonte](INTERFACE.md) couvrent aussi les trois pages,
 l'historique, le logo/favicon, les réglages visuels, la conservation de la caméra
 et du panneau, le défilement des options sans déplacement des commandes, le
-panneau à 15 % et le tiroir mobile. Les commandes de simulation sont vérifiées
-comme désactivées. Les captures `test-results/design-*.png` présentent les pages
+panneau à 15 % et le tiroir mobile. Les commandes de simulation sont raccordées au Worker et testées par les
+parcours du laboratoire. Les captures `test-results/design-*.png` présentent les pages
 sur ordinateur et mobile.
 
 Les corrections du panneau ajoutent les trois modes de grille, les boutons de
@@ -141,3 +141,17 @@ Les fixtures qui importent les sources sont ignorées avec `TEST_BASE_URL` sur
 Nginx. Les parcours du site, y compris le chargement de son Worker compilé et
 la navigation tactile, s'y exécutent sans ces imports. Les futures campagnes
 et les KPI restent à vérifier lors de leurs lots.
+
+## Poste de pilotage (lot 07)
+
+Vitest vérifie les six cadences avec timers virtuels et comparaison scientifique,
+la modification atomique des options et l’invalidation des timers, les
+remplacements de session, les notifications tardives, les pannes et la fermeture.
+Le transport du client couvre aussi `setExecutionOptions`.
+
+Les parcours `laboratory.spec.js` utilisent le vrai Worker sans import de sources :
+règles et incompatibilités, seuils, verrouillage, premiers pas, cibles exactes,
+validation, vitesse, pause/reprise, annulation, reset, clavier, mobile et pannes.
+Ils sont également exécutables contre Nginx. Les fixtures de visualisation
+demandent explicitement la cadence maximale pour leurs longs calculs via API.
+Voir le [bilan du lot 07](RECEPTION_ETAPE_07.md).
