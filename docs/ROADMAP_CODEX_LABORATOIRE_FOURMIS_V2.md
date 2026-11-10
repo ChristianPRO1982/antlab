@@ -230,18 +230,18 @@ aux commandes et au rendu du site reste aux étapes suivantes.
 
 **Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
 pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
-l'origine, ainsi que les modes de cadrage côté vue. Le raccordement au Worker
-et la navigation tactile complète restent à réaliser ; cette étape reste ouverte.
+l'origine, ainsi que les modes de cadrage côté vue. Le lot 06 raccorde désormais
+le Worker au Canvas et complète la navigation tactile.
 Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.
 
 **Points à réaliser**
 
-- [ ] Dessiner les cases noires visibles et la fourmi dans un Canvas 2D, sans dessiner une grille géante.
-- [ ] Ajouter zoom, déplacement de caméra, recentrage et suivi facultatif de la fourmi.
-- [ ] Prendre en charge souris, tactile et coordonnées négatives.
-- [ ] Veiller à ce que la visibilité ou la vitesse du rendu ne change jamais l’état calculé.
+- [x] Dessiner les cases noires visibles et la fourmi dans un Canvas 2D, sans dessiner une grille géante.
+- [x] Ajouter zoom, déplacement de caméra, recentrage et suivi facultatif de la fourmi.
+- [x] Prendre en charge souris, tactile et coordonnées négatives.
+- [x] Veiller à ce que la visibilité ou la vitesse du rendu ne change jamais l’état calculé.
 
 **Livrable attendu.** Une visualisation fluide aux différentes échelles, indépendante de la logique du moteur.
 
@@ -249,8 +249,8 @@ Voir [Interface](INTERFACE.md).
 
 **Vérifications de réception**
 
-- [ ] La caméra ne peut pas modifier les résultats du moteur.
-- [ ] La navigation fonctionne pour zoom, pan, suivi et positions négatives sur ordinateur/mobile.
+- [x] La caméra ne peut pas modifier les résultats du moteur.
+- [x] La navigation fonctionne pour zoom, pan, suivi et positions négatives sur ordinateur/mobile.
 
 **Prompt Codex**
 
@@ -258,7 +258,11 @@ Voir [Interface](INTERFACE.md).
 Lis les deux documents et réalise uniquement l'étape 06. Crée une visualisation Canvas 2D du monde clairsemé et de la fourmi. Dessine uniquement les cases visibles, avec zoom, pan, recentrage et option de suivi de la fourmi ; rends l'ensemble utilisable à la souris et au tactile. Sépare strictement la caméra et le rendu du moteur scientifique : modifier l'affichage ne doit jamais changer les étapes ou les couleurs. Prends en charge les coordonnées négatives et les grands déplacements dans des limites numériques explicites. Vérifie visuellement le rendu et ajoute les tests pertinents sans introduire un moteur graphique sophistiqué.
 ```
 
-- [ ] **Étape 06 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 06 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+
+Bilan : [réception de l'étape 06](RECEPTION_ETAPE_06.md),
+[session et navigation](VISUALISATION.md). Les commandes scientifiques visibles
+restent au lot 07 ; les essais tactiles sur matériel réel restent à apprécier.
 
 ## 07 — Assembler l'interface du laboratoire
 

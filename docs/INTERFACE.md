@@ -84,17 +84,19 @@ borne basse pour le reste de la session, afin qu'une reprise manuelle ne saute
 pas à un pixel. Le curseur et le zoom affiché sont synchronisés avec la caméra,
 avec un pas libre et une notation scientifique sous 0,01 pixel par case.
 
-`Lanto-top.webp` est dessiné au centre de la case de la fourmi, tête vers le nord,
+`Lanto-top.webp` est dessiné au centre de la case de la fourmi, dans son orientation,
 sur 90 % du côté d'une case. Sa position est commune au dessin et au cadrage ;
-elle reste `(0, 0)` dans l'application actuelle, sans liaison au moteur. Le repère gris
+elle est maintenant actualisée avec les couleurs du monde par le Worker. Le repère gris
 est dessiné ensuite, afin de rester visible. Lanto ne suit pas le pointeur.
 
 Les couleurs du monde restent dans `SparseWorld`. Les réglages, le panneau et
 la caméra ne font aucun appel en écriture sur ce monde. Le contrôleur de vue
-fournit `setActive`, `setZoom`, `selectFraming`, `updateOptions` et `refresh`, avec
+fournit `setActive`, `setZoom`, `selectFraming`, `updateOptions`, `updateScene`,
+`setError`, `dispose` et `refresh`, avec
 les rappels `onScaleChange(scale, minimumScale)` et `onFramingChange(mode)`.
-`refresh` déclenche le rendu après une actualisation du monde ou de la position
-de fourmi passée au montage. `view-framing.js` calcule les cadrages sans DOM ni
+`updateScene` valide puis remplace fourmi, étape et couleurs ensemble ;
+`stepCount` lit l'étape de cette scène. `refresh` redessine le cache courant.
+`view-framing.js` calcule les cadrages sans DOM ni
 écriture du monde ; les états de suivi sont `free`, `ant` et `world`.
 Le masquage du jeu annule le rendu en attente et termine le glissement éventuel ;
 le retour reprend la même caméra et son mode. Il n'y a aucune boucle au repos.
@@ -108,8 +110,9 @@ réinitialisation et bouton flottant sont désactivés avec la mention
 « Simulation à venir ». Le [moteur autonome de l'étape 03](MOTEUR.md) est désormais
 disponible et possède un [catalogue de règles](REGLES.md) configurable à la
 construction par API. Le [pilotage en Worker](EXECUTION.md) est disponible et
-testé sous Vite ; son raccordement aux commandes et au rendu reste futur.
-Il n'existe pas d'export/import. La prochaine étape est la visualisation (06).
+testé sous Vite, et son raccordement au rendu est disponible depuis le lot 06,
+avec [navigation tactile et suivi](VISUALISATION.md). Les commandes scientifiques
+visibles restent désactivées pour le lot 07. Il n'existe pas d'export/import.
 
 Les tests TDD ont d'abord échoué sur l'absence du panneau, du recentrage et de
 la navigation. Vitest couvre les transitions et limites du panneau ainsi que

@@ -9,35 +9,38 @@ de l'étape 04 ajoute cinq règles centrales exclusives et la rotation horaire
 facultative des branches, avec validation des compatibilités.
 Les règles « Majorité l'emporte » et « Majorité inversée » ont un seuil
 configurable de 1 à 5, fixé à 3 par défaut.
-Une vue du pavage permet le glissement à la souris et le zoom à la molette ;
-cette extension demandée anticipe partiellement l'étape 06, qui reste ouverte.
+La vue de l'étape 06 est raccordée au Worker : position et orientation de Lanto,
+cases noires, suivi, cadrage du monde et navigation souris/tactile.
 Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
 Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
-les commandes de simulation restent désactivées en attendant l'intégration du moteur.
+les commandes de simulation restent désactivées en attendant l'étape 07.
 L'étape 05 fournit un contrôleur asynchrone et une API Worker testée sous Vite,
 avec calcul par lots, pause, reprise, annulation et progression compacte.
-Le branchement de cette API au jeu, les graphiques, les campagnes et les formats
+La session du jeu se pilote par API sous Vite et son Worker est inclus dans le
+build statique. Les commandes graphiques, les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
-| Document                                           | Usage                                   |
-| -------------------------------------------------- | --------------------------------------- |
-| [Contexte](CONTEXTE_LABORATOIRE_FOURMIS.md)        | Intention et principes scientifiques    |
-| [Roadmap](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md) | Lots et critères de réception           |
-| [Architecture](ARCHITECTURE.md)                    | Responsabilités et décisions techniques |
-| [Géométrie et monde](GEOMETRIE_MONDE.md)           | Conventions, API et navigation          |
-| [Moteur déterministe](MOTEUR.md)                   | API, transitions et limites numériques  |
-| [Catalogue de règles](REGLES.md)                   | Définitions, versions et compatibilités |
-| [Pilotage et Worker](EXECUTION.md)                 | API asynchrone, protocole et limites    |
-| [Développement](DEVELOPPEMENT.md)                  | Commandes Docker et conventions         |
-| [Tests](TESTS.md)                                  | Cycle TDD et contrôles disponibles      |
-| [Releases](RELEASES.md)                            | Branches, Conventional Commits et robot |
-| [Déploiement](DEPLOIEMENT.md)                      | Image, Docker Hub et contrat VPS        |
-| [Changelog](CHANGELOG.md)                          | Historique produit par semantic-release |
-| [Réception du socle](RECEPTION_SOCLE.md)           | Vérifications réalisées et limites      |
-| [Réception de l'étape 02](RECEPTION_ETAPE_02.md)   | Géométrie, monde et pavage navigable    |
-| [Réception de l'étape 03](RECEPTION_ETAPE_03.md)   | Moteur et reproductibilité              |
-| [Réception de l'étape 04](RECEPTION_ETAPE_04.md)   | Règles et combinaisons testées          |
-| [Réception de l'étape 05](RECEPTION_ETAPE_05.md)   | Calculs longs et interruptions          |
+| Document                                           | Usage                                    |
+| -------------------------------------------------- | ---------------------------------------- |
+| [Contexte](CONTEXTE_LABORATOIRE_FOURMIS.md)        | Intention et principes scientifiques     |
+| [Roadmap](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md) | Lots et critères de réception            |
+| [Architecture](ARCHITECTURE.md)                    | Responsabilités et décisions techniques  |
+| [Géométrie et monde](GEOMETRIE_MONDE.md)           | Conventions, API et navigation           |
+| [Moteur déterministe](MOTEUR.md)                   | API, transitions et limites numériques   |
+| [Catalogue de règles](REGLES.md)                   | Définitions, versions et compatibilités  |
+| [Pilotage et Worker](EXECUTION.md)                 | API asynchrone, protocole et limites     |
+| [Visualisation](VISUALISATION.md)                  | Session, cache, rendu et gestes tactiles |
+| [Développement](DEVELOPPEMENT.md)                  | Commandes Docker et conventions          |
+| [Tests](TESTS.md)                                  | Cycle TDD et contrôles disponibles       |
+| [Releases](RELEASES.md)                            | Branches, Conventional Commits et robot  |
+| [Déploiement](DEPLOIEMENT.md)                      | Image, Docker Hub et contrat VPS         |
+| [Changelog](CHANGELOG.md)                          | Historique produit par semantic-release  |
+| [Réception du socle](RECEPTION_SOCLE.md)           | Vérifications réalisées et limites       |
+| [Réception de l'étape 02](RECEPTION_ETAPE_02.md)   | Géométrie, monde et pavage navigable     |
+| [Réception de l'étape 03](RECEPTION_ETAPE_03.md)   | Moteur et reproductibilité               |
+| [Réception de l'étape 04](RECEPTION_ETAPE_04.md)   | Règles et combinaisons testées           |
+| [Réception de l'étape 05](RECEPTION_ETAPE_05.md)   | Calculs longs et interruptions           |
+| [Réception de l'étape 06](RECEPTION_ETAPE_06.md)   | Monde simulé et navigation tactile       |
 
 ## Décisions validées
 

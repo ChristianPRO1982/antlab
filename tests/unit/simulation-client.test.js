@@ -156,6 +156,25 @@ test('fermeture explicite pendant une demande et fermeture répétée', async ()
   expect(() => client.subscribe(() => {})).toThrow(/ferm/i);
 });
 
+test('une panne est observable même au repos ; fermeture volontaire sans fausse erreur', async () => {
+  const { client, worker } = await initialized();
+  const onError = vi.fn();
+  client.subscribeErrors(onError);
+  worker.dispatchEvent(
+    Object.assign(new Event('error'), { message: 'Panne au repos.' }),
+  );
+  expect(onError).toHaveBeenCalledWith(
+    expect.objectContaining({ message: 'Panne au repos.' }),
+  );
+  await client.dispose();
+  expect(onError).toHaveBeenCalledOnce();
+  const other = await initialized();
+  const callback = vi.fn();
+  other.client.subscribeErrors(callback);
+  await other.client.dispose();
+  expect(callback).not.toHaveBeenCalled();
+});
+
 test('initialisation refusée ou données non transférables : libération du Worker', async () => {
   const pending = createSimulationClient({ rules: { central: 'unknown' } });
   const worker = TestWorker.instances.at(-1);

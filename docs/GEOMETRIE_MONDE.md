@@ -78,6 +78,13 @@ et `recenter()` (retour au centre de `(0, 0)` sans changer l'échelle).
 `height` et `minimumScale` sont en lecture seule. Les [modes automatiques](INTERFACE.md)
 calculent le cadrage sans modifier l'état du monde.
 
+`panZoomAt(from, to, factor)` combine translation et zoom autour de deux points
+écran `{ x, y }` : le point du monde sous `from` reste sous `to` après le geste,
+même si le zoom est borné. L'opération est atomique ; `zoomAt` l'utilise avec
+deux points identiques. Un doigt déplace la vue ; deux doigts utilisent leurs
+milieux successifs et le rapport de leurs distances. Les contacts supplémentaires
+et distances nulles sont gérés sans saut ni division par zéro.
+
 - Vue initiale : 32 pixels CSS par case, centrée sur la case `(0, 0)`.
 - Bouton gauche maintenu et déplacement : translation du pavage avec capture du
   pointeur. Relâchement, annulation et perte de capture terminent le geste.
@@ -108,9 +115,15 @@ regroupées avec `requestAnimationFrame`, sans boucle au repos. Les changements
 de taille et de densité de pixels reconstruisent le tampon Canvas ; le centre
 du monde affiché est conservé lors du redimensionnement.
 
+Sous un pixel physique par case, les rectangles noirs sont projetés sur les
+pixels qu'ils touchent, par arrondi inférieur des bords gauche/haut et supérieur
+des bords droit/bas. Cet aperçu de présence évite leur disparition à très faible
+échelle, sans modifier leurs coordonnées ni leur couleur dans le modèle.
+
 Cette vue ne change aucune couleur. La [refonte de l'interface](INTERFACE.md)
 ajoute les trois modes de grille, les centrages et suivis, et Lanto, dessiné au
-centre de sa case à 90 % de son côté. Lanto reste à l'origine dans l'application
-actuelle. Le [moteur autonome](MOTEUR.md) est disponible ; son intégration au
-rendu, l'édition des cases, le déplacement visible de la fourmi et les gestes
-tactiles complets restent à développer.
+centre de sa case à 90 % de son côté, orienté selon l'état du moteur. La
+[synchronisation visuelle](VISUALISATION.md) reçoit des copies cohérentes du
+Worker, sans dépendance scientifique envers la caméra ou le rendu. Les gestes
+tactiles sont disponibles ; les commandes graphiques de simulation restent au
+lot 07. L'édition des cases n'est pas ajoutée dans ce lot.

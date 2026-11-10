@@ -1,6 +1,8 @@
 import { Camera } from './camera.js';
 import { drawPaving, GRID_MODES } from './renderer.js';
 import { ViewFraming } from './view-framing.js';
+import { PointerGestures } from './navigation-gestures.js';
+import { createScene } from './scene.js';
 
 export function mountPaving(
   canvas,
@@ -18,13 +20,33 @@ export function mountPaving(
   const initial = canvas.getBoundingClientRect();
   const camera = new Camera(initial.width, initial.height);
   const framing = new ViewFraming(camera);
-  const scene = { world, ant };
+  let scene = { world, ant, stepCount: null };
   const options = { gridMode: 'crosses', origin: true, lanto: true };
   let frame = null;
-  let drag = null;
   let active = true;
+  let disposed = false;
+  let externalError = null;
+  let pointerKind = null;
+  const gestures = new PointerGestures();
+  const lifecycle = new AbortController();
+  function listen(target, type, callback, options = {}) {
+    target.addEventListener(type, callback, {
+      ...options,
+      signal: lifecycle.signal,
+    });
+  }
+  function assertOpen() {
+    if (disposed) throw new Error('La vue est fermée.');
+  }
 
   function report(message, error = false) {
+    if (externalError) {
+      message = externalError;
+      error = true;
+    } else if (!error && sprite?.complete && sprite.naturalWidth === 0) {
+      message = 'Impossible de charger l’image de Lanto.';
+      error = true;
+    }
     if (status.textContent !== message) status.textContent = message;
     status.classList.toggle('sr-only', !error);
     status.classList.toggle('view-error', error);
@@ -36,16 +58,11 @@ export function mountPaving(
   }
 
   function requestDraw() {
-    if (!active || frame !== null) return;
+    if (disposed || !active || frame !== null) return;
     frame = requestAnimationFrame(() => {
       frame = null;
       const { width, height } = canvas.getBoundingClientRect();
-      if (!active || width <= 0 || height <= 0 || (sprite && !sprite.complete))
-        return;
-      if (sprite && sprite.naturalWidth === 0) {
-        report('Impossible de charger l’image de Lanto.', true);
-        return;
-      }
+      if (disposed || !active || width <= 0 || height <= 0) return;
       try {
         camera.resize(width, height);
         framing.apply(scene);
@@ -64,7 +81,7 @@ export function mountPaving(
           0,
           0,
         );
-        drawPaving(context, camera, world, options, sprite, ant);
+        drawPaving(context, camera, scene.world, options, sprite, scene.ant);
         notify();
         report('Pavage prêt.');
       } catch (error) {
@@ -86,34 +103,62 @@ export function mountPaving(
     }
   }
 
-  canvas.addEventListener('pointerdown', (event) => {
-    if (!active || event.button !== 0 || drag) return;
+  function localPoint(event) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  }
+  listen(canvas, 'pointerdown', (event) => {
+    const kind = event.pointerType === 'touch' ? 'touch' : 'mouse';
+    if (
+      !active ||
+      event.button !== 0 ||
+      (pointerKind && pointerKind !== kind) ||
+      (kind === 'mouse' && gestures.ids.length)
+    )
+      return;
+    const { x, y } = localPoint(event);
+    if (!gestures.begin(event.pointerId, x, y)) return;
+    pointerKind = kind;
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
-    drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
     canvas.classList.add('dragging');
   });
-  canvas.addEventListener('pointermove', (event) => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const dx = event.clientX - drag.x;
-    const dy = event.clientY - drag.y;
-    if (dx || dy) navigate(() => camera.moveBy(dx, dy), true);
-    drag.x = event.clientX;
-    drag.y = event.clientY;
+  listen(canvas, 'pointermove', (event) => {
+    if (!active) return;
+    const { x, y } = localPoint(event);
+    const transform = gestures.move(event.pointerId, x, y);
+    if (transform)
+      navigate(
+        () => camera.panZoomAt(transform.from, transform.to, transform.factor),
+        true,
+      );
   });
-  function stopDrag(event) {
-    if (!drag || event.pointerId !== drag.id) return;
-    const id = drag.id;
-    drag = null;
-    canvas.classList.remove('dragging');
+  function stopPointer(event) {
+    const id = event.pointerId;
+    if (!gestures.ids.includes(id)) return;
+    gestures.end(id);
+    if (!gestures.ids.length) {
+      pointerKind = null;
+      canvas.classList.remove('dragging');
+    }
     if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
   }
-  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-    canvas.addEventListener(type, stopDrag);
+  function stopGestures() {
+    const ids = gestures.ids;
+    gestures.clear();
+    pointerKind = null;
+    canvas.classList.remove('dragging');
+    for (const id of ids)
+      if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
   }
-  canvas.addEventListener(
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    listen(canvas, type, stopPointer);
+  }
+  listen(
+    canvas,
     'wheel',
     (event) => {
+      if (!active) return;
       event.preventDefault();
       if (!event.deltaY) return;
       const rect = canvas.getBoundingClientRect();
@@ -133,12 +178,18 @@ export function mountPaving(
     { passive: false },
   );
 
-  const resizeObserver = new ResizeObserver(requestDraw);
+  const onResize = () => {
+    stopGestures();
+    requestDraw();
+  };
+  const resizeObserver = new ResizeObserver(onResize);
   resizeObserver.observe(canvas);
-  window.addEventListener('resize', requestDraw);
+  listen(window, 'resize', onResize);
+  listen(window, 'blur', stopGestures);
   function watchDensity() {
     const query = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
-    query.addEventListener(
+    listen(
+      query,
       'change',
       () => {
         requestDraw();
@@ -149,26 +200,32 @@ export function mountPaving(
   }
   watchDensity();
   if (sprite) {
-    sprite.addEventListener('load', requestDraw);
-    sprite.addEventListener('error', () => {
+    listen(sprite, 'load', requestDraw);
+    listen(sprite, 'error', () => {
       report('Impossible de charger l’image de Lanto.', true);
+      requestDraw();
       console.error(status.textContent);
     });
   }
   notify();
   requestDraw();
   return {
+    get stepCount() {
+      return scene.stepCount;
+    },
     setActive(value) {
+      assertOpen();
       if (typeof value !== 'boolean')
         throw new TypeError('État de visibilité invalide.');
       active = value;
       if (!active) {
-        if (drag) stopDrag({ pointerId: drag.id });
+        stopGestures();
         if (frame !== null) cancelAnimationFrame(frame);
         frame = null;
       } else requestDraw();
     },
     setZoom(scale) {
+      assertOpen();
       if (typeof scale !== 'number' || !Number.isFinite(scale))
         throw new TypeError('Zoom invalide.');
       navigate(
@@ -182,9 +239,11 @@ export function mountPaving(
       );
     },
     selectFraming(action) {
+      assertOpen();
       navigate(() => framing.select(action, scene));
     },
     updateOptions(changes) {
+      assertOpen();
       for (const [key, value] of Object.entries(changes)) {
         const valid =
           key === 'gridMode'
@@ -195,6 +254,29 @@ export function mountPaving(
       }
       Object.assign(options, changes);
       requestDraw();
+    },
+    updateScene(snapshot) {
+      assertOpen();
+      const next = createScene(snapshot);
+      scene = next;
+      requestDraw();
+    },
+    setError(message) {
+      assertOpen();
+      if (message !== null && typeof message !== 'string')
+        throw new TypeError('Message d’erreur invalide.');
+      externalError = message;
+      report('Pavage prêt.');
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      active = false;
+      stopGestures();
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      resizeObserver.disconnect();
+      lifecycle.abort();
     },
     // Point d'entrée des actualisations de scène ; aucune boucle de suivi au repos.
     refresh: requestDraw,

@@ -42,6 +42,7 @@ class SimulationClient {
   #nextId = 1;
   #pending = new Map();
   #listeners = new Set();
+  #errorListeners = new Set();
   #failure = null;
 
   static async create(configuration, execution) {
@@ -66,7 +67,7 @@ class SimulationClient {
     worker.addEventListener('messageerror', this.#onError);
   }
 
-  #close(error) {
+  #close(error, unexpected = true) {
     if (this.#failure) return;
     this.#failure = error;
     this.#worker.removeEventListener('message', this.#onMessage);
@@ -76,6 +77,18 @@ class SimulationClient {
     for (const request of this.#pending.values()) request.reject(error);
     this.#pending.clear();
     this.#listeners.clear();
+    if (unexpected) {
+      for (const callback of [...this.#errorListeners]) {
+        try {
+          callback(error);
+        } catch (failure) {
+          queueMicrotask(() => {
+            throw failure;
+          });
+        }
+      }
+    }
+    this.#errorListeners.clear();
   }
 
   #onError = (event) => {
@@ -183,7 +196,15 @@ class SimulationClient {
   }
 
   async dispose() {
-    this.#close(new Error('Le client de simulation est fermé.'));
+    this.#close(new Error('Le client de simulation est fermé.'), false);
+  }
+
+  subscribeErrors(callback) {
+    if (this.#failure) throw this.#failure;
+    if (typeof callback !== 'function')
+      throw new TypeError('L’abonné aux erreurs doit être une fonction.');
+    this.#errorListeners.add(callback);
+    return () => this.#errorListeners.delete(callback);
   }
 }
 

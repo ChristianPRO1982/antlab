@@ -3,6 +3,8 @@ import lantoTopURL from './assets/lanto/Lanto-top.webp';
 import { SparseWorld } from './world.js';
 import { mountPaving } from './paving-view.js';
 import { mountOptionsPanel } from './options-panel.js';
+import { createSimulationClient } from './simulation-client.js';
+import { connectSimulationView } from './simulation-view.js';
 
 const pages = [...document.querySelectorAll('[data-page]')];
 const links = [...document.querySelectorAll('[data-route]')];
@@ -14,6 +16,58 @@ const world = new SparseWorld();
 const sprite = new Image();
 sprite.src = lantoTopURL;
 let view = null;
+let sessionPromise = null;
+let synchronizer = null;
+let sessionDisposed = false;
+const gameLifecycle = new AbortController();
+
+function listenGame(target, type, callback) {
+  target.addEventListener(type, callback, { signal: gameLifecycle.signal });
+}
+
+function updateVisibility() {
+  if (sessionDisposed) return;
+  const active = document.body.dataset.page === 'jeu' && !document.hidden;
+  if (synchronizer) synchronizer.setActive(active);
+  else view?.setActive(active);
+}
+
+export async function getGameSession() {
+  if (sessionDisposed) throw new Error('La session de simulation est fermée.');
+  if (!view)
+    throw new Error('Ouvrir la page Jeu avant de demander sa session.');
+  if (!sessionPromise) {
+    sessionPromise = (async () => {
+      const simulation = await createSimulationClient();
+      try {
+        synchronizer = connectSimulationView(simulation, view);
+        updateVisibility();
+        return {
+          simulation,
+          view,
+          async dispose() {
+            if (sessionDisposed) return;
+            sessionDisposed = true;
+            gameLifecycle.abort();
+            synchronizer.dispose();
+            view.setError('La session de simulation est fermée.');
+            view.dispose();
+            for (const control of document.querySelectorAll(
+              '#zoom, #grid-mode, [data-framing], [data-option]',
+            )) {
+              control.disabled = true;
+            }
+            await simulation.dispose();
+          },
+        };
+      } catch (error) {
+        await simulation.dispose();
+        throw error;
+      }
+    })();
+  }
+  return sessionPromise;
+}
 
 const panel = mountOptionsPanel(
   document.querySelector('.sidebar'),
@@ -28,7 +82,8 @@ function renderRoute(focus = false) {
     ? requested
     : 'accueil';
   panel.cancel();
-  view?.setActive(false);
+  if (synchronizer) synchronizer.setActive(false);
+  else view?.setActive(false);
   for (const page of pages) page.hidden = page.dataset.page !== route;
   for (const link of links) {
     if (link.dataset.route === route) link.setAttribute('aria-current', 'page');
@@ -36,7 +91,7 @@ function renderRoute(focus = false) {
   }
   document.body.dataset.page = route;
   document.title = `AntLab — ${{ accueil: 'Accueil', jeu: 'Jeu', aide: 'Aide' }[route]}`;
-  if (route === 'jeu') {
+  if (route === 'jeu' && !sessionDisposed) {
     try {
       if (!view)
         view = mountPaving(document.querySelector('canvas'), status, world, {
@@ -62,6 +117,10 @@ function renderRoute(focus = false) {
           },
         });
       else view.setActive(true);
+      updateVisibility();
+      void getGameSession().catch((error) =>
+        view.setError(`Simulation indisponible : ${error.message}`),
+      );
     } catch (error) {
       status.textContent = `Impossible d’afficher le pavage : ${error.message}`;
       status.classList.remove('sr-only');
@@ -76,16 +135,14 @@ function renderRoute(focus = false) {
   window.scrollTo(0, 0);
 }
 
-zoom.addEventListener('input', () => view?.setZoom(Number(zoom.value)));
+listenGame(zoom, 'input', () => view?.setZoom(Number(zoom.value)));
 for (const button of framingButtons) {
-  button.addEventListener('click', () =>
+  listenGame(button, 'click', () =>
     view?.selectFraming(button.dataset.framing),
   );
   if (button.dataset.framing === 'ant') {
-    button.addEventListener('dblclick', () =>
-      view?.selectFraming('follow-ant'),
-    );
-    button.addEventListener('keydown', (event) => {
+    listenGame(button, 'dblclick', () => view?.selectFraming('follow-ant'));
+    listenGame(button, 'keydown', (event) => {
       if (event.shiftKey && event.key === 'Enter') {
         event.preventDefault();
         view?.selectFraming('follow-ant');
@@ -93,13 +150,14 @@ for (const button of framingButtons) {
     });
   }
 }
-document.querySelector('#grid-mode').addEventListener('change', (event) => {
+listenGame(document.querySelector('#grid-mode'), 'change', (event) => {
   view?.updateOptions({ gridMode: event.target.value });
 });
 for (const input of document.querySelectorAll('[data-option]')) {
-  input.addEventListener('change', () =>
+  listenGame(input, 'change', () =>
     view?.updateOptions({ [input.dataset.option]: input.checked }),
   );
 }
 window.addEventListener('hashchange', () => renderRoute(true));
+listenGame(document, 'visibilitychange', updateVisibility);
 renderRoute();

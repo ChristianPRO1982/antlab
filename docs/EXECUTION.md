@@ -14,11 +14,11 @@ avec la même API. `src/simulation-worker.js` héberge un contrôleur par Worker
 La configuration initiale est celle du [moteur](MOTEUR.md), y compris les
 [règles et seuils de majorité](REGLES.md). Elle reste fixe pendant l'expérience.
 
-Le lot 05 fournit cette API et des fixtures de test sous Vite. Les commandes de
-la page Jeu et le Canvas ne sont pas encore raccordés. Le client n'est donc pas
-encore importé par l'entrée du site, ni embarqué dans son build de production.
-Lors du raccordement, l'import du client permettra à Vite de construire aussi
-le Worker référencé par `new Worker(new URL(..., import.meta.url))`.
+Depuis le lot 06, le client est importé par la page Jeu et raccordé au Canvas.
+Vite construit aussi le Worker référencé par
+`new Worker(new URL(..., import.meta.url))`. Les commandes graphiques restent au
+lot 07 ; la [session et sa visualisation](VISUALISATION.md) se pilotent par API
+sous Vite. Les expériences indépendantes utilisent toujours cette fabrique.
 
 ## API commune
 
@@ -79,7 +79,7 @@ Le **nombre de transitions** est scientifique. Le **débit** dépend du matérie
 des règles, de la taille et du délai des lots. La **fréquence des notifications**
 est indépendante ; aucune ne décide des transformations. Un intervalle nul
 notifie chaque lot. Les changements de statut et les fins de tâches sont toujours
-notifiés. Le futur rendu choisira sa propre fréquence et pourra ne pas s'abonner.
+notifiés. Le rendu choisit sa propre fréquence et peut aussi ne pas s'abonner.
 
 Une progression contient `ant`, `stepCount`, `blackCellCount`, `status` et
 `targetStep` (nul pour le calcul continu ou après annulation). Les statuts sont
@@ -95,6 +95,11 @@ Les exceptions d'un abonné sont signalées comme erreurs asynchrones, sans êtr
 requalifiées en erreurs scientifiques ni interrompre les autres abonnés.
 
 ## Protocole Worker
+
+Le client possède aussi `subscribeErrors(callback)`, avec une fonction de
+désabonnement, pour observer une panne fatale même au repos. La fermeture
+volontaire ne déclenche pas ce canal. Il est local au client et ne constitue
+pas une commande envoyée au Worker.
 
 Le client utilise un identifiant entier sûr positif distinct par requête.
 Une requête contient `{ id, command }`, complété uniquement par ses arguments :
@@ -159,7 +164,9 @@ unsubscribe();
 await simulation.dispose();
 ```
 
-La page doit rester utilisable. Après l'acquittement de pause, le compteur reste
+Cet exemple crée une expérience indépendante. Pour afficher la simulation dans
+Jeu, utiliser [getGameSession](VISUALISATION.md). La page doit rester utilisable.
+Après l'acquittement de pause, le compteur reste
 stable jusqu'à reprise ; après annulation, la cible vaut `null` et le monde est
 conservé. Le pavage affiché reste celui de l'interface actuelle : il n'est pas
 encore relié à l'expérience de cette console.
@@ -178,6 +185,7 @@ Worker détruit son état privé ; seule une erreur scientifique traitée par le
 contrôleur permet encore sa consultation. Aucune sauvegarde ou reprise après
 panne n'est ajoutée.
 
-Les tests Worker utilisent les modules source de Vite et sont explicitement
-ignorés avec `TEST_BASE_URL` vers une image de production, qui ne contient pas
-ces fixtures. Les parcours actuels de l'interface restent exécutés dans ce cas.
+Les fixtures de pilotage important les sources sont explicitement ignorées
+avec `TEST_BASE_URL` vers une image de production. Depuis le lot 06, le Worker
+du site et les gestes tactiles possèdent aussi des parcours sans import de
+sources, exécutés contre Vite ou Nginx.
