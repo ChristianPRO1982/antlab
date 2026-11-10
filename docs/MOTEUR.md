@@ -33,7 +33,9 @@ restauration d'un état avancé dans ce lot.
 | `getRules()`                                    | Renvoie une copie de la sélection `{ central, optional }`, fixée à la construction.                                       |
 
 Chaque instance possède son monde et son état privés. Modifier les données
-initiales ou une copie retournée n'altère pas la simulation. Les cases noires
+initiales ou une copie retournée n'altère pas la simulation. `getProgress()`
+retourne `{ ant, stepCount, blackCellCount }` en coût constant, sans copier les
+cases noires ; sa fourmi est également une copie indépendante. Les cases noires
 sont énumérées dans l'ordre d'insertion du monde, sans tri spatial ; un même
 état initial et une même séquence produisent le même ordre. `getState()` copie
 toutes les cases noires : son coût dépend de leur nombre. Ce n'est ni un format
@@ -91,9 +93,10 @@ acquises ; `getState()` donne l'étape réellement atteinte. Aucun arrondi ni
 bouclage n'est effectué aux limites.
 
 Le monde reste limité par la mémoire disponible. Le calcul est synchrone ;
-`advance` sur un grand nombre de pas peut monopoliser son thread. Le Worker et
-le pilotage des calculs longs viendront à l'étape 05. Le moteur n'est pas encore
-relié à l'interface. Le catalogue de l'étape 04 est disponible par API ; la
+`advance` sur un grand nombre de pas peut monopoliser son thread. Le
+[contrôleur asynchrone et son Worker](EXECUTION.md) calculent par lots et
+permettent les interruptions entre lots. Leur raccordement à l'interface reste
+futur. Le catalogue de l'étape 04 est disponible par API ; la
 sélection des règles dans l'interface reste à développer.
 
 ## Vérification via Docker

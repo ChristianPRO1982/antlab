@@ -44,17 +44,18 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01 à 04 sont clôturées ; le lot 04 ajoute un catalogue de règles
-au moteur autonome sur `feat/rule-catalog`, sans nouvelle release. Sur demande
+Les étapes 01 à 05 sont clôturées ; le lot 05 ajoute le pilotage asynchrone et
+le Worker sur `feat/worker-execution`, sans nouvelle release. Sur demande
 explicite, une vue du pavage avec glissement souris, zoom et repère d'origine
 anticipe partiellement l'étape 06, qui reste ouverte. Une refonte visuelle ajoute
 les pages Accueil, Jeu et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
 simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
 Le moteur calcule les cinq règles centrales et la rotation horaire facultative
-des branches, sans affichage ; son intégration à l'interface reste future. La
-prochaine étape est le pilotage des calculs longs en Worker (05).
-Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md) et le
-[bilan du lot 04](RECEPTION_ETAPE_04.md). Ce repère est une
+des branches, sans affichage ; son intégration à l'interface reste future.
+Le pilotage des calculs longs est disponible par API, avec pause, reprise et
+annulation conservant l'état. La prochaine étape est la visualisation (06).
+Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
+[pilotage](EXECUTION.md) et le [bilan du lot 05](RECEPTION_ETAPE_05.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
 ## 1. Origine et intention

@@ -4,7 +4,8 @@ Laboratoire web d'expérimentation autour de la fourmi de Langton.
 
 **État actuel :** pages Accueil, Jeu et Aide, pavage navigable et panneau d'options
 autour de Lanto. Le moteur déterministe et son catalogue de règles sont utilisables
-sans affichage ; leur intégration à l'interface et les fonctions d'expérimentation
+sans affichage, avec une API de pilotage asynchrone et un Worker testé sous Vite ;
+leur intégration à l'interface et les fonctions d'expérimentation
 restent à développer.
 
 ## Préparer les commandes locales
@@ -113,6 +114,7 @@ DNS, réseau `proxy` et Traefik doivent déjà être configurés par l'infrastru
 - [Architecture](docs/ARCHITECTURE.md)
 - [Moteur déterministe et exemple Docker](docs/MOTEUR.md)
 - [Catalogue de règles et compatibilités](docs/REGLES.md)
+- [Pilotage asynchrone et Worker](docs/EXECUTION.md)
 - [Releases](docs/RELEASES.md) et [déploiement Docker](docs/DEPLOIEMENT.md)
 - [Contexte](docs/CONTEXTE_LABORATOIRE_FOURMIS.md) et [roadmap](docs/ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md)
 

@@ -96,6 +96,18 @@ export class LangtonEngine {
     };
   }
 
+  getProgress() {
+    return {
+      ant: {
+        x: this.#x,
+        y: this.#y,
+        orientation: DIRECTIONS[this.#direction].orientation,
+      },
+      stepCount: this.#stepCount,
+      blackCellCount: this.#world.blackCellCount,
+    };
+  }
+
   getRules() {
     const configuration = this.#rules.configuration;
     return { ...configuration, optional: [...configuration.optional] };
