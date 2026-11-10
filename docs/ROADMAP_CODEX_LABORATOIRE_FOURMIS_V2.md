@@ -9,7 +9,7 @@
 
 ## Mode d'emploi
 
-1. Placer ce document et `CONTEXTE_LABORATOIRE_FOURMIS.md` à la racine du dépôt.
+1. Conserver ce document et `CONTEXTE_LABORATOIRE_FOURMIS.md` dans `docs`, avec toute la documentation détaillée. Les consignes applicables au dépôt sont dans `AGENTS.md` à la racine.
 2. Exécuter les **15 étapes dans l'ordre** ; chaque étape représente un lot fonctionnel complet, pas une micro-tâche.
 3. Pour chaque étape, transmettre à Codex **le prompt associé**. Lui demander de lire les deux documents avant toute modification.
 4. Cocher **chaque point réalisé** et chaque vérification de réception. La case de clôture de l’étape ne se coche que lorsque toutes les autres cases de cette étape sont validées.
@@ -24,38 +24,42 @@
 - La simulation débute avec **une fourmi**, une position et une orientation, et des règles de déplacement de Langton explicites. Exemple de convention par défaut : **blanc → tourner à droite ; noir → tourner à gauche**, puis transformation de couleur et déplacement d'une case.
 - **Une étape = une transition complète** ; les décisions se basent sur les couleurs **avant** transformation. Les mouvements, règles et mesures ne doivent jamais dépendre de la fréquence d'affichage.
 - Sur une branche, le comportement initial est l'inversion de la case visitée. Sur un centre, le catalogue de départ propose : inversion simple, inversion individuelle des cinq cases, centre maître, majorité inversée. Ces quatre mécanismes sont **alternatifs**, pas simultanés.
-- Pour préciser les deux règles susceptibles d'être ambiguës : **centre maître** = les cinq cases prennent la couleur *opposée à l'ancienne couleur du centre* ; **majorité inversée** = si au moins 3 cases sur 5 sont noires, les cinq deviennent blanches, sinon elles deviennent noires. Ces conventions seront documentées et testées ; elles pourront devenir de nouvelles variantes si l'on souhaite plus tard les changer.
+- Pour préciser les deux règles susceptibles d'être ambiguës : **centre maître** = les cinq cases prennent la couleur _opposée à l'ancienne couleur du centre_ ; **majorité inversée** = si au moins 3 cases sur 5 sont noires, les cinq deviennent blanches, sinon elles deviennent noires. Ces conventions seront documentées et testées ; elles pourront devenir de nouvelles variantes si l'on souhaite plus tard les changer.
 - Un changement de règle met immédiatement la simulation en pause et propose **continuer**, **recommencer**, **annuler**. S'il est validé à l'étape `N` et que l'expérience continue, la nouvelle règle s'applique **à la transition N → N+1**. La modification est inscrite dans un journal.
 - Le monde est illimité **au niveau du modèle**, pas au niveau des ressources physiques : éviter tout affichage prétendant garantir une infinité effective ou une capacité de calcul illimitée.
 - Les indicateurs exacts et leurs maxima sont calculés depuis l'état du moteur ; les courbes peuvent être échantillonnées. Les exports doivent enregistrer la politique d'échantillonnage.
 - **Pas de sauvegarde automatique persistante, pas de comptes, pas de base de données, pas d'IndexedDB/localStorage de sauvegarde** pour le MVP. L'état vit en mémoire pendant la session ; la pérennisation se fait par fichiers explicitement exportés/importés.
-- Le **JSON versionné** fait foi pour les données. Le **Markdown** fournit un rapport lisible et peut contenir un bloc JSON embarqué afin de constituer un fichier autonome. Un partage par URL ne concerne que les petites configurations, jamais un monde volumineux.
+- Le **JSON versionné** fait foi pour les données. Le **Markdown** fournit le fichier de sauvegarde autonome lisible, contenant le bloc JSON versionné de référence. Un partage par URL ne concerne que les petites configurations, jamais un monde volumineux.
+- Décision de préparation : le **Markdown autonome avec JSON versionné embarqué est le format de sauvegarde de référence**, réimportable dans une session. Les JSON seuls et CSV restent des exports complémentaires. Une session est l'état en mémoire de l'onglet, sans authentification ni cookie de connexion.
+- **TDD obligatoire** : test en échec avant le code, implémentation minimale puis refactorisation ; Vitest et Playwright via Docker. Aucun test scientifique artificiel n'est requis pendant la préparation de l'outillage.
+- **Un moteur JavaScript unique**, animé ou sans affichage, exécuté dans un Web Worker ; pas de moteur Python ni backend applicatif. HTML/CSS/JavaScript natifs, Vite pour le développement et le build.
+- **Docker** pour les outils et la production Nginx statique, sur `antlab.carthographie.fr`. Traefik et VPS appartiennent au dépôt voisin `cARThographie`.
+- **Livraison** : contrôles locaux sur les branches de développement, PR vers `main`, `semantic-release` automatique (tag, GitHub Release et `docs/CHANGELOG.md`). Build, push Docker Hub et déploiement manuels.
 - Deux modes pilotent **le même moteur** : **interactif** (simulation visualisée) et **campagne en série** (N configurations compatibles × K étapes, sans animation, avec résultats finaux et séries de KPI).
 - Une campagne doit énumérer les configurations **valides et uniques** selon des paramètres choisis par l’utilisateur ; **1 024 est un exemple**, pas un nombre garanti. Toute campagne utilise des conditions initiales et un nombre de pas explicitement fixés.
 - L’interface de campagne indique le nombre de calculs à effectuer avant le départ ; pendant l’exécution, elle montre l’avancement, les erreurs et permet une annulation propre. Le calcul ne dépend jamais du Canvas et ne doit pas bloquer la page.
 - Les résultats de **chaque expérience** d’une campagne comprennent la configuration, le statut, l’étape réellement atteinte, les KPI finaux, les maxima avec étapes, les séries échantillonnées et les versions de règles/moteur. L’état complet de chaque monde est **optionnel** pour éviter des fichiers démesurés.
 - **Sauvegarder signifie exporter volontairement un fichier** : aucune persistance interne. L’export de campagne produit des formats exploitables (JSON et au moins CSV pour la synthèse, Markdown lisible ; ZIP si nécessaire). Une campagne interrompue peut exporter les résultats déjà terminés.
 
-
 ## Vue d'ensemble
 
-| Étape | Lot | Livrable central | Jalons |
-|---|---|---|---|
-| 01 | Fondations | Application locale exécutable et architecture minimale | Socle |
-| 02 | Géométrie et monde | Pavage en croix + état clairsemé fiable | Socle |
-| 03 | Moteur déterministe | Simulation de Langton testée, pas à pas | Socle |
-| 04 | Catalogue de règles | Quatre règles centrales et compatibilités | Socle |
-| 05 | Exécution intensive | Moteur pilotable sans affichage, Worker, pause et cible | Simulation |
-| 06 | Visualisation du monde | Canvas, zoom, caméra et suivi | Simulation |
-| 07 | Poste de pilotage | Interface des règles et des commandes | MVP interactif |
-| 08 | Changements en cours d'expérience | Confirmation et journal des changements | MVP scientifique |
-| 09 | Indicateurs exacts | KPI, encadrements, maxima historiques | Observatoire |
-| 10 | Graphiques temporels | Courbes échantillonnées et événements | Observatoire |
-| 11 | Rapports et exports | Formats individuels et de campagne, JSON/Markdown/CSV | Portabilité |
-| 12 | Import et reprise | Restaurer/rejouer une expérience fidèlement | Reproductibilité |
-| 13 | Campagnes en série et comparaison | Exploration exhaustive de règles, résultats et comparaison | Exploration |
-| 14 | Robustesse et validation | Tests globaux, performances et accessibilité | Prépublication |
-| 15 | Partage et mise en ligne | URL de configuration + site public documenté | Publication |
+| Étape | Lot                               | Livrable central                                           | Jalons           |
+| ----- | --------------------------------- | ---------------------------------------------------------- | ---------------- |
+| 01    | Fondations                        | Application locale exécutable et architecture minimale     | Socle            |
+| 02    | Géométrie et monde                | Pavage en croix + état clairsemé fiable                    | Socle            |
+| 03    | Moteur déterministe               | Simulation de Langton testée, pas à pas                    | Socle            |
+| 04    | Catalogue de règles               | Quatre règles centrales et compatibilités                  | Socle            |
+| 05    | Exécution intensive               | Moteur pilotable sans affichage, Worker, pause et cible    | Simulation       |
+| 06    | Visualisation du monde            | Canvas, zoom, caméra et suivi                              | Simulation       |
+| 07    | Poste de pilotage                 | Interface des règles et des commandes                      | MVP interactif   |
+| 08    | Changements en cours d'expérience | Confirmation et journal des changements                    | MVP scientifique |
+| 09    | Indicateurs exacts                | KPI, encadrements, maxima historiques                      | Observatoire     |
+| 10    | Graphiques temporels              | Courbes échantillonnées et événements                      | Observatoire     |
+| 11    | Rapports et exports               | Formats individuels et de campagne, JSON/Markdown/CSV      | Portabilité      |
+| 12    | Import et reprise                 | Restaurer/rejouer une expérience fidèlement                | Reproductibilité |
+| 13    | Campagnes en série et comparaison | Exploration exhaustive de règles, résultats et comparaison | Exploration      |
+| 14    | Robustesse et validation          | Tests globaux, performances et accessibilité               | Prépublication   |
+| 15    | Partage et mise en ligne          | URL de configuration + site public documenté               | Publication      |
 
 ---
 
@@ -65,10 +69,10 @@
 
 **Points à réaliser**
 
-- [ ] Créer un projet web statique exécutable localement, avec point d’entrée clair et outils de développement sobres.
-- [ ] Séparer les responsabilités futures : géométrie/monde, transitions, règles, pilotage, rendu et formats de fichiers.
-- [ ] Mettre en place une commande unique pour les tests et une page de démarrage réelle (non fictive).
-- [ ] Documenter installation, exécution locale et conventions de contribution, sans backend ni stockage interne.
+- [x] Créer un projet web statique exécutable localement, avec point d’entrée clair et outils de développement sobres.
+- [x] Séparer les responsabilités futures : géométrie/monde, transitions, règles, pilotage, rendu et formats de fichiers.
+- [x] Mettre en place une commande unique pour les tests et une page de démarrage réelle (non fictive).
+- [x] Documenter installation, exécution locale et conventions de contribution, sans backend ni stockage interne.
 
 **Livrable attendu.** Une application qui démarre localement, une structure compréhensible, un guide de démarrage et une première vérification automatisée opérationnelle.
 
@@ -76,8 +80,8 @@
 
 **Vérifications de réception**
 
-- [ ] Le site démarre avec les seules instructions documentées.
-- [ ] La commande de tests fonctionne ; aucun backend ou stockage persistant ne se lance.
+- [x] Le site démarre avec les seules instructions documentées.
+- [x] La commande de tests fonctionne ; aucun backend ou stockage persistant ne se lance.
 
 **Prompt Codex**
 
@@ -85,7 +89,7 @@
 Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md. Réalise uniquement l'étape 01 : pose un socle d'application web statique, simple à lancer localement et facile à déployer. Organise le code de façon à séparer à terme géométrie/monde, moteur de simulation, catalogue de règles, exécution en Web Worker, affichage et export/import. Prévois une interface minimale fonctionnelle, une documentation de démarrage et une commande de tests. Privilégie JavaScript/HTML/CSS et évite les dépendances inutiles. Ne développe pas les futures étapes en avance. Exécute les vérifications accessibles et termine par un bilan précis de ce qui fonctionne, des commandes utiles et des limites.
 ```
 
-- [ ] **Étape 01 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 01 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
 
 ## 02 — Formaliser le pavage et représenter le monde infini
 
@@ -352,14 +356,14 @@ Lis les deux documents et réalise uniquement l'étape 10. Ajoute des graphiques
 
 ## 11 — Exporter des expériences lisibles et exploitables
 
-**Périmètre.** Définir un JSON canonique **versionné** pour une expérience, et une enveloppe cohérente pour une campagne future : configurations, conditions initiales, moteur/règles, chronologie de changements, KPI, maxima, mesures échantillonnées et états finaux éventuellement complets. Générer un rapport Markdown lisible, éventuellement avec JSON intégré. Préparer une synthèse CSV pour les campagnes sans les exécuter encore. La sauvegarde est **un export volontaire**, pas un stockage interne.
+**Périmètre.** Définir les données JSON canoniques **versionnées** d'une expérience et leur intégration dans un **Markdown autonome, format de sauvegarde de référence**. Prévoir une enveloppe cohérente pour une campagne future : configurations, conditions initiales, moteur/règles, chronologie de changements, KPI, maxima, mesures échantillonnées et états finaux éventuellement complets. Préparer une synthèse CSV pour les campagnes sans les exécuter encore. La sauvegarde est **un export volontaire**, pas un stockage interne.
 
 **Points à réaliser**
 
 - [ ] Définir des formats JSON versionnés pour configuration, rapport et état complet d’une expérience.
 - [ ] Inclure règles et versions, état initial, journal, KPI, maxima, politique et séries d’échantillonnage.
 - [ ] Inclure toutes les cases noires et l’état de la fourmi dans un export explicitement reprenable.
-- [ ] Générer un rapport Markdown lisible et une variante autonome contenant un bloc JSON intégré.
+- [ ] Générer le Markdown autonome de référence, lisible et contenant un bloc JSON versionné intégré ; proposer au besoin un rapport allégé non reprenable.
 - [ ] Préparer le schéma de résultats pour plusieurs expériences et leur récapitulatif CSV.
 - [ ] Ne déclencher les sauvegardes que sur une action explicite de téléchargement/export.
 
@@ -375,7 +379,7 @@ Lis les deux documents et réalise uniquement l'étape 10. Ajoute des graphiques
 **Prompt Codex**
 
 ```text
-Lis les documents de référence et réalise uniquement l’étape 11. Définis un JSON canonique versionné pour les expériences : état initial, configuration et versions, historique daté en étapes, KPI actuels/maxima/étapes, mesures échantillonnées et, pour une reprise exacte, état courant complet (fourmi et cases noires). Définis aussi l’enveloppe minimale d’un futur export de campagne avec résultats indépendants de chaque configuration, ainsi qu’un format tabulaire CSV de synthèse ; n’implémente pas encore le lanceur de campagnes. Crée des exports manuels JSON et Markdown lisible ; propose un Markdown autonome avec bloc JSON balisé. Distingue rapport, configuration et état complet ; ne crée ni base de données, ni IndexedDB, ni sauvegarde automatique. Valide les schémas et teste la sérialisation de valeurs limites et d’états volumineux raisonnables.
+Lis les documents de référence et réalise uniquement l’étape 11. Définis un JSON canonique versionné pour les expériences : état initial, configuration et versions, historique daté en étapes, KPI actuels/maxima/étapes, mesures échantillonnées et, pour une reprise exacte, état courant complet (fourmi et cases noires). Définis aussi l’enveloppe minimale d’un futur export de campagne avec résultats indépendants de chaque configuration, ainsi qu’un format tabulaire CSV de synthèse ; n’implémente pas encore le lanceur de campagnes. Crée la sauvegarde manuelle de référence en Markdown autonome avec bloc JSON versionné balisé ; un export JSON seul peut être proposé en complément. Distingue rapport, configuration et état complet ; ne crée ni base de données, ni IndexedDB, ni sauvegarde automatique. Valide les schémas et teste la sérialisation de valeurs limites et d’états volumineux raisonnables.
 ```
 
 - [ ] **Étape 11 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
@@ -386,7 +390,7 @@ Lis les documents de référence et réalise uniquement l’étape 11. Définis 
 
 **Points à réaliser**
 
-- [ ] Importer et valider les fichiers JSON, puis les Markdown autonomes au format défini.
+- [ ] Importer et valider les Markdown autonomes de référence et les fichiers JSON complémentaires au format défini.
 - [ ] Distinguer import de configuration, rapport non reprenable et état complet reprenable.
 - [ ] Restaurer toutes les données nécessaires pour reprendre exactement à l’étape sauvegardée.
 - [ ] Refuser proprement les versions incompatibles ou fichiers corrompus, avec des messages explicites.
@@ -475,7 +479,7 @@ Lis les deux documents et réalise uniquement l'étape 14. Effectue une revue tr
 
 ## 15 — Publier et permettre le partage des configurations
 
-**Périmètre.** Finaliser la présentation publique du projet : page d'accueil concise, aide « première expérience », explications des règles, mentions sur les limites expérimentales, métadonnées web et déploiement statique. Générer un lien partageable contenant uniquement une configuration compacte et versionnée ; prévoir une validation stricte des paramètres URL. L'état massif du monde continue de s'échanger par fichier.
+**Périmètre.** Finaliser la présentation publique du projet : page d'accueil concise, aide « première expérience », explications des règles, mentions sur les limites expérimentales, métadonnées web et déploiement Docker statique derrière le Traefik existant. Générer un lien partageable contenant uniquement une configuration compacte et versionnée ; prévoir une validation stricte des paramètres URL. L'état massif du monde continue de s'échanger par fichier.
 
 **Points à réaliser**
 
@@ -498,7 +502,7 @@ Lis les deux documents et réalise uniquement l'étape 14. Effectue une revue tr
 **Prompt Codex**
 
 ```text
-Lis les deux documents et réalise uniquement l'étape 15. Prépare la publication d'un laboratoire web statique, utilisable sans compte : onboarding court, explication des règles, navigation mobile, états d'erreur utiles, métadonnées et documentation de déploiement pour un hébergement HTTPS standard. Implémente le partage par URL d'une configuration initiale compacte et versionnée (règles, position/orientation de départ, éventuels paramètres d'affichage), avec validation des entrées ; ne tente pas d'y inclure des millions de cases. Vérifie que la simulation, les KPI, le rapport Markdown/JSON et la reprise par fichiers restent opérationnels après build. Prépare les fichiers de déploiement et liste les étapes manuelles, sans modifier une infrastructure serveur extérieure non fournie.
+Lis les deux documents et réalise uniquement l'étape 15. Prépare la publication d'un laboratoire web statique, utilisable sans compte : onboarding court, explication des règles, navigation mobile, états d'erreur utiles, métadonnées et documentation de déploiement pour un hébergement HTTPS standard. Implémente le partage par URL d'une configuration initiale compacte et versionnée (règles, position/orientation de départ, éventuels paramètres d'affichage), avec validation des entrées ; ne tente pas d'y inclure des millions de cases. Vérifie que la simulation, les KPI, le rapport Markdown/JSON et la reprise par fichiers restent opérationnels après build. Réutilise les fichiers Docker du socle et documente les étapes manuelles ; le VPS et Traefik global sont gérés dans le dépôt cARThographie, sans modification depuis AntLab.
 ```
 
 - [ ] **Étape 15 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.

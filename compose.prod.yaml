@@ -1,0 +1,28 @@
+# Modèle à intégrer à la stack applicative du dépôt d'infrastructure.
+name: antlab
+
+services:
+  antlab:
+    image: ${ANTLAB_IMAGE:?Définir ANTLAB_IMAGE avec un tag de release précis}
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: proxy
+      traefik.http.routers.antlab.rule: Host(`antlab.carthographie.fr`)
+      traefik.http.routers.antlab.entrypoints: websecure
+      traefik.http.routers.antlab.tls: 'true'
+      traefik.http.routers.antlab.tls.certresolver: letsencrypt
+      traefik.http.routers.antlab.service: antlab
+      traefik.http.services.antlab.loadbalancer.server.port: '8080'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+networks:
+  proxy:
+    external: true
+    name: proxy

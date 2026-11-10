@@ -1,63 +1,115 @@
 # AntLab
 
-**FR —** Laboratoire web d'expérimentation autour de la fourmi de Langton : explorer des règles élémentaires, des géométries et les comportements émergents qu'elles produisent.
+Laboratoire web d'expérimentation autour de la fourmi de Langton.
 
-**EN —** A web-based laboratory inspired by Langton's ant, for exploring elementary rules, grid geometries and the emergent behaviors they produce.
+**État actuel :** socle technique uniquement. La simulation et les fonctions
+d'expérimentation ne sont pas encore développées.
 
-> **État du projet / Project status:** conception et développement initial (*early development*). Les fonctionnalités décrites ci-dessous sont des **objectifs**, pas nécessairement des fonctions déjà disponibles.
+## Préparer les commandes locales
 
-## L'idée / The idea
+Prérequis : Docker Engine et Docker Compose, sans Node ni npm sur l'hôte.
+Depuis la racine du dépôt, après le clonage ou une mise à jour des dépendances :
 
-**FR** — À partir d'une fourmi, de cases noires ou blanches et de règles locales très simples, AntLab propose d'observer, mesurer et comparer des phénomènes qui apparaissent après des milliers ou des millions d'étapes. Il ne s'agit pas de prouver qu'un comportement est inédit, mais de rendre son exploration rigoureuse et reproductible.
+```sh
+export LOCAL_UID=$(id -u)
+export LOCAL_GID=$(id -g)
+docker compose build tools dev test
+docker compose run --rm tools npm ci
+```
 
-Le premier terrain d'expérimentation est un plan virtuellement infini pavé de **croix de cinq cases** : une case centrale et quatre branches. Une visite au centre peut déclencher une règle collective sur toute la croix. Le damier classique de Langton et d'autres géométries pourront être ajoutés par la suite.
+Conserver les variables `LOCAL_UID` et `LOCAL_GID` dans chaque terminal local.
 
-**EN** — Starting with one ant, black-and-white cells and simple local rules, AntLab aims to observe, measure and compare patterns emerging after thousands or millions of steps. The goal is not to claim scientific novelty, but to make experiments reproducible and easy to explore.
+## 1. Lancer les tests automatiques
 
-The first experimental world is a virtually infinite plane tiled with **five-cell crosses**: one center and four arms. Visiting a center may trigger a rule affecting the entire cross. Classic Langton grids and other geometries may follow.
+Tests unitaires et tests navigateur :
 
-## Fonctionnalités envisagées / Planned features
+```sh
+docker compose run --rm test npm test
+```
 
-- **Règles configurables / Configurable rules:** choix de règles exclusives et de modificateurs compatibles ; démarrage en noir et blanc.
-- **Simulation pilotable / Controllable simulation:** pas à pas, lecture, pause, vitesse réglable, calcul jusqu'à une étape cible (10 000, 100 000, 1 000 000 ou valeur libre).
-- **Visualisation / Visualization:** vue déplaçable et zoomable d'un monde sans bord prédéfini ; calcul indépendant de l'affichage.
-- **Changement de règles / Rule changes:** mise en pause et choix entre poursuivre l'expérience ou repartir de zéro, avec historique des changements.
-- **Mesures / Metrics:** nombre de cases noires, dimensions de la zone englobante, maxima historiques, distance à l'origine et courbes d'évolution.
-- **Campagnes / Batch experiments:** exécuter automatiquement toutes les combinaisons de règles compatibles sur un nombre d'étapes choisi, sans animation, puis comparer les résultats.
-- **Export et reprise / Export and resume:** fichiers JSON pour les données et états, rapports Markdown lisibles, import et partage de configurations.
+Tous les contrôles avant une PR : analyse JavaScript, formatage, tests et build.
 
-## Principes / Principles
+```sh
+docker compose run --rm test
+```
 
-- **Simplicité / Simplicity:** une fourmi, deux couleurs et des règles élémentaires pour commencer.
-- **Déterminisme / Determinism:** à conditions et règles identiques, résultats identiques.
-- **Reproductibilité / Reproducibility:** numéros d'étapes, historique des changements et formats documentés.
-- **Extensibilité / Extensibility:** séparer géométrie, règles, moteur, observations et interface.
-- **Sobriété / Lightweight design:** pas de compte utilisateur, de base de données ni de sauvegarde serveur prévus pour la première version.
+## 2. Lancer l'interface en local
 
-## Orientation technique / Technical direction
+```sh
+docker compose --profile dev up --build dev
+```
 
-Application web légère, avec **HTML / CSS / JavaScript**, **Canvas 2D** pour le rendu et **Web Workers** pour les calculs intensifs. Le moteur sera indépendant de l'interface afin de pouvoir aussi exécuter des campagnes sans affichage. Le monde sera représenté de manière clairsemée : seules les cases utiles seront stockées.
+Ouvrir <http://localhost:5173>. Les modifications sont rechargées automatiquement.
+Pour arrêter : Ctrl+C, puis :
 
-*Lightweight browser app; an independent deterministic engine, Canvas rendering, Web Workers for computation, and sparse world storage. No backend is required for the initial version.*
+```sh
+docker compose --profile dev down
+```
 
-Les outils de test envisagés sont **Vitest** (moteur et règles) et **Playwright** (parcours navigateur), avec une priorité aux tests de reproductibilité.
+## 3. Construire et pousser une nouvelle image Docker Hub
 
-## Documentation / Documentation
+Après une release sur `main`, utiliser un dépôt de travail propre et remplacer
+`1.0.0` par la version publiée. Exécuter sur la machine locale :
 
-Documents de conception destinés à accompagner le dépôt :
+```sh
+git fetch --tags origin
+export ANTLAB_VERSION=1.0.0
+git switch --detach "v$ANTLAB_VERSION"
 
-- `CONTEXTE_LABORATOIRE_FOURMIS.md` — vision, principes et périmètre du projet.
-- `ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md` — roadmap en 15 étapes, cases à cocher et prompts de développement pour Codex.
+docker compose build tools test
+docker compose run --rm tools npm ci
+docker compose run --rm test
 
-*These design documents describe the intended system; implementation progress should be tracked separately from planned features.*
+docker build --pull --target production -t "carthographie/antlab:$ANTLAB_VERSION" .
+export ANTLAB_PREVIEW_IMAGE="carthographie/antlab:$ANTLAB_VERSION"
+docker compose --profile preview up --no-build --wait preview
+docker compose run --rm -e TEST_BASE_URL=http://preview:8080 test npm run test:e2e
+```
 
-## Démarrage / Getting started
+Si les vérifications passent, publier l'image :
 
-Le projet est en cours de préparation. Les instructions d'installation et de lancement seront ajoutées dès qu'une première version exécutable sera disponible.
+```sh
+docker compose --profile preview down
+unset ANTLAB_PREVIEW_IMAGE
+docker login
+docker push "carthographie/antlab:$ANTLAB_VERSION"
+git switch -
+```
 
-*The project is in early development. Installation and usage instructions will be added when a runnable version is available.*
+Construire pour l'architecture du VPS. Chaque release utilise un tag distinct ;
+conserver les anciennes images pour pouvoir revenir à la version précédente.
 
----
+## 4. Mettre à jour et relancer en production
 
-**AntLab** — Des règles simples, des résultats inattendus.  
-*Simple rules, unexpected outcomes.*
+Sur le VPS, après intégration du modèle `compose.prod.yaml` dans
+`/opt/stacks/apps/antlab` via le dépôt d'infrastructure `cARThographie` :
+
+```sh
+cd /opt/stacks/apps/antlab
+export ANTLAB_VERSION=1.0.0
+export ANTLAB_IMAGE="carthographie/antlab:$ANTLAB_VERSION"
+
+docker compose -f compose.prod.yaml config --quiet
+docker compose -f compose.prod.yaml pull antlab
+docker compose -f compose.prod.yaml up -d --no-build --force-recreate --wait antlab
+docker compose -f compose.prod.yaml ps
+docker compose -f compose.prod.yaml logs --tail=50 antlab
+```
+
+Remplacer `1.0.0` par la version poussée à l'étape 3 et adapter le nom du fichier
+Compose si l'intégration utilise une autre convention. Le build de l'image est
+réalisé à l'étape 3 ; ici, Docker récupère cette image et recrée le conteneur.
+
+Vérifier <https://antlab.carthographie.fr>. Pour revenir en arrière, définir
+`ANTLAB_IMAGE` avec la version précédente, puis répéter `pull` et `up`.
+DNS, réseau `proxy` et Traefik doivent déjà être configurés par l'infrastructure.
+
+## Documentation
+
+- [Index et décisions du projet](docs/README.md)
+- [Développement](docs/DEVELOPPEMENT.md) et [tests TDD](docs/TESTS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Releases](docs/RELEASES.md) et [déploiement Docker](docs/DEPLOIEMENT.md)
+- [Contexte](docs/CONTEXTE_LABORATOIRE_FOURMIS.md) et [roadmap](docs/ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md)
+
+Les consignes de contribution applicables au dépôt sont dans [AGENTS.md](AGENTS.md).

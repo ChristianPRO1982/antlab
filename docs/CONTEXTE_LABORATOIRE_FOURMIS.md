@@ -96,7 +96,7 @@ Deux besoins doivent être distingués :
 - **Rapport lisible** : Markdown, avec contexte, règles, historique des changements, observations et résultats ;
 - **Données exploitables** : JSON structuré, pour retrouver les paramètres, les mesures et, lorsqu'il s'agit d'une reprise complète, l'état du monde et de la fourmi.
 
-Un **Markdown contenant un bloc JSON intégré** est une piste envisagée pour réunir rapport humain et données dans un même fichier. Le JSON est toutefois le candidat naturel pour représenter de manière stable les données structurées.
+Le format de sauvegarde de référence est un **Markdown contenant un bloc JSON versionné intégré**, pour réunir rapport humain et données dans un même fichier `.md` réimportable. Le JSON embarqué fait foi pour les données structurées ; un JSON seul peut être proposé comme export complémentaire.
 
 La **réimportation** et la **reprise d'expérience** sont souhaitées. Une simple configuration permet de rejouer depuis le début ; une reprise instantanée à une étape avancée nécessite également un instantané complet de l'état correspondant.
 
@@ -113,6 +113,10 @@ L'orientation actuelle est une application légère, essentiellement **côté na
 - Un moteur de simulation déterministe indépendant de l'interface ;
 - Un Web Worker pour isoler les calculs intensifs de l'affichage ;
 - Une représentation **clairsemée** du monde, ne mémorisant pas une grille géante de cases blanches.
+
+Décisions de préparation du dépôt : **HTML/CSS/JavaScript en modules ES**, sans framework ; Vite pour le développement et le build ; **un seul moteur JavaScript**, y compris pour les campagnes sans affichage. Aucun backend applicatif ni moteur Python parallèle. Les sessions désignent l'état en mémoire de l'onglet, sans connexion ni cookie de session serveur ; fermer ou recharger la page peut perdre cet état avant export.
+
+Le développement et les tests utilisent **Docker**, avec **TDD obligatoire**, Vitest et Playwright. La production est une image statique Nginx derrière le Traefik existant, prévue sur `antlab.carthographie.fr`. Le VPS et Traefik global sont gérés dans le dépôt voisin `cARThographie`. Tests locaux sur branches de développement, PR vers `main`, puis `semantic-release` automatique ; build, push Docker Hub et déploiement restent manuels. Toute documentation détaillée est conservée dans `docs`.
 
 Ces orientations expriment une préférence pour la sobriété et l'évolutivité, **pas une obligation d'adopter un framework ou une architecture complexe**.
 
