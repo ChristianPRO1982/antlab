@@ -106,9 +106,9 @@ Ce lot est une refonte visuelle demandée après l'étape 02. Il anticipe des
 éléments des étapes 06 et 07 **sans les clôturer**. Vitesse, lecture/pause,
 réinitialisation et bouton flottant sont désactivés avec la mention
 « Simulation à venir ». Le [moteur autonome de l'étape 03](MOTEUR.md) est désormais
-disponible, sans intégration à l'interface. Il n'existe ni Worker, ni règles
-configurables, ni export/import. La prochaine étape scientifique est le catalogue
-de règles (04).
+disponible et possède un [catalogue de règles](REGLES.md) configurable à la
+construction par API. Leur intégration à l'interface reste future ; il n'existe
+ni Worker ni export/import. La prochaine étape est le pilotage en Worker (05).
 
 Les tests TDD ont d'abord échoué sur l'absence du panneau, du recentrage et de
 la navigation. Vitest couvre les transitions et limites du panneau ainsi que

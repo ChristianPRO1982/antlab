@@ -44,17 +44,17 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01, 02 et 03 sont clôturées ; le lot 03 ajoute un moteur déterministe
-autonome sur `feat/deterministic-engine`, sans nouvelle release. Sur demande
+Les étapes 01 à 04 sont clôturées ; le lot 04 ajoute un catalogue de règles
+au moteur autonome sur `feat/rule-catalog`, sans nouvelle release. Sur demande
 explicite, une vue du pavage avec glissement souris, zoom et repère d'origine
-anticipe partiellement
-l'étape 06, qui reste ouverte. Une refonte visuelle ajoute les pages Accueil, Jeu
-et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
+anticipe partiellement l'étape 06, qui reste ouverte. Une refonte visuelle ajoute
+les pages Accueil, Jeu et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
 simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
-Le moteur calcule la règle classique de Langton sans affichage ; son intégration
-à l'interface reste future. La prochaine étape scientifique est le catalogue
-de règles (04). Voir les [conventions du moteur](MOTEUR.md) et le
-[bilan du lot 03](RECEPTION_ETAPE_03.md). Ce repère est une
+Le moteur calcule les cinq règles centrales et la rotation horaire facultative
+des branches, sans affichage ; son intégration à l'interface reste future. La
+prochaine étape est le pilotage des calculs longs en Worker (05).
+Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md) et le
+[bilan du lot 04](RECEPTION_ETAPE_04.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
 ## 1. Origine et intention
@@ -104,14 +104,19 @@ Le système doit permettre de **sélectionner les règles d'une expérience** vi
 
 Certaines règles sont **mutuellement exclusives** : une seule règle peut être choisie dans une catégorie donnée. D'autres sont **facultatives** et combinables si elles ne se contredisent pas. Les incompatibilités doivent être explicites. Le catalogue est destiné à s'enrichir progressivement, sans activer toutes les règles à la fois.
 
-Les quatre règles de départ pour une visite sur la **case centrale** d'une croix
+Les cinq règles pour une visite sur la **case centrale** d'une croix
 sont alternatives : une seule est active à la fois. Leurs définitions de référence,
 précisées dans la roadmap, sont :
 
 - **Inversion collective** : les cinq cases inversent individuellement leur couleur.
 - **Centre maître** : les cinq cases prennent la couleur opposée à l'ancienne couleur du centre.
-- **Majorité inversée** : si au moins trois des cinq cases étaient noires, les cinq deviennent blanches ; sinon, elles deviennent noires.
+- **Majorité inversée** : si le nombre de cases noires atteint le seuil choisi, les cinq deviennent blanches ; sinon, elles deviennent noires.
+- **Majorité l'emporte** : si le nombre de cases noires atteint le seuil choisi, les cinq deviennent noires ; sinon, elles deviennent blanches.
 - **Inversion simple** : seule la case visitée change de couleur, comme point de comparaison.
+
+Les deux règles de majorité comptent le centre et les quatre branches avant
+transformation. Leur seuil est sélectionnable parmi **1, 2, 3, 4 et 5**, avec
+**3 par défaut**. Atteindre exactement le seuil suffit à déclencher la décision.
 
 Sur une branche, le comportement de base est l'inversion de la case visitée.
 Les décisions utilisent les couleurs observées **avant** la transformation.

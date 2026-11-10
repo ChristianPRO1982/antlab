@@ -23,8 +23,8 @@
 - Pour le pavage initial, une convention mathématique possible est : un carré de coordonnées entières `(x, y)` est un **centre** si `x + 2y` est multiple de 5. Les quatre voisins orthogonaux sont ses branches. **Attention aux coordonnées négatives et au modulo en JavaScript.** Une convention alternative est acceptable si elle est formalisée, testée et stable.
 - La simulation débute avec **une fourmi**, une position et une orientation, et des règles de déplacement de Langton explicites. Exemple de convention par défaut : **blanc → tourner à droite ; noir → tourner à gauche**, puis transformation de couleur et déplacement d'une case.
 - **Une étape = une transition complète** ; les décisions se basent sur les couleurs **avant** transformation. Les mouvements, règles et mesures ne doivent jamais dépendre de la fréquence d'affichage.
-- Sur une branche, le comportement initial est l'inversion de la case visitée. Sur un centre, le catalogue de départ propose : inversion simple, inversion individuelle des cinq cases, centre maître, majorité inversée. Ces quatre mécanismes sont **alternatifs**, pas simultanés.
-- Pour préciser les deux règles susceptibles d'être ambiguës : **centre maître** = les cinq cases prennent la couleur _opposée à l'ancienne couleur du centre_ ; **majorité inversée** = si au moins 3 cases sur 5 sont noires, les cinq deviennent blanches, sinon elles deviennent noires. Ces conventions seront documentées et testées ; elles pourront devenir de nouvelles variantes si l'on souhaite plus tard les changer.
+- Sur une branche, le comportement initial est l'inversion de la case visitée. Sur un centre, le catalogue propose : inversion simple, inversion individuelle des cinq cases, centre maître, majorité inversée, majorité l'emporte. Ces cinq mécanismes sont **alternatifs**, pas simultanés.
+- **Centre maître** : les cinq cases prennent la couleur _opposée à l'ancienne couleur du centre_. **Majorité inversée** : si le nombre de cases noires atteint le seuil choisi, les cinq deviennent blanches, sinon noires. **Majorité l'emporte** : si ce seuil est atteint, les cinq deviennent noires, sinon blanches. Les deux majorités comptent les cinq anciennes couleurs, centre inclus ; leur seuil est sélectionnable parmi **1, 2, 3, 4 ou 5**, avec **3 par défaut**.
 - Un changement de règle met immédiatement la simulation en pause et propose **continuer**, **recommencer**, **annuler**. S'il est validé à l'étape `N` et que l'expérience continue, la nouvelle règle s'applique **à la transition N → N+1**. La modification est inscrite dans un journal.
 - Le monde est illimité **au niveau du modèle**, pas au niveau des ressources physiques : éviter tout affichage prétendant garantir une infinité effective ou une capacité de calcul illimitée.
 - Les indicateurs exacts et leurs maxima sont calculés depuis l'état du moteur ; les courbes peuvent être échantillonnées. Les exports doivent enregistrer la politique d'échantillonnage.
@@ -48,7 +48,7 @@
 | 01    | Fondations                        | Application locale exécutable et architecture minimale     | Socle            |
 | 02    | Géométrie et monde                | Pavage en croix + état clairsemé fiable                    | Socle            |
 | 03    | Moteur déterministe               | Simulation de Langton testée, pas à pas                    | Socle            |
-| 04    | Catalogue de règles               | Quatre règles centrales et compatibilités                  | Socle            |
+| 04    | Catalogue de règles               | Cinq règles centrales et compatibilités                    | Socle            |
 | 05    | Exécution intensive               | Moteur pilotable sans affichage, Worker, pause et cible    | Simulation       |
 | 06    | Visualisation du monde            | Canvas, zoom, caméra et suivi                              | Simulation       |
 | 07    | Poste de pilotage                 | Interface des règles et des commandes                      | MVP interactif   |
@@ -160,33 +160,36 @@ Bilan : [réception de l'étape 03](RECEPTION_ETAPE_03.md),
 
 ## 04 — Introduire un catalogue de règles élémentaires
 
-**Périmètre.** Intégrer la distinction branche/centre et les quatre comportements centraux initiaux. Définir une forme d'enregistrement minimale pour les règles (identifiant stable, nom, description, catégorie exclusive ou optionnelle, compatibilités pertinentes) sans créer de langage de règles générique. Conserver la lecture d'un état initial commun lorsque plusieurs effets compatibles existeront.
+**Périmètre.** Intégrer la distinction branche/centre et les cinq comportements centraux, dont les deux majorités à seuil configurable de 1 à 5 (3 par défaut). Définir une forme d'enregistrement minimale pour les règles (identifiant stable, nom, description, catégorie exclusive ou optionnelle, compatibilités pertinentes) sans créer de langage de règles générique. Conserver la lecture d'un état initial commun lorsque plusieurs effets compatibles existeront.
 
 **Points à réaliser**
 
-- [ ] Définir quatre règles centrales exclusives et la transformation de base des branches.
-- [ ] Formaliser centre maître et seuil de majorité, y compris tous les cas de 0 à 5 noirs.
-- [ ] Définir un catalogue extensible avec identifiants/version des règles, catégories et compatibilités explicites.
-- [ ] Prévoir un petit mécanisme de règles optionnelles, avec ordre d’application documenté et conflits refusés.
-- [ ] Proposer au moins une variation élémentaire réellement compatible à combiner, sans langage de scripting.
-- [ ] Tester systématiquement les règles seules et les combinaisons autorisées.
+- [x] Définir cinq règles centrales exclusives et la transformation de base des branches.
+- [x] Formaliser centre maître et les deux majorités aux seuils 1 à 5, y compris tous les cas de 0 à 5 noirs.
+- [x] Définir un catalogue extensible avec identifiants/version des règles, catégories et compatibilités explicites.
+- [x] Prévoir un petit mécanisme de règles optionnelles, avec ordre d’application documenté et conflits refusés.
+- [x] Proposer au moins une variation élémentaire réellement compatible à combiner, sans langage de scripting.
+- [x] Tester systématiquement les règles seules et les combinaisons autorisées.
 
 **Livrable attendu.** Le moteur exécute les différentes règles choisies par configuration ; chaque règle est testée avec des motifs noirs/blancs représentatifs.
 
-**Validation.** Quatre règles centrales opérationnelles et clairement documentées ; configurations invalides refusées ; exemples couvrant 0 à 5 cases noires pour la majorité ; aucune ambiguïté sur le centre maître et l'instant de lecture des couleurs.
+**Validation.** Cinq règles centrales opérationnelles et clairement documentées ; configurations invalides refusées ; exemples couvrant 0 à 5 cases noires aux cinq seuils pour les deux majorités ; aucune ambiguïté sur le centre maître et l'instant de lecture des couleurs.
 
 **Vérifications de réception**
 
-- [ ] Les quatre règles donnent les résultats attendus sur leurs cas limites.
-- [ ] Le moteur refuse les incompatibilités et applique les opérations dans un ordre stable.
+- [x] Les cinq règles donnent les résultats attendus sur leurs cas limites.
+- [x] Le moteur refuse les incompatibilités et applique les opérations dans un ordre stable.
 
 **Prompt Codex**
 
 ```text
-Lis les deux documents et réalise uniquement l'étape 04. Intègre au moteur la différence entre case périphérique et centre d'une croix. Sur une branche, utilise l'inversion simple par défaut ; sur un centre, permets de sélectionner exactement l'une de ces règles : inversion simple, inversion individuelle des cinq cases, centre maître, majorité inversée. Respecte les définitions précises et l'ordre des transitions spécifiés dans la roadmap. Construis un petit catalogue extensible avec identifiants stables et validation des choix, sans moteur de scripting ni abstraction excessive. Teste chaque règle sur des états variés, notamment les seuils et les coordonnées négatives. Ne développe pas encore l'interface de sélection.
+Lis les deux documents et réalise uniquement l'étape 04. Intègre au moteur la différence entre case périphérique et centre d'une croix. Sur une branche, utilise l'inversion simple par défaut ; sur un centre, permets de sélectionner exactement l'une de ces règles : inversion simple, inversion individuelle des cinq cases, centre maître, majorité inversée, majorité l'emporte. Pour les deux majorités, propose les seuils 1, 2, 3, 4 et 5, avec 3 par défaut. Respecte les définitions précises et l'ordre des transitions spécifiés dans la roadmap. Construis un petit catalogue extensible avec identifiants stables et validation des choix, sans moteur de scripting ni abstraction excessive. Teste chaque règle sur des états variés, notamment les seuils et les coordonnées négatives. Ne développe pas encore l'interface de sélection.
 ```
 
-- [ ] **Étape 04 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 04 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+
+Bilan : [réception de l'étape 04](RECEPTION_ETAPE_04.md),
+[catalogue et compatibilités](REGLES.md).
 
 ## 05 — Piloter des calculs longs sans bloquer le navigateur
 

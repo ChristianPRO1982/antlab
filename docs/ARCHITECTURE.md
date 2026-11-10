@@ -21,6 +21,15 @@ et `coordinates.js`, sans dépendance au rendu, au temps ou au Worker. Les
 conditions initiales et les copies d'état sont indépendantes du stockage privé.
 Voir l'[API et les conventions du moteur](MOTEUR.md).
 
+`rules.js` définit le catalogue versionné et valide la sélection fixe du moteur.
+Il prépare les écritures sans modifier le monde : toutes les transformations
+lisent les couleurs initiales communes. Le moteur valide sa destination puis
+applique les écritures préparées avant d'avancer et d'incrémenter le compteur.
+Les métadonnées du [catalogue](REGLES.md) sont exposées sans les fonctions de
+calcul. Les centres utilisent la règle sélectionnée ; les branches conservent
+l'inversion simple. Aucun langage de règles ni chargement de code externe
+n'est introduit.
+
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite
 du jeu puis conservé en mémoire ; son contrôleur suspend les rendus hors de cette

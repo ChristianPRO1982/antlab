@@ -91,5 +91,22 @@ L'absence de mutation lors d'un pas refusé et la conservation des pas achevés
 dans un lot interrompu sont vérifiées. Le cycle TDD et les résultats figurent
 dans la [réception de l'étape 03](RECEPTION_ETAPE_03.md).
 
+Les suites du catalogue couvrent 1 021 tests : neuf de catalogue et validation,
+356 d'intégration moteur/règles et 656 consacrés aux majorités. Les quatre transformations centrales initiales et
+l'inversion simple combinée à la rotation sont vérifiées pour les 32 motifs
+binaires de la croix, à l'origine et sur un centre négatif. Les autres cas
+couvrent les branches, les copies de configuration, les incompatibilités,
+l'ordre des écritures, la conservation des couleurs des branches lors de la
+rotation et les limites numériques sans mutation partielle. Pour chacune des
+six configurations sans seuil explicite, répétabilité et équivalence à 10 000 pas sont vérifiées,
+avec calcul par pas individuels, en un lot ou en plusieurs lots, sans horloge
+ni hasard. Voir la [réception de l'étape 04](RECEPTION_ETAPE_04.md).
+
+Les deux majorités sont aussi testées sur tous les motifs et aux cinq seuils,
+à l'origine et sur un centre négatif (640 transformations). Les autres tests
+de majorité vérifient les métadonnées, les versions, les copies, la valeur par
+défaut et les seuils invalides ; pour les dix couples règle/seuil, ils comparent
+10 000 pas individuels à un lot unique et à plusieurs lots.
+
 L'équivalence du pilotage par Worker et des campagnes sera testée lorsque ces
-modes existeront ; aucun KPI n'est validé dans le lot 03.
+modes existeront ; aucun KPI n'est encore validé.
