@@ -15,14 +15,43 @@ pour les résultats scientifiques. Tester cas limites, invariants et reproductib
 
 ## Tests actuels
 
-Le test navigateur du socle vérifie la réponse HTTP, le titre et le contenu,
-l'exécution du JavaScript, le chargement CSS et l'absence d'erreurs navigateur.
-Il doit fonctionner aussi bien sur Vite que sur l'image Nginx.
+Les tests unitaires couvrent le pavage (couverture unique, coordonnées négatives,
+limites numériques), le stockage clairsemé (blanc implicite, suppressions,
+inversions, validation sans mutation) et la caméra (conversions, déplacements,
+ancrage du zoom et limites). `passWithNoTests` a été retiré.
 
-Il n'existe encore **aucun test unitaire ou d'intégration scientifique**.
-Vitest signale explicitement cette absence et utilise temporairement
-`passWithNoTests`. Retirer cette option au premier test de ces catégories.
-Ne pas ajouter de calcul factice pour remplir la suite.
+Les tests du panneau vérifient les bornes 15–50 %, le seuil clic/glissement,
+l'annulation d'un geste, la restauration de largeur, le clavier et les états
+mobile/ordinateur séparés. La caméra teste aussi le recentrage sans changement
+d'échelle.
+
+Les tests de cadrage vérifient les modes exclusifs, le suivi de positions
+successives, les bornes noires actuelles, leur agrandissement/rétrécissement,
+le monde blanc, les marges, le redimensionnement, le zoom inférieur à un pixel
+et ses limites numériques. Les fixtures modifient positions et couleurs sans
+ajouter de moteur ; le cadrage est vérifié sans mutation du monde.
+
+Les parcours Chromium vérifient le chargement, les couleurs réellement dessinées,
+le repère d'origine, la différence d'épaisseur des frontières, le glissement hors
+zone, la fin/annulation du geste, le zoom avec retour depuis son minimum de
+1 pixel par case, le redimensionnement et une densité
+de pixels de 2 sur fenêtre étroite. Ils peuvent cibler Vite ou l'image Nginx.
+Les captures `test-results/pavage.png` et `test-results/pavage-densite-2.png`
+permettent une inspection visuelle sans figer un instantané de référence.
+
+Les parcours de la [refonte](INTERFACE.md) couvrent aussi les trois pages,
+l'historique, le logo/favicon, les réglages visuels, la conservation de la caméra
+et du panneau, le défilement des options sans déplacement des commandes, le
+panneau à 15 % et le tiroir mobile. Les commandes de simulation sont vérifiées
+comme désactivées. Les captures `test-results/design-*.png` présentent les pages
+sur ordinateur et mobile.
+
+Les corrections du panneau ajoutent les trois modes de grille, les boutons de
+cadrage alignés, le double-clic/Maj+Entrée, les états bleus et leur annulation par
+navigation manuelle. Une fixture de règles longue vérifie le défilement de la
+seule zone des règles ; affichage, vue et commandes restent fixes. Les captures
+`test-results/cadrage-*.png` montrent le cadrage actif, le bouton flottant en bas
+à droite et la disposition à petite hauteur.
 
 ```sh
 docker compose run --rm test

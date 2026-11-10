@@ -95,13 +95,20 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md. 
 
 **Périmètre.** Définir sans ambiguïté les coordonnées, les centres et les branches des croix ; construire un monde clairsemé, initialement entièrement blanc, où seules les cases noires occupent la mémoire. Gérer correctement les coordonnées négatives et l'inversion des couleurs, y compris lorsque des cases disparaissent de la mémoire.
 
+**Extension demandée pour ce lot :** vue Canvas du pavage, déplacement par
+glissement du bouton gauche, zoom à la molette ancré sous le pointeur, contours
+des croix renforcés et repère gris dans le coin inférieur gauche de `(0, 0)`.
+Cette anticipation partielle du lot 06 ne clôture aucun de ses critères complets.
+Conventions et limites : [géométrie et monde](GEOMETRIE_MONDE.md).
+Vérifications : [réception du lot 02](RECEPTION_ETAPE_02.md).
+
 **Points à réaliser**
 
-- [ ] Fixer une convention d’entiers `(x, y)` et formaliser le pavage de pentominos en X.
-- [ ] Déterminer de manière fiable centre, branche et croix propriétaire de n’importe quelle case.
-- [ ] Représenter le blanc implicitement et stocker uniquement les cases noires dans une structure clairsemée.
-- [ ] Fournir les opérations de lecture, écriture et inversion de couleur, sans dépendance graphique.
-- [ ] Vérifier la géométrie, notamment les coordonnées négatives, les bords virtuels et les suppressions noir→blanc.
+- [x] Fixer une convention d’entiers `(x, y)` et formaliser le pavage de pentominos en X.
+- [x] Déterminer de manière fiable centre, branche et croix propriétaire de n’importe quelle case.
+- [x] Représenter le blanc implicitement et stocker uniquement les cases noires dans une structure clairsemée.
+- [x] Fournir les opérations de lecture, écriture et inversion de couleur, sans dépendance graphique.
+- [x] Vérifier la géométrie, notamment les coordonnées négatives, les bords virtuels et les suppressions noir→blanc.
 
 **Livrable attendu.** Une API de monde et géométrie indépendante de l'affichage, accompagnée de tests représentatifs.
 
@@ -109,8 +116,8 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md. 
 
 **Vérifications de réception**
 
-- [ ] Chaque case appartient à une unique croix, y compris pour `(x,y)` négatifs.
-- [ ] Les cellules redevenues blanches ne consomment plus une entrée de stockage.
+- [x] Chaque case appartient à une unique croix, y compris pour `(x,y)` négatifs.
+- [x] Les cellules redevenues blanches ne consomment plus une entrée de stockage.
 
 **Prompt Codex**
 
@@ -118,7 +125,7 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md. 
 Lis les deux documents de référence et réalise uniquement l'étape 02. Implémente le pavage infini virtuel en croix de cinq carrés et la représentation clairsemée d'un monde blanc par défaut. Formalise la convention de coordonnées, la détermination centre/branche et l'identification de la croix propriétaire d'une case ; assure la correction pour x et y négatifs. Fournis les opérations minimales de lecture et de modification de couleur, sans coupler le monde au Canvas. Ajoute des tests d'invariants géométriques, de non-chevauchement et d'aller-retour blanc/noir. Documente brièvement les conventions. N'ajoute ni moteur complet ni fonctions futures.
 ```
 
-- [ ] **Étape 02 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 02 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
 
 ## 03 — Construire le moteur déterministe de la fourmi
 
@@ -210,6 +217,13 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md, 
 
 ## 06 — Visualiser un monde théoriquement sans limite
 
+**Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
+pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
+l'origine, puis les modes de suivi et le cadrage des cases noires côté vue.
+Les déplacements simulés et la navigation tactile complète manquent encore ;
+cette étape reste ouverte.
+Voir [Interface](INTERFACE.md).
+
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.
 
 **Points à réaliser**
@@ -237,6 +251,11 @@ Lis les deux documents et réalise uniquement l'étape 06. Crée une visualisati
 - [ ] **Étape 06 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
 
 ## 07 — Assembler l'interface du laboratoire
+
+**Anticipation visuelle demandée :** la refonte Lanto ajoute Accueil, Jeu, Aide,
+un bandeau commun et un panneau d'options redimensionnable. Les commandes
+scientifiques restent explicitement désactivées en l'absence de moteur.
+Cette étape n'est pas clôturée par le lot de design. Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Transformer les fonctionnalités techniques existantes en une interface agréable et compréhensible : panneau de configuration des règles, commandes du moteur, paliers et cible libre, statut, compteurs, vitesse, contrôles de caméra et aide courte. Empêcher les choix incompatibles ; rendre les contrôles cohérents avec le véritable état du Worker.
 

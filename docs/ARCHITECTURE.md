@@ -3,7 +3,29 @@
 ## Socle actuel
 
 Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
-Il affiche uniquement le statut de chargement du socle. Il ne simule aucune fourmi.
+Il affiche le pavage en croix dans un Canvas 2D navigable. La géométrie et le monde
+clairsemé sont implémentés ; aucune fourmi n'est encore simulée.
+
+`geometry.js` définit les croix, `world.js` stocke les cases noires et
+`coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
+ni du navigateur ni du rendu. `camera.js` calcule les conversions et la navigation
+sans DOM ; `renderer.js` dessine la fenêtre visible et `paving-view.js` relie
+les événements du navigateur au rendu. `view-framing.js` calcule les bornes noires
+courantes et les modes de centrage/suivi sans DOM, horloge ou écriture du monde.
+L'interface ne modifie pas le monde.
+
+`main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
+sans routeur ni rechargement de page. Le Canvas est monté à la première visite
+du jeu puis conservé en mémoire ; son contrôleur suspend les rendus hors de cette
+page. Les réglages et la caméra restent intacts lors de la navigation.
+`panel-state.js` contient les transitions du panneau sans DOM ; `options-panel.js`
+relie son redimensionnement, son repli et le mode mobile aux événements.
+
+La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
+l'utilisateur, sans clôturer ce lot. La refonte visuelle ajoute le recentrage et
+une représentation de Lanto à l'origine et des modes de suivi côté vue. Moteur et navigation tactile
+complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md)
+et le [périmètre de l'interface](INTERFACE.md).
 
 Vite lance le serveur de développement et construit `dist`. Nginx sert ce dossier
 dans l'image de production, sur le port interne 8080, sous l'utilisateur 101.
@@ -24,7 +46,7 @@ de release (`.github`). Aucun module scientifique vide n'est créé.
 | Rendu et interface | Canvas, caméra, formulaires ; aucune décision scientifique                      |
 | Formats            | Validation, rapport Markdown et JSON embarqué ; import/export explicites        |
 
-Ces ensembles seront créés au moment des lots concernés. Les modules communiquent
+Les ensembles encore absents seront créés au moment des lots concernés. Les modules communiquent
 par des données explicites ; leurs interfaces seront définies par les tests.
 Il n'y a pas de moteur Python ou de calcul serveur à maintenir en parallèle.
 
