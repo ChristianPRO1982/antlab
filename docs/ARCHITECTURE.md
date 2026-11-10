@@ -1,0 +1,49 @@
+# Architecture
+
+## Socle actuel
+
+Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
+Il affiche uniquement le statut de chargement du socle. Il ne simule aucune fourmi.
+
+Vite lance le serveur de développement et construit `dist`. Nginx sert ce dossier
+dans l'image de production, sur le port interne 8080, sous l'utilisateur 101.
+Node et les outils npm ne sont pas présents dans l'image finale.
+
+Le dépôt sépare le code (`src`), les tests (`tests`), les fichiers de déploiement
+(`docker`, Dockerfile et Compose), la documentation (`docs`) et le workflow
+de release (`.github`). Aucun module scientifique vide n'est créé.
+
+## Responsabilités futures
+
+| Ensemble           | Responsabilité et dépendances permises                                          |
+| ------------------ | ------------------------------------------------------------------------------- |
+| Géométrie et monde | Coordonnées, croix et état clairsemé ; sans DOM                                 |
+| Règles et moteur   | Transitions déterministes, état et versions ; sans horloge ni rendu             |
+| Mesures            | Indicateurs et maxima exacts ; courbes échantillonnées par étape                |
+| Pilotage et Worker | Commandes, lots de calcul, pause, progression ; même moteur dans les deux modes |
+| Rendu et interface | Canvas, caméra, formulaires ; aucune décision scientifique                      |
+| Formats            | Validation, rapport Markdown et JSON embarqué ; import/export explicites        |
+
+Ces ensembles seront créés au moment des lots concernés. Les modules communiquent
+par des données explicites ; leurs interfaces seront définies par les tests.
+Il n'y a pas de moteur Python ou de calcul serveur à maintenir en parallèle.
+
+Un Web Worker calcule sans bloquer l'affichage. Il reste lié à la durée de vie
+de la page : fermer l'onglet arrête le calcul. Les navigateurs peuvent ralentir
+les onglets masqués ; aucun calcul permanent après fermeture n'est promis.
+
+## Session et fichiers
+
+La session désigne l'état en mémoire de l'onglet. Aucun compte ni identifiant de
+session serveur n'est nécessaire. Recharger ou fermer la page peut perdre l'état.
+
+La sauvegarde de référence sera un fichier `.md` lisible avec un bloc JSON
+versionné contenant les données nécessaires à la reprise. Le JSON reste la
+représentation structurée faisant foi ; un export JSON seul pourra être proposé
+en complément. Ces fonctions seront développées aux étapes 11 et 12.
+
+## Infrastructure
+
+AntLab fournit une image statique et un modèle de stack applicative. Le réseau
+externe `proxy`, Traefik, TLS et DNS sont gérés par l'infrastructure existante.
+L'application ne dépend d'aucune base de données ni autre application du VPS.

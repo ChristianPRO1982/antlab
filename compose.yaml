@@ -1,0 +1,47 @@
+name: antlab
+
+x-local: &local
+  working_dir: /app
+  user: '${LOCAL_UID:-1000}:${LOCAL_GID:-1000}'
+  init: true
+  volumes:
+    - .:/app
+  environment:
+    NPM_CONFIG_CACHE: /tmp/npm-cache
+    PLAYWRIGHT_BROWSERS_PATH: /opt/playwright
+
+services:
+  tools:
+    <<: *local
+    profiles: [tools]
+    build:
+      context: .
+      target: tooling
+    command: npm run lint
+
+  dev:
+    <<: *local
+    profiles: [dev]
+    build:
+      context: .
+      target: tooling
+    ports:
+      - '127.0.0.1:5173:5173'
+
+  test:
+    <<: *local
+    profiles: [test]
+    build:
+      context: .
+      target: browser-tools
+    shm_size: 1gb
+    command: npm run check
+
+  preview:
+    profiles: [preview]
+    image: ${ANTLAB_PREVIEW_IMAGE:-antlab-preview:local}
+    build:
+      context: .
+      target: production
+    ports:
+      - '127.0.0.1:8080:8080'
