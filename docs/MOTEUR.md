@@ -12,23 +12,25 @@ import { LangtonEngine } from './src/engine.js';
 const engine = new LangtonEngine({
   ant: { x: 0, y: 0, orientation: 'north' },
   blackCells: [],
+  rules: { central: 'single-flip', optional: [] },
 });
 engine.step(); // 1
 engine.advance(4); // 5
 engine.getState();
 ```
 
-Les deux propriétés du constructeur sont facultatives : leur omission (ou
+Les trois propriétés du constructeur sont facultatives : leur omission (ou
 `undefined`) utilise les valeurs de cet exemple. Si `ant` est fourni, ses trois
 champs sont obligatoires. Le compteur commence toujours à zéro ; il n'y a pas de
 restauration d'un état avancé dans ce lot.
 
-| Opération                                | Comportement                                                                                                        |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `new LangtonEngine({ ant, blackCells })` | Copie la fourmi et un tableau de cases noires `{ x, y }` ; les doublons désignent une seule case noire.             |
-| `step()`                                 | Effectue une transition complète et renvoie le compteur atteint.                                                    |
-| `advance(count)`                         | Effectue exactement `count` transitions supplémentaires et renvoie le compteur atteint ; zéro ne change rien.       |
-| `getState()`                             | Renvoie `{ ant: { x, y, orientation }, stepCount, blackCells }`, une copie complète indépendante de l'état courant. |
+| Opération                                       | Comportement                                                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `new LangtonEngine({ ant, blackCells, rules })` | Copie la fourmi, les cases noires et la configuration des règles ; les doublons de cases noires désignent une seule case. |
+| `step()`                                        | Effectue une transition complète et renvoie le compteur atteint.                                                          |
+| `advance(count)`                                | Effectue exactement `count` transitions supplémentaires et renvoie le compteur atteint ; zéro ne change rien.             |
+| `getState()`                                    | Renvoie `{ ant: { x, y, orientation }, stepCount, blackCells }`, une copie complète indépendante de l'état courant.       |
+| `getRules()`                                    | Renvoie une copie de la sélection `{ central, optional }`, fixée à la construction.                                       |
 
 Chaque instance possède son monde et son état privés. Modifier les données
 initiales ou une copie retournée n'altère pas la simulation. Les cases noires
@@ -44,13 +46,19 @@ X augmente vers la droite, Y vers le haut. Les orientations sont `north`, `east`
 
 1. Lire la couleur de la case sous la fourmi **avant** toute transformation.
 2. Tourner de 90° : à droite sur blanc, à gauche sur noir.
-3. Inverser uniquement la couleur de la case visitée.
+3. Transformer les couleurs selon les règles sélectionnées, à partir de l'état initial du pas.
 4. Avancer d'une case dans la nouvelle orientation.
 5. Incrémenter le compteur d'une unité.
 
-La même règle s'applique aux centres et aux branches. La case d'arrivée n'est
-transformée qu'à la transition suivante. Toutes les décisions et la destination
-sont calculées et validées avant de modifier l'état du pas.
+Par défaut, centres et branches utilisent l'inversion simple, sans autre effet.
+Le [catalogue de règles](REGLES.md) permet de choisir une autre transformation
+centrale et une permutation facultative des couleurs des branches.
+Les deux règles de majorité acceptent `rules.threshold` parmi 1, 2, 3, 4 ou 5,
+avec 3 par défaut ; `getRules()` retourne aussi leur seuil effectif.
+Sur une branche, seule la case visitée s'inverse. Toutes les décisions, les
+écritures et la destination sont calculées et validées avant de modifier l'état
+du pas. Une case d'arrivée peut être modifiée comme voisine d'un centre ; le
+déplacement lui-même ne déclenche pas de nouvelle application de règle.
 
 Depuis le départ standard, les états de la fourmi sont :
 
@@ -77,15 +85,16 @@ domaine provoquent une `RangeError`.
 Avant un lot, `advance` vérifie que le compteur final demandé reste représentable.
 Un nombre invalide ou ce dépassement est refusé sans calcul ni mutation. Chaque
 pas vérifie aussi sa destination avant d'inverser une case, de tourner ou
-d'incrémenter : une destination hors domaine laisse le pas intact. Si cette
-erreur arrive après des transitions réussies dans un lot, celles-ci restent
+d'incrémenter : une destination ou une croix nécessaire hors domaine laisse le
+pas intact. Si cette erreur arrive après des transitions réussies dans un lot, celles-ci restent
 acquises ; `getState()` donne l'étape réellement atteinte. Aucun arrondi ni
 bouclage n'est effectué aux limites.
 
 Le monde reste limité par la mémoire disponible. Le calcul est synchrone ;
 `advance` sur un grand nombre de pas peut monopoliser son thread. Le Worker et
 le pilotage des calculs longs viendront à l'étape 05. Le moteur n'est pas encore
-relié à l'interface ; le catalogue de règles relève de l'étape 04.
+relié à l'interface. Le catalogue de l'étape 04 est disponible par API ; la
+sélection des règles dans l'interface reste à développer.
 
 ## Vérification via Docker
 

@@ -1,5 +1,6 @@
 import { coordinate } from './coordinates.js';
 import { SparseWorld } from './world.js';
+import { resolveRules } from './rules.js';
 
 // Ordre horaire, dans le repère du monde (Y vers le haut).
 const DIRECTIONS = [
@@ -21,11 +22,16 @@ export class LangtonEngine {
   #y;
   #direction;
   #stepCount = 0;
+  #rules;
 
   constructor(options = {}) {
     requireObject(options, 'La configuration');
-    const { ant = { x: 0, y: 0, orientation: 'north' }, blackCells = [] } =
-      options;
+    const {
+      ant = { x: 0, y: 0, orientation: 'north' },
+      blackCells = [],
+      rules,
+    } = options;
+    this.#rules = resolveRules(rules);
     requireObject(ant, 'La fourmi');
     this.#x = coordinate(ant.x, 'fourmi.x');
     this.#y = coordinate(ant.y, 'fourmi.y');
@@ -56,10 +62,12 @@ export class LangtonEngine {
     const { dx, dy } = DIRECTIONS[direction];
     const x = coordinate(this.#x + dx, 'destination.x');
     const y = coordinate(this.#y + dy, 'destination.y');
+    const changes = this.#rules.prepareChanges(this.#world, this.#x, this.#y);
 
-    // Une transition complète : tourner, inverser, avancer, incrémenter.
+    // Une transition complète : tourner, transformer, avancer, incrémenter.
     this.#direction = direction;
-    this.#world.toggleColor(this.#x, this.#y);
+    for (const cell of changes)
+      this.#world.setColor(cell.x, cell.y, cell.color);
     this.#x = x;
     this.#y = y;
     return ++this.#stepCount;
@@ -86,5 +94,10 @@ export class LangtonEngine {
       stepCount: this.#stepCount,
       blackCells: [...this.#world.blackCells()],
     };
+  }
+
+  getRules() {
+    const configuration = this.#rules.configuration;
+    return { ...configuration, optional: [...configuration.optional] };
   }
 }
