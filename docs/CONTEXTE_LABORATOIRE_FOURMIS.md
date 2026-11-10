@@ -44,14 +44,17 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01 et 02 sont clôturées ; le lot 02 est présent localement sur
-`feat/geometry-world`, sans nouvelle release. Sur demande explicite, une vue du
-pavage avec glissement souris, zoom et repère d'origine anticipe partiellement
+Les étapes 01, 02 et 03 sont clôturées ; le lot 03 ajoute un moteur déterministe
+autonome sur `feat/deterministic-engine`, sans nouvelle release. Sur demande
+explicite, une vue du pavage avec glissement souris, zoom et repère d'origine
+anticipe partiellement
 l'étape 06, qui reste ouverte. Une refonte visuelle ajoute les pages Accueil, Jeu
 et Aide, Lanto et un panneau d'options redimensionnable ; les commandes de
 simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
-La prochaine étape scientifique est le moteur déterministe
-(03). Voir le [bilan du lot 02](RECEPTION_ETAPE_02.md). Ce repère est une
+Le moteur calcule la règle classique de Langton sans affichage ; son intégration
+à l'interface reste future. La prochaine étape scientifique est le catalogue
+de règles (04). Voir les [conventions du moteur](MOTEUR.md) et le
+[bilan du lot 03](RECEPTION_ETAPE_03.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
 ## 1. Origine et intention

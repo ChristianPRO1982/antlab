@@ -3,7 +3,8 @@
 Laboratoire web d'expérimentation autour de la fourmi de Langton.
 
 **État actuel :** pages Accueil, Jeu et Aide, pavage navigable et panneau d'options
-autour de Lanto. La simulation et les fonctions d'expérimentation restent à développer.
+autour de Lanto. Le moteur déterministe de Langton est utilisable sans affichage ;
+son intégration à l'interface et les fonctions d'expérimentation restent à développer.
 
 ## Préparer les commandes locales
 
@@ -109,6 +110,7 @@ DNS, réseau `proxy` et Traefik doivent déjà être configurés par l'infrastru
 - [Index et décisions du projet](docs/README.md)
 - [Développement](docs/DEVELOPPEMENT.md) et [tests TDD](docs/TESTS.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Moteur déterministe et exemple Docker](docs/MOTEUR.md)
 - [Releases](docs/RELEASES.md) et [déploiement Docker](docs/DEPLOIEMENT.md)
 - [Contexte](docs/CONTEXTE_LABORATOIRE_FOURMIS.md) et [roadmap](docs/ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md)
 

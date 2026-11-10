@@ -86,7 +86,7 @@ avec un pas libre et une notation scientifique sous 0,01 pixel par case.
 
 `Lanto-top.webp` est dessiné au centre de la case de la fourmi, tête vers le nord,
 sur 90 % du côté d'une case. Sa position est commune au dessin et au cadrage ;
-elle reste `(0, 0)` dans l'application actuelle, sans moteur. Le repère gris
+elle reste `(0, 0)` dans l'application actuelle, sans liaison au moteur. Le repère gris
 est dessiné ensuite, afin de rester visible. Lanto ne suit pas le pointeur.
 
 Les couleurs du monde restent dans `SparseWorld`. Les réglages, le panneau et
@@ -105,8 +105,10 @@ Les limites numériques sont conservées ; un cadrage refusé affiche son erreur
 Ce lot est une refonte visuelle demandée après l'étape 02. Il anticipe des
 éléments des étapes 06 et 07 **sans les clôturer**. Vitesse, lecture/pause,
 réinitialisation et bouton flottant sont désactivés avec la mention
-« Simulation à venir ». Il n'existe ni moteur, ni Worker, ni règles configurables,
-ni export/import. La prochaine étape scientifique demeure l'étape 03.
+« Simulation à venir ». Le [moteur autonome de l'étape 03](MOTEUR.md) est désormais
+disponible, sans intégration à l'interface. Il n'existe ni Worker, ni règles
+configurables, ni export/import. La prochaine étape scientifique est le catalogue
+de règles (04).
 
 Les tests TDD ont d'abord échoué sur l'absence du panneau, du recentrage et de
 la navigation. Vitest couvre les transitions et limites du panneau ainsi que

@@ -133,10 +133,10 @@ Lis les deux documents de référence et réalise uniquement l'étape 02. Implé
 
 **Points à réaliser**
 
-- [ ] Définir position, orientation, configuration initiale et compteur d’étapes de la fourmi.
-- [ ] Fixer et documenter une transition atomique : lire, tourner, modifier, avancer, incrémenter.
-- [ ] Permettre le calcul exact de 1 ou N transitions sans Canvas ni dépendance au temps réel.
-- [ ] Garantir et tester la répétabilité à état initial et règles identiques.
+- [x] Définir position, orientation, configuration initiale et compteur d’étapes de la fourmi.
+- [x] Fixer et documenter une transition atomique : lire, tourner, modifier, avancer, incrémenter.
+- [x] Permettre le calcul exact de 1 ou N transitions sans Canvas ni dépendance au temps réel.
+- [x] Garantir et tester la répétabilité à état initial et règles identiques.
 
 **Livrable attendu.** Un moteur capable d'exécuter N transitions identiques à partir d'un état initial donné, indépendamment de l'interface.
 
@@ -144,8 +144,8 @@ Lis les deux documents de référence et réalise uniquement l'étape 02. Implé
 
 **Vérifications de réception**
 
-- [ ] Une même configuration initiale produit toujours la même séquence et le même état final.
-- [ ] Le calcul fonctionne sans interface, affichage ni dépendance au temps système.
+- [x] Une même configuration initiale produit toujours la même séquence et le même état final.
+- [x] Le calcul fonctionne sans interface, affichage ni dépendance au temps système.
 
 **Prompt Codex**
 
@@ -153,7 +153,10 @@ Lis les deux documents de référence et réalise uniquement l'étape 02. Implé
 Lis les deux documents et réalise uniquement l'étape 03. Crée un moteur déterministe avec une fourmi (position et orientation), un compteur d'étapes exact et un état initial explicite. Implémente la transition de Langton selon la convention fixée dans la roadmap, avec un ordre d'opérations documenté et stable. Permets d'avancer d'un pas ou de N pas sans aucune dépendance visuelle. Ajoute des tests sur des trajectoires courtes, l'état résultant et la reproductibilité. Conserve l'architecture simple : la gestion des règles centrales, l'interface et le Web Worker viendront ensuite. Rends compte des vérifications exécutées.
 ```
 
-- [ ] **Étape 03 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Étape 03 clôturée :** tous les points et toutes les vérifications ci-dessus sont cochés.
+
+Bilan : [réception de l'étape 03](RECEPTION_ETAPE_03.md),
+[API et conventions du moteur](MOTEUR.md).
 
 ## 04 — Introduire un catalogue de règles élémentaires
 
@@ -219,9 +222,7 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md, 
 
 **Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
 pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
-l'origine, puis les modes de suivi et le cadrage des cases noires côté vue.
-Les déplacements simulés et la navigation tactile complète manquent encore ;
-cette étape reste ouverte.
+l'origine. Le moteur et le suivi manquent encore ; cette étape reste ouverte.
 Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.
