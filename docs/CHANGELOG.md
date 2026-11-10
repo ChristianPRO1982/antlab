@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ChristianPRO1982/antlab/compare/v1.2.0...v1.3.0) (2026-11-10)
+
+
+### Features
+
+* implement rule catalog and majority rules with configurable thresholds ([0d19011](https://github.com/ChristianPRO1982/antlab/commit/0d190110956dbde37d278276ac8fa95920536b4c))
+
 # [1.2.0](https://github.com/ChristianPRO1982/antlab/compare/v1.1.0...v1.2.0) (2026-11-10)
 
 
