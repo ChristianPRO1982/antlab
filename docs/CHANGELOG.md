@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ChristianPRO1982/antlab/compare/v1.1.0...v1.2.0) (2026-11-10)
+
+
+### Features
+
+* implement deterministic Langton engine with initial conditions and atomic transitions ([0cb1d79](https://github.com/ChristianPRO1982/antlab/commit/0cb1d79fef9e1586123e597b329b7adc37e1239a))
+
 # [1.1.0](https://github.com/ChristianPRO1982/antlab/compare/v1.0.0...v1.1.0) (2026-11-10)
 
 
