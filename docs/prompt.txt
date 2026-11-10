@@ -1,0 +1,6 @@
+Voici le projet `antlab`.
+C'est un développement d'un laboratoire de test HTML/JS/CSS basé sur la `fourmi de Langton`.
+
+lis en prends concscience du projet ici `./docs` et particulièrement `docs/CONTEXTE_LABORATOIRE_FOURMIS.md`.
+
+NE MODIFE AUCUN FICHIER
