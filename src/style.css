@@ -114,6 +114,17 @@ figure {
   object-fit: contain;
   filter: drop-shadow(0 0 5px #087bff40);
 }
+.release-link {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #555;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.release-link:hover {
+  color: var(--blue);
+}
 nav {
   display: flex;
   gap: 7px;
@@ -935,6 +946,22 @@ canvas:focus-visible {
 }
 @media (max-height: 600px) {
   .panel-heading {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-header {
+    gap: 8px;
+    padding-inline: 10px;
+  }
+  .site-header nav {
+    gap: 0;
+  }
+  .site-header nav a {
+    padding-inline: 8px;
+  }
+  .header-name {
     display: none;
   }
 }

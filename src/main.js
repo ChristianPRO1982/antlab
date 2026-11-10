@@ -5,6 +5,9 @@ import { mountPaving } from './paving-view.js';
 import { mountOptionsPanel } from './options-panel.js';
 import { createGameSession } from './game-session.js';
 import { mountLaboratory } from './laboratory-controls.js';
+import { updateReleaseLink } from './release-link.js';
+
+void updateReleaseLink(document.querySelector('.release-link'));
 
 const pages = [...document.querySelectorAll('[data-page]')];
 const links = [...document.querySelectorAll('[data-route]')];
