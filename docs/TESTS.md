@@ -25,6 +25,12 @@ l'annulation d'un geste, la restauration de largeur, le clavier et les états
 mobile/ordinateur séparés. La caméra teste aussi le recentrage sans changement
 d'échelle.
 
+Les tests de cadrage vérifient les modes exclusifs, le suivi de positions
+successives, les bornes noires actuelles, leur agrandissement/rétrécissement,
+le monde blanc, les marges, le redimensionnement, le zoom inférieur à un pixel
+et ses limites numériques. Les fixtures modifient positions et couleurs sans
+ajouter de moteur ; le cadrage est vérifié sans mutation du monde.
+
 Les parcours Chromium vérifient le chargement, les couleurs réellement dessinées,
 le repère d'origine, la différence d'épaisseur des frontières, le glissement hors
 zone, la fin/annulation du geste, le zoom avec retour depuis son minimum de
@@ -39,6 +45,13 @@ et du panneau, le défilement des options sans déplacement des commandes, le
 panneau à 15 % et le tiroir mobile. Les commandes de simulation sont vérifiées
 comme désactivées. Les captures `test-results/design-*.png` présentent les pages
 sur ordinateur et mobile.
+
+Les corrections du panneau ajoutent les trois modes de grille, les boutons de
+cadrage alignés, le double-clic/Maj+Entrée, les états bleus et leur annulation par
+navigation manuelle. Une fixture de règles longue vérifie le défilement de la
+seule zone des règles ; affichage, vue et commandes restent fixes. Les captures
+`test-results/cadrage-*.png` montrent le cadrage actif, le bouton flottant en bas
+à droite et la disposition à petite hauteur.
 
 ```sh
 docker compose run --rm test

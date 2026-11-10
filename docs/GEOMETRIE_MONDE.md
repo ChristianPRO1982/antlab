@@ -74,15 +74,19 @@ height, { x, y })` reçoit les dimensions CSS et éventuellement le centre du mo
 affiché (par défaut `(0.5, 0.5)`). Ses opérations sont `screenToWorld`,
 `worldToScreen`, `moveBy(dx, dy)`, `zoomAt(x, y, factor)`, `resize(width, height)`
 et `recenter()` (retour au centre de `(0, 0)` sans changer l'échelle).
-`scale`, `width` et `height` sont en lecture seule.
+`frame(x, y, scale)` fixe un cadrage validé en une opération. `scale`, `width`,
+`height` et `minimumScale` sont en lecture seule. Les [modes automatiques](INTERFACE.md)
+calculent le cadrage sans modifier l'état du monde.
 
 - Vue initiale : 32 pixels CSS par case, centrée sur la case `(0, 0)`.
 - Bouton gauche maintenu et déplacement : translation du pavage avec capture du
   pointeur. Relâchement, annulation et perte de capture terminent le geste.
-- Molette : zoom continu entre 1 et 160 pixels par case, ancré sous le pointeur.
+- Molette : zoom continu, initialement entre 1 et 160 pixels par case, ancré sous le pointeur.
   La page ne défile pas pendant le zoom dans le Canvas. Les deltas exprimés en
   lignes sont convertis à raison de 16 pixels ; ceux en pages utilisent la hauteur
   de la vue. Le facteur vaut `exp(-deltaPixels × 0.001)`, avec delta borné à ±10000.
+  Après un cadrage automatique sous un pixel, `minimumScale` conserve la plus petite
+  échelle atteinte pendant la session ; le zoom manuel utilise cette borne.
 - Fond blanc ; séparations internes gris clair `#cccccc`, 1 pixel ; frontières
   entre croix gris foncé `#555555`, 2 pixels. Chaque arête n'est dessinée qu'une fois.
   Sous 8 pixels par case, les épaisseurs diminuent proportionnellement à l'échelle
@@ -105,7 +109,7 @@ de taille et de densité de pixels reconstruisent le tampon Canvas ; le centre
 du monde affiché est conservé lors du redimensionnement.
 
 Cette vue ne change aucune couleur. La [refonte de l'interface](INTERFACE.md)
-ajoute des interrupteurs visuels, le recentrage et Lanto, fixe à l'origine,
-dessiné au centre de la case à 90 % de son côté. Le moteur, l'édition des cases,
-le déplacement et le suivi de la fourmi et les gestes tactiles complets restent
-à développer.
+ajoute les trois modes de grille, les centrages et suivis, et Lanto, dessiné au
+centre de sa case à 90 % de son côté. Lanto reste à l'origine dans l'application
+actuelle. Le moteur, l'édition des cases, le déplacement effectif de la fourmi
+et les gestes tactiles complets restent à développer.

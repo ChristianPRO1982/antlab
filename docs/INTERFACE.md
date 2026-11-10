@@ -33,10 +33,13 @@ flèches horizontales.
 - Entrée/Espace bascule l'ouverture. Flèche gauche agrandit et flèche droite
   réduit, par pas de deux points de pourcentage. Flèche gauche rouvre un panneau
   replié. Le focus reste sur la poignée.
-- Les options défilent indépendamment. Le bloc vitesse, lecture/pause et
-  réinitialisation reste fixé en bas du panneau.
+- Seule la zone supérieure des règles défile. En l'absence de catalogue, elle
+  indique que les règles seront disponibles avec la simulation. Tous les
+  réglages sont fixes en bas, dans l'ordre affichage, zoom/cadrage puis
+  vitesse/lecture/pause/réinitialisation.
 - Une fois replié, seule la poignée subsiste, avec un bouton lecture/pause
-  flottant au-dessus de la grille. Le bouton disparaît quand le panneau s'ouvre.
+  flottant de 56 × 56 pixels en bas à droite, à 20 pixels des bords de la grille.
+  Le bouton disparaît quand le panneau s'ouvre.
 
 Sous 768 pixels, le panneau devient un tiroir superposé de largeur
 `min(88vw, 400px)`, initialement fermé. Son ouverture ne réduit pas la grille.
@@ -46,22 +49,56 @@ en mémoire, comme la largeur choisie sur ordinateur.
 
 ## Réglages visuels et Lanto
 
-Les options fonctionnelles sont le zoom de 1 à 160 pixels CSS par case, le
-recentrage sans changer l'échelle et quatre interrupteurs activés par défaut :
-quadrillage, contours renforcés, repère d'origine et Lanto. Le zoom affiché est
-synchronisé avec la molette. Désactiver le quadrillage peut conserver les seuls
-contours des croix ; désactiver leur renforcement laisse des traits fins si le
-quadrillage reste activé.
+Le sélecteur Grille propose trois modes exclusifs : **Pas de grille**, **Grille
+simple** (tous les traits fins) et **Grille simple + grille « + »** (contours des
+croix renforcés), choisi par défaut. Le repère d'origine et Lanto disposent de
+deux interrupteurs indépendants, activés par défaut.
 
-`Lanto-top.webp` est dessiné au centre de la case `(0, 0)`, tête vers le nord,
-sur 90 % du côté d'une case. Le repère gris est dessiné ensuite, afin de rester
-visible. Lanto ne suit pas le pointeur et ne se déplace pas encore.
+Les trois boutons de cadrage restent sur une seule ligne, au-dessus des commandes
+de simulation. Sur un panneau étroit ou une petite hauteur, leurs icônes restent
+visibles et leurs noms sont accessibles avec une infobulle.
+
+| Bouton                | Action                                                                  |
+| --------------------- | ----------------------------------------------------------------------- |
+| Centrer le monde      | Centre la case de départ sans modifier le zoom et arrête tout suivi     |
+| Centrer sur la fourmi | Centre sa case ; double-clic ou Maj+Entrée pour la suivre en permanence |
+| Taille max            | Cadre en permanence les cases actuellement noires                       |
+
+Les deux modes automatiques sont exclusifs : bouton bleu et `aria-pressed=true`
+pour le mode actif. Choisir un autre cadrage l'annule. Cliquer de nouveau sur un
+mode automatique actif le conserve. Un glissement effectif ou un zoom manuel
+(molette ou curseur) rend la caméra libre ; un clic sans déplacement sur la grille
+ne désactive pas le suivi. Le mode reste mémorisé entre les pages et au repli du
+panneau. Les redimensionnements le conservent et réappliquent son cadrage.
+
+Taille max utilise le rectangle des carrés noirs entiers, avec une marge de
+24 pixels CSS par côté, limitée au quart de la largeur/hauteur sur une petite
+fenêtre. Il exclut la fourmi, l'origine et les anciennes bornes. Le zoom diminue
+quand le monde grandit et augmente quand il rétrécit, jusqu'à 160 pixels par case.
+Sans case noire, il revient à la vue initiale (case `(0, 0)`, 32 pixels par case)
+en restant actif. Aucun maximum historique ni KPI n'est calculé.
+
+Le minimum du zoom manuel vaut initialement 1 pixel par case. Taille max peut
+descendre plus bas ; la plus petite échelle atteinte est alors conservée comme
+borne basse pour le reste de la session, afin qu'une reprise manuelle ne saute
+pas à un pixel. Le curseur et le zoom affiché sont synchronisés avec la caméra,
+avec un pas libre et une notation scientifique sous 0,01 pixel par case.
+
+`Lanto-top.webp` est dessiné au centre de la case de la fourmi, tête vers le nord,
+sur 90 % du côté d'une case. Sa position est commune au dessin et au cadrage ;
+elle reste `(0, 0)` dans l'application actuelle, sans moteur. Le repère gris
+est dessiné ensuite, afin de rester visible. Lanto ne suit pas le pointeur.
 
 Les couleurs du monde restent dans `SparseWorld`. Les réglages, le panneau et
 la caméra ne font aucun appel en écriture sur ce monde. Le contrôleur de vue
-fournit `setActive`, `setZoom`, `recenter` et `updateOptions`, avec un rappel
-`onScaleChange` pour l'interface. Le masquage du jeu annule le rendu en attente
-et termine le glissement éventuel ; le retour reprend la même caméra.
+fournit `setActive`, `setZoom`, `selectFraming`, `updateOptions` et `refresh`, avec
+les rappels `onScaleChange(scale, minimumScale)` et `onFramingChange(mode)`.
+`refresh` déclenche le rendu après une actualisation du monde ou de la position
+de fourmi passée au montage. `view-framing.js` calcule les cadrages sans DOM ni
+écriture du monde ; les états de suivi sont `free`, `ant` et `world`.
+Le masquage du jeu annule le rendu en attente et termine le glissement éventuel ;
+le retour reprend la même caméra et son mode. Il n'y a aucune boucle au repos.
+Les limites numériques sont conservées ; un cadrage refusé affiche son erreur.
 
 ## Périmètre et vérification
 
@@ -83,7 +120,7 @@ Contrôle local : `docker compose run --rm test`. Le bilan final et les limites
 doivent distinguer les contrôles Chromium des essais sur du matériel réel.
 Aucune publication, modification d'infrastructure ou persistance n'est ajoutée.
 
-### Réception du 10 novembre 2026
+### Réception initiale du 10 novembre 2026
 
 Le contrôle global Docker est réussi : ESLint, Prettier, **39 tests unitaires**
 (dont quatre sur le panneau et six sur la caméra), **12 parcours Chromium** et
@@ -95,3 +132,30 @@ Restent à vérifier sur du matériel réel : confort du redimensionnement, du z
 et du panneau tactile. Les autres navigateurs, l'image Nginx de production et
 le déploiement n'ont pas été testés dans ce lot. Les commandes de simulation
 restent désactivées et aucune étape scientifique supplémentaire n'est clôturée.
+
+### Correctifs de cadrage du 10 novembre 2026
+
+Le TDD a constaté l'absence du module de cadrage et des trois boutons avant
+implémentation. Les neuf nouveaux tests unitaires vérifient les bornes actuelles,
+les modes exclusifs, des positions successives de fourmi, l'agrandissement et le
+rétrécissement du monde, le retour au blanc, les petites fenêtres et les limites
+numériques. Ils vérifient aussi que le cadrage ne modifie pas les cases noires.
+
+Le contrôle global `docker compose run --rm test` est réussi : **48 tests
+unitaires**, **15 parcours Chromium**, ESLint, Prettier et build Vite. Les nouveaux
+parcours contrôlent les trois grilles, l'alignement des boutons, le suivi par
+double-clic et Maj+Entrée, la couleur du mode actif, son arrêt par glissement,
+molette ou curseur, sa conservation entre pages et au redimensionnement, ainsi
+que le bouton flottant de 56 pixels à 20 pixels des bords inférieur et droit.
+
+Les captures du panneau ouvert, replié, mobile, du mode actif et de la petite
+hauteur ont été inspectées. L'essai du recentrage vérifie la conservation exacte
+du zoom avant/après, sans supposer un arrondi du delta de molette du navigateur.
+Le défilement est testé avec du contenu long ajouté seulement dans une fixture
+de règles ; aucun catalogue fictif n'est présent dans l'application.
+
+Lanto reste à l'origine et le monde reste blanc dans l'interface sans moteur.
+Les variations de position et de couleurs sont vérifiées dans les tests de
+cadrage, sans animation scientifique. Le confort sur souris et écran tactile
+réels et les autres navigateurs restent à vérifier. Aucune publication ni
+clôture d'étape scientifique supplémentaire n'a été effectuée.

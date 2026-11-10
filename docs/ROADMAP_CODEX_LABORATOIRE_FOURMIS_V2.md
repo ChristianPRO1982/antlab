@@ -219,7 +219,9 @@ Lis CONTEXTE_LABORATOIRE_FOURMIS.md et ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md, 
 
 **Anticipation visuelle demandée :** le lot 02 puis la refonte Lanto ont ajouté
 pan/zoom, recentrage, options d'affichage et représentation fixe de Lanto à
-l'origine. Le moteur et le suivi manquent encore ; cette étape reste ouverte.
+l'origine, puis les modes de suivi et le cadrage des cases noires côté vue.
+Les déplacements simulés et la navigation tactile complète manquent encore ;
+cette étape reste ouverte.
 Voir [Interface](INTERFACE.md).
 
 **Périmètre.** Afficher les cases visibles, les cases noires et la fourmi dans un Canvas 2D. Fournir zoom, déplacement libre, recentrage et suivi de la fourmi. Dessiner une fenêtre du monde sans jamais imposer de bord au modèle ; limiter le travail de dessin à la région visible.

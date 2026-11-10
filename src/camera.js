@@ -1,4 +1,3 @@
-const MIN_SCALE = 1;
 const MAX_SCALE = 160;
 // Plus conservateur que le monde discret pour conserver une précision sous-pixel.
 const VIEW_LIMIT = 2 ** 40;
@@ -16,6 +15,7 @@ export class Camera {
   #scale;
   #width;
   #height;
+  #minimumScale = 1;
 
   constructor(width, height, { x = 0.5, y = 0.5 } = {}) {
     this.#update(x, y, 32, width, height);
@@ -23,6 +23,9 @@ export class Camera {
 
   get scale() {
     return this.#scale;
+  }
+  get minimumScale() {
+    return this.#minimumScale;
   }
   get width() {
     return this.#width;
@@ -34,7 +37,7 @@ export class Camera {
   #update(x, y, scale, width, height) {
     for (const [name, value] of Object.entries({ x, y, scale, width, height }))
       finite(value, name);
-    if (width <= 0 || height <= 0 || scale < MIN_SCALE || scale > MAX_SCALE) {
+    if (width <= 0 || height <= 0 || scale <= 0 || scale > MAX_SCALE) {
       throw new RangeError('Dimensions ou échelle de caméra invalides.');
     }
     if (
@@ -48,6 +51,7 @@ export class Camera {
     this.#scale = scale;
     this.#width = width;
     this.#height = height;
+    this.#minimumScale = Math.min(this.#minimumScale, scale);
   }
 
   screenToWorld(x, y) {
@@ -82,6 +86,10 @@ export class Camera {
     this.#update(0.5, 0.5, this.#scale, this.#width, this.#height);
   }
 
+  frame(x, y, scale = this.#scale) {
+    this.#update(x, y, scale, this.#width, this.#height);
+  }
+
   zoomAt(x, y, factor) {
     finite(factor, 'facteur de zoom');
     if (factor <= 0)
@@ -89,7 +97,7 @@ export class Camera {
     const anchor = this.screenToWorld(x, y);
     const scale = Math.min(
       MAX_SCALE,
-      Math.max(MIN_SCALE, this.#scale * factor),
+      Math.max(this.#minimumScale, this.#scale * factor),
     );
     this.#update(
       anchor.x - (x - this.#width / 2) / scale,

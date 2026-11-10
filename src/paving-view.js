@@ -1,65 +1,88 @@
 import { Camera } from './camera.js';
-import { drawPaving } from './renderer.js';
+import { drawPaving, GRID_MODES } from './renderer.js';
+import { ViewFraming } from './view-framing.js';
 
 export function mountPaving(
   canvas,
   status,
   world,
-  { sprite = null, onScaleChange = () => {} } = {},
+  {
+    sprite = null,
+    ant = { x: 0, y: 0 },
+    onScaleChange = () => {},
+    onFramingChange = () => {},
+  } = {},
 ) {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Le rendu Canvas 2D est indisponible.');
   const initial = canvas.getBoundingClientRect();
   const camera = new Camera(initial.width, initial.height);
+  const framing = new ViewFraming(camera);
+  const scene = { world, ant };
+  const options = { gridMode: 'crosses', origin: true, lanto: true };
   let frame = null;
   let drag = null;
   let active = true;
-  const options = { grid: true, outlines: true, origin: true, lanto: true };
+
+  function report(message, error = false) {
+    if (status.textContent !== message) status.textContent = message;
+    status.classList.toggle('sr-only', !error);
+    status.classList.toggle('view-error', error);
+  }
+
+  function notify() {
+    onScaleChange(camera.scale, camera.minimumScale);
+    onFramingChange(framing.mode);
+  }
 
   function requestDraw() {
     if (!active || frame !== null) return;
     frame = requestAnimationFrame(() => {
       frame = null;
       const { width, height } = canvas.getBoundingClientRect();
-      if (!active || width <= 0 || height <= 0) return;
-      if (sprite && !sprite.complete) return;
+      if (!active || width <= 0 || height <= 0 || (sprite && !sprite.complete))
+        return;
       if (sprite && sprite.naturalWidth === 0) {
-        status.textContent = 'Impossible de charger l’image de Lanto.';
+        report('Impossible de charger l’image de Lanto.', true);
         return;
       }
-      camera.resize(width, height);
-      const ratio = window.devicePixelRatio || 1;
-      const pixelWidth = Math.round(width * ratio);
-      const pixelHeight = Math.round(height * ratio);
-      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-        canvas.width = pixelWidth;
-        canvas.height = pixelHeight;
-      }
-      // Utiliser les rapports réels après arrondi des dimensions physiques.
-      context.setTransform(
-        pixelWidth / width,
-        0,
-        0,
-        pixelHeight / height,
-        0,
-        0,
-      );
-      drawPaving(context, camera, world, options, sprite);
-      if (status.textContent !== 'Pavage prêt.') {
-        status.textContent = 'Pavage prêt.';
+      try {
+        camera.resize(width, height);
+        framing.apply(scene);
+        const density = window.devicePixelRatio || 1;
+        const pixelWidth = Math.round(width * density);
+        const pixelHeight = Math.round(height * density);
+        if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+          canvas.width = pixelWidth;
+          canvas.height = pixelHeight;
+        }
+        context.setTransform(
+          pixelWidth / width,
+          0,
+          0,
+          pixelHeight / height,
+          0,
+          0,
+        );
+        drawPaving(context, camera, world, options, sprite, ant);
+        notify();
+        report('Pavage prêt.');
+      } catch (error) {
+        if (!(error instanceof RangeError)) throw error;
+        report(error.message, true);
       }
     });
   }
 
-  function navigate(operation) {
+  function navigate(operation, manual = false) {
     try {
       operation();
-      onScaleChange(camera.scale);
+      if (manual) framing.release();
+      notify();
       requestDraw();
     } catch (error) {
-      // Une limite de navigation est visible ; les autres erreurs restent explicites.
       if (!(error instanceof RangeError)) throw error;
-      status.textContent = error.message;
+      report(error.message, true);
     }
   }
 
@@ -70,16 +93,14 @@ export function mountPaving(
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
     canvas.classList.add('dragging');
   });
-
   canvas.addEventListener('pointermove', (event) => {
     if (!drag || event.pointerId !== drag.id) return;
-    navigate(() =>
-      camera.moveBy(event.clientX - drag.x, event.clientY - drag.y),
-    );
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (dx || dy) navigate(() => camera.moveBy(dx, dy), true);
     drag.x = event.clientX;
     drag.y = event.clientY;
   });
-
   function stopDrag(event) {
     if (!drag || event.pointerId !== drag.id) return;
     const id = drag.id;
@@ -87,38 +108,34 @@ export function mountPaving(
     canvas.classList.remove('dragging');
     if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
   }
-  canvas.addEventListener('pointerup', stopDrag);
-  canvas.addEventListener('pointercancel', stopDrag);
-  canvas.addEventListener('lostpointercapture', stopDrag);
-
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    canvas.addEventListener(type, stopDrag);
+  }
   canvas.addEventListener(
     'wheel',
     (event) => {
       event.preventDefault();
+      if (!event.deltaY) return;
       const rect = canvas.getBoundingClientRect();
       const unit =
         event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? rect.height : 1;
       const delta = Math.max(-10000, Math.min(10000, event.deltaY * unit));
-      navigate(() =>
-        camera.zoomAt(
-          event.clientX - rect.left,
-          event.clientY - rect.top,
-          Math.exp(-delta * 0.001),
-        ),
+      navigate(
+        () =>
+          camera.zoomAt(
+            event.clientX - rect.left,
+            event.clientY - rect.top,
+            Math.exp(-delta * 0.001),
+          ),
+        true,
       );
     },
     { passive: false },
   );
 
-  const resizeObserver = new ResizeObserver(() => {
-    const rect = canvas.getBoundingClientRect();
-    if (active && rect.width > 0 && rect.height > 0)
-      navigate(() => camera.resize(rect.width, rect.height));
-  });
+  const resizeObserver = new ResizeObserver(requestDraw);
   resizeObserver.observe(canvas);
   window.addEventListener('resize', requestDraw);
-
-  // Changer d'écran peut modifier la densité sans redimensionner le Canvas CSS.
   function watchDensity() {
     const query = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
     query.addEventListener(
@@ -134,14 +151,16 @@ export function mountPaving(
   if (sprite) {
     sprite.addEventListener('load', requestDraw);
     sprite.addEventListener('error', () => {
-      status.textContent = 'Impossible de charger l’image de Lanto.';
+      report('Impossible de charger l’image de Lanto.', true);
       console.error(status.textContent);
     });
   }
-  onScaleChange(camera.scale);
+  notify();
   requestDraw();
   return {
     setActive(value) {
+      if (typeof value !== 'boolean')
+        throw new TypeError('État de visibilité invalide.');
       active = value;
       if (!active) {
         if (drag) stopDrag({ pointerId: drag.id });
@@ -152,24 +171,32 @@ export function mountPaving(
     setZoom(scale) {
       if (typeof scale !== 'number' || !Number.isFinite(scale))
         throw new TypeError('Zoom invalide.');
-      navigate(() =>
-        camera.zoomAt(
-          camera.width / 2,
-          camera.height / 2,
-          scale / camera.scale,
-        ),
+      navigate(
+        () =>
+          camera.zoomAt(
+            camera.width / 2,
+            camera.height / 2,
+            scale / camera.scale,
+          ),
+        true,
       );
     },
-    recenter() {
-      navigate(() => camera.recenter());
+    selectFraming(action) {
+      navigate(() => framing.select(action, scene));
     },
     updateOptions(changes) {
       for (const [key, value] of Object.entries(changes)) {
-        if (!Object.hasOwn(options, key) || typeof value !== 'boolean')
-          throw new TypeError('Réglage visuel invalide.');
+        const valid =
+          key === 'gridMode'
+            ? GRID_MODES.includes(value)
+            : (key === 'origin' || key === 'lanto') &&
+              typeof value === 'boolean';
+        if (!valid) throw new TypeError('Réglage visuel invalide.');
       }
       Object.assign(options, changes);
       requestDraw();
     },
+    // Point d'entrée des actualisations de scène ; aucune boucle de suivi au repos.
+    refresh: requestDraw,
   };
 }

@@ -131,7 +131,7 @@ test('panneau minimal sans débordement sur petit ordinateur', async ({
   expect((await panel.boundingBox()).width).toBeCloseTo(800 * 0.15 - 14, 0);
   for (const region of [
     page.locator('.panel-heading'),
-    page.getByRole('region', { name: 'Réglages visuels' }),
+    page.getByRole('region', { name: 'Règles du jeu' }),
     page.getByRole('group', { name: 'Commandes de simulation' }),
   ]) {
     expect(
@@ -154,8 +154,7 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
   const before = await image();
   await page.getByLabel('Afficher Lanto').uncheck();
   await expect.poll(image).not.toBe(before);
-  await page.getByLabel('Afficher le quadrillage').uncheck();
-  await page.getByLabel('Renforcer les contours des croix').uncheck();
+  await page.getByLabel('Grille', { exact: true }).selectOption('none');
   await page.getByLabel('Repérer l’origine').uncheck();
   await expect
     .poll(() =>
@@ -167,7 +166,7 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
       }),
     )
     .toBe(true);
-  await page.getByLabel('Afficher le quadrillage').check();
+  await page.getByLabel('Grille', { exact: true }).selectOption('crosses');
   const zoom = page.getByLabel('Zoom', { exact: true });
   await zoom.fill('64');
   const box = await canvas.boundingBox();
@@ -187,15 +186,23 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
   await page.getByRole('navigation').getByRole('link', { name: 'Jeu' }).click();
   await expect.poll(image).toBe(moved);
   await expect(page.getByLabel('Afficher Lanto')).not.toBeChecked();
-  await page.getByRole('button', { name: 'Recentrer la vue' }).click();
-  await expect(zoom).toHaveValue('32');
+  const zoomBeforeCenter = await zoom.inputValue();
+  await page
+    .getByRole('button', { name: 'Centrer le monde', exact: true })
+    .click();
+  await expect(zoom).toHaveValue(zoomBeforeCenter);
   await expect.poll(image).not.toBe(moved);
 });
 
 test('options défilantes et commandes toujours visibles', async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 430 });
   await page.goto('/#/jeu');
-  const scroller = page.getByRole('region', { name: 'Réglages visuels' });
+  const scroller = page.getByRole('region', { name: 'Règles du jeu' });
+  await scroller.evaluate((element) => {
+    const content = document.createElement('div');
+    content.style.height = '1000px';
+    element.append(content);
+  });
   expect(
     await scroller.evaluate(
       (element) => element.scrollHeight > element.clientHeight,

@@ -1,5 +1,7 @@
 import { getCellGeometry } from './geometry.js';
 
+export const GRID_MODES = Object.freeze(['none', 'simple', 'crosses']);
+
 const patternCache = new WeakMap();
 
 function sameCross(a, b) {
@@ -65,14 +67,12 @@ export function drawPaving(
   context,
   camera,
   world,
-  {
-    grid = true,
-    outlines = true,
-    origin: showOrigin = true,
-    lanto = true,
-  } = {},
+  { gridMode = 'crosses', origin: showOrigin = true, lanto = true } = {},
   sprite = null,
+  ant = { x: 0, y: 0 },
 ) {
+  const grid = gridMode !== 'none';
+  const outlines = gridMode === 'crosses';
   const { width, height, scale } = camera;
   context.fillStyle = '#ffffff';
   context.fillRect(0, 0, width, height);
@@ -111,7 +111,7 @@ export function drawPaving(
   }
 
   if (lanto && sprite?.complete && sprite.naturalWidth > 0) {
-    const center = camera.worldToScreen(0.5, 0.5);
+    const center = camera.worldToScreen(ant.x + 0.5, ant.y + 0.5);
     const size = 0.9 * scale;
     context.drawImage(
       sprite,

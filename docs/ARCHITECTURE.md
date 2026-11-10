@@ -10,7 +10,9 @@ clairsemé sont implémentés ; aucune fourmi n'est encore simulée.
 `coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
 ni du navigateur ni du rendu. `camera.js` calcule les conversions et la navigation
 sans DOM ; `renderer.js` dessine la fenêtre visible et `paving-view.js` relie
-les événements du navigateur au rendu. L'interface ne modifie pas le monde.
+les événements du navigateur au rendu. `view-framing.js` calcule les bornes noires
+courantes et les modes de centrage/suivi sans DOM, horloge ou écriture du monde.
+L'interface ne modifie pas le monde.
 
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite
@@ -21,7 +23,7 @@ relie son redimensionnement, son repli et le mode mobile aux événements.
 
 La vue souris et le zoom anticipent une partie de l'étape 06 à la demande de
 l'utilisateur, sans clôturer ce lot. La refonte visuelle ajoute le recentrage et
-une représentation fixe de Lanto à l'origine. Moteur, suivi et navigation tactile
+une représentation de Lanto à l'origine et des modes de suivi côté vue. Moteur et navigation tactile
 complète restent à réaliser. Voir les [conventions et API](GEOMETRIE_MONDE.md)
 et le [périmètre de l'interface](INTERFACE.md).
 

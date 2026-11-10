@@ -9,6 +9,7 @@ const links = [...document.querySelectorAll('[data-route]')];
 const status = document.querySelector('[role="status"]');
 const zoom = document.querySelector('#zoom');
 const zoomValue = document.querySelector('#zoom-value');
+const framingButtons = [...document.querySelectorAll('[data-framing]')];
 const world = new SparseWorld();
 const sprite = new Image();
 sprite.src = lantoTopURL;
@@ -40,14 +41,31 @@ function renderRoute(focus = false) {
       if (!view)
         view = mountPaving(document.querySelector('canvas'), status, world, {
           sprite,
-          onScaleChange(scale) {
+          onScaleChange(scale, minimumScale) {
+            zoom.min = String(minimumScale);
             zoom.value = String(scale);
-            zoomValue.textContent = `${new Intl.NumberFormat('fr', { maximumFractionDigits: 1 }).format(scale)} px / case`;
+            const value =
+              scale < 0.01
+                ? scale.toExponential(2)
+                : new Intl.NumberFormat('fr', {
+                    maximumSignificantDigits: 3,
+                  }).format(scale);
+            zoomValue.textContent = `${value} px / case`;
+          },
+          onFramingChange(mode) {
+            for (const button of framingButtons) {
+              button.setAttribute(
+                'aria-pressed',
+                String(button.dataset.framing === mode),
+              );
+            }
           },
         });
       else view.setActive(true);
     } catch (error) {
       status.textContent = `Impossible d’afficher le pavage : ${error.message}`;
+      status.classList.remove('sr-only');
+      status.classList.add('view-error');
       console.error(error);
     }
   }
@@ -59,9 +77,25 @@ function renderRoute(focus = false) {
 }
 
 zoom.addEventListener('input', () => view?.setZoom(Number(zoom.value)));
-document
-  .querySelector('.recenter')
-  .addEventListener('click', () => view?.recenter());
+for (const button of framingButtons) {
+  button.addEventListener('click', () =>
+    view?.selectFraming(button.dataset.framing),
+  );
+  if (button.dataset.framing === 'ant') {
+    button.addEventListener('dblclick', () =>
+      view?.selectFraming('follow-ant'),
+    );
+    button.addEventListener('keydown', (event) => {
+      if (event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        view?.selectFraming('follow-ant');
+      }
+    });
+  }
+}
+document.querySelector('#grid-mode').addEventListener('change', (event) => {
+  view?.updateOptions({ gridMode: event.target.value });
+});
 for (const input of document.querySelectorAll('[data-option]')) {
   input.addEventListener('change', () =>
     view?.updateOptions({ [input.dataset.option]: input.checked }),

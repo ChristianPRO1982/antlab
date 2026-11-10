@@ -333,7 +333,7 @@ aside {
   overflow: hidden;
 }
 .panel-heading {
-  padding: 25px 24px 17px;
+  padding: 16px 24px 12px;
 }
 .panel-heading .eyebrow {
   font-size: 8px;
@@ -350,26 +350,84 @@ aside {
   overscroll-behavior: contain;
   min-height: 0;
   flex: 1;
-  padding: 0 24px;
+  padding: 12px 24px;
   scrollbar-width: thin;
 }
-fieldset {
-  padding: 20px 0 24px;
-  margin: 0;
-  border: 0;
-  border-top: 1px solid var(--line);
+.options-scroll h3 {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+.rules-placeholder {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.fixed-controls {
+  flex: 0 0 auto;
   min-width: 0;
 }
-legend {
-  float: left;
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 0;
-  font-size: 12px;
-  font-weight: 650;
+.display-controls,
+.view-controls {
+  padding: 12px 24px;
+  border-top: 1px solid var(--line);
 }
-legend + * {
-  clear: both;
+.grid-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+}
+.grid-mode-row select {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 30px;
+  padding: 0 5px;
+  background: #fff;
+  color: #111;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font: inherit;
+}
+.display-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 10px;
+}
+.framing-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+.framing-buttons button {
+  flex-direction: column;
+  padding: 8px 3px;
+  gap: 5px;
+  min-width: 0;
+  line-height: 1.3;
+  font-size: 10px;
+  touch-action: manipulation;
+}
+.framing-buttons button[aria-pressed='true'] {
+  color: var(--blue);
+  border-color: var(--blue);
+  background: #edf5ff;
+}
+.view-controls input {
+  margin: 7px 0 12px;
+}
+.view-error {
+  position: absolute;
+  z-index: 4;
+  bottom: 12px;
+  left: 12px;
+  max-width: min(400px, calc(100% - 24px));
+  padding: 10px 14px;
+  border: 1px solid var(--blue);
+  background: #fff;
+  font-size: 12px;
 }
 .zoom-label {
   display: flex;
@@ -391,13 +449,6 @@ input[type='range'] {
   accent-color: var(--blue);
   height: 14px;
 }
-.range-endpoints {
-  display: flex;
-  justify-content: space-between;
-  color: #999;
-  font-size: 9px;
-  gap: 8px;
-}
 .secondary-action {
   background: #fff;
   border: 1px solid #ddd;
@@ -409,10 +460,6 @@ input[type='range'] {
   justify-content: center;
   gap: 8px;
 }
-.recenter {
-  width: 100%;
-  margin-top: 20px;
-}
 .secondary-action .icon {
   width: 15px;
   height: 15px;
@@ -422,8 +469,7 @@ input[type='range'] {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 17px;
-  font-size: 11px;
+  font-size: 10px;
   cursor: pointer;
 }
 .check-row input {
@@ -433,29 +479,10 @@ input[type='range'] {
   accent-color: var(--blue);
   flex-shrink: 0;
 }
-.check-row:last-child {
-  margin-bottom: 0;
-}
-.panel-tip {
-  border-top: 1px solid var(--line);
-  padding: 22px 0 32px;
-  font-size: 11px;
-  color: #888;
-  line-height: 1.8;
-}
-.panel-tip p:first-child {
-  color: #333;
-  margin-bottom: 7px;
-}
-.panel-tip .text-link {
-  display: inline-block;
-  margin-top: 14px;
-  font-size: 10px;
-}
 .simulation-controls {
   flex: 0 0 auto;
   border-top: 1px solid var(--line);
-  padding: 17px 24px 15px;
+  padding: 12px 24px;
   background: #fff;
 }
 .simulation-heading {
@@ -463,7 +490,7 @@ input[type='range'] {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 13px;
+  margin-bottom: 7px;
 }
 .simulation-heading h3 {
   font-size: 12px;
@@ -481,7 +508,7 @@ input[type='range'] {
   color: #888;
 }
 .simulation-controls input {
-  margin: 8px 0 14px;
+  margin: 5px 0 8px;
 }
 .transport {
   display: flex;
@@ -489,7 +516,7 @@ input[type='range'] {
 }
 .transport button {
   border-radius: 5px;
-  padding: 9px;
+  padding: 7px;
   border: 1px solid #e5e5e5;
   display: flex;
   align-items: center;
@@ -510,14 +537,14 @@ input[type='range'] {
 .simulation-controls p {
   font-size: 9px;
   color: #999;
-  margin-top: 9px;
+  margin-top: 5px;
 }
 .floating-play {
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   display: grid;
   place-items: center;
   border: 1px solid #ddd;
@@ -525,6 +552,10 @@ input[type='range'] {
   background: #ffffffed;
   color: #888;
   box-shadow: 0 0 16px #087bff15;
+}
+.floating-play .icon {
+  width: 26px;
+  height: 26px;
 }
 .help-page {
   max-width: 820px;
@@ -583,6 +614,8 @@ input[type='range'] {
     display: none;
   }
   .options-scroll,
+  .display-controls,
+  .view-controls,
   .simulation-controls {
     padding-inline: 12px;
   }
@@ -593,12 +626,62 @@ input[type='range'] {
   .simulation-heading {
     flex-wrap: wrap;
   }
-  .transport-play span,
-  .recenter .icon {
+  .transport-play span {
     display: none;
   }
-  .recenter {
-    padding-inline: 5px;
+  .grid-mode-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+}
+@container (max-width: 280px) {
+  .framing-label {
+    display: none;
+  }
+  .framing-buttons button {
+    height: 36px;
+  }
+}
+@media (max-height: 600px) {
+  .panel-heading {
+    padding-block: 7px;
+  }
+  .panel-heading .eyebrow {
+    display: none;
+  }
+  .panel-heading h2 {
+    font-size: 20px;
+    margin: 0;
+  }
+  .options-scroll,
+  .display-controls,
+  .view-controls,
+  .simulation-controls {
+    padding-block: 7px;
+  }
+  .framing-label {
+    display: none;
+  }
+  .framing-buttons button {
+    height: 32px;
+    padding-block: 4px;
+  }
+  .display-toggles {
+    margin-top: 6px;
+    gap: 5px 10px;
+  }
+  .view-controls input {
+    margin: 4px 0 7px;
+  }
+  .simulation-heading {
+    margin-bottom: 3px;
+  }
+  .simulation-controls input {
+    margin: 3px 0 5px;
+  }
+  .transport button {
+    padding-block: 5px;
   }
 }
 @media (max-width: 767px) {
@@ -665,9 +748,6 @@ input[type='range'] {
   }
   .handle-arrows {
     display: none;
-  }
-  .floating-play {
-    right: 30px;
   }
   .help-page {
     padding: 40px 28px;
