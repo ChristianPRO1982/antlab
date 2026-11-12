@@ -50,63 +50,46 @@ Pour arrêter : Ctrl+C, puis :
 docker compose --profile dev down
 ```
 
-## 3. Construire et pousser une nouvelle image Docker Hub
+## 3. Construire et pousser l'image
 
-Après une release sur `main`, utiliser un dépôt de travail propre et remplacer
-`1.0.0` par la version publiée. Exécuter sur la machine locale :
-
-```sh
-git fetch --tags origin
-export ANTLAB_VERSION=1.0.0
-git switch --detach "v$ANTLAB_VERSION"
-
-docker compose build tools test
-docker compose run --rm tools npm ci
-docker compose run --rm test
-
-docker build --pull --target production -t "carthographie/antlab:$ANTLAB_VERSION" .
-export ANTLAB_PREVIEW_IMAGE="carthographie/antlab:$ANTLAB_VERSION"
-docker compose --profile preview up --no-build --wait preview
-docker compose run --rm -e TEST_BASE_URL=http://preview:8080 test npm run test:e2e
-```
-
-Si les vérifications passent, publier l'image :
+Après les contrôles locaux, construire une seule image depuis le code à livrer,
+puis la publier sur Docker Hub :
 
 ```sh
-docker compose --profile preview down
-unset ANTLAB_PREVIEW_IMAGE
-docker login
-docker push "carthographie/antlab:$ANTLAB_VERSION"
-git switch -
+docker build -t carthographie/antlab:latest .
+docker push carthographie/antlab:latest
 ```
 
-Construire pour l'architecture du VPS. Chaque release utilise un tag distinct ;
-conserver les anciennes images pour pouvoir revenir à la version précédente.
+Effectuer `docker login` une première fois si nécessaire. L'image doit cibler
+`linux/amd64`, l'architecture du VPS actuel. Ces commandes supposent une machine
+de build de même architecture ; voir [Déploiement](docs/DEPLOIEMENT.md).
+Le tag Docker `latest` est mis à jour manuellement ; les releases GitHub restent
+indépendantes. La prévisualisation Nginx est disponible en vérification complémentaire.
 
-## 4. Mettre à jour et relancer en production
+## 4. Mettre à jour la production
 
-Sur le VPS, après intégration du modèle `compose.prod.yaml` dans
-`/opt/stacks/apps/antlab` via le dépôt d'infrastructure `cARThographie` :
+Sur le VPS, le modèle `compose.prod.yaml` est intégré sous le nom
+`docker-compose.yml` dans `/opt/stacks/apps/antlab`, via le dépôt d'infrastructure
+`cARThographie`. L'image `carthographie/antlab:latest` est fixée dans le YAML.
 
 ```sh
 cd /opt/stacks/apps/antlab
-export ANTLAB_VERSION=1.0.0
-export ANTLAB_IMAGE="carthographie/antlab:$ANTLAB_VERSION"
-
-docker compose -f compose.prod.yaml config --quiet
-docker compose -f compose.prod.yaml pull antlab
-docker compose -f compose.prod.yaml up -d --no-build --force-recreate --wait antlab
-docker compose -f compose.prod.yaml ps
-docker compose -f compose.prod.yaml logs --tail=50 antlab
+docker compose pull antlab
+docker compose up -d --no-build antlab
 ```
 
-Remplacer `1.0.0` par la version poussée à l'étape 3 et adapter le nom du fichier
-Compose si l'intégration utilise une autre convention. Le build de l'image est
-réalisé à l'étape 3 ; ici, Docker récupère cette image et recrée le conteneur.
+Le VPS télécharge l'image déjà construite et remplace le conteneur si elle a
+changé. Aucun build, variable d'image ou arrêt préalable avec `down` n'est requis.
+Vérifier <https://antlab.carthographie.fr>. En cas de problème :
 
-Vérifier <https://antlab.carthographie.fr>. Pour revenir en arrière, définir
-`ANTLAB_IMAGE` avec la version précédente, puis répéter `pull` et `up`.
+```sh
+docker compose ps
+docker compose logs --tail=50 antlab
+```
+
 DNS, réseau `proxy` et Traefik doivent déjà être configurés par l'infrastructure.
+La préparation initiale et le retour à une image précédente sont décrits dans
+[Déploiement](docs/DEPLOIEMENT.md).
 
 ## Documentation
 

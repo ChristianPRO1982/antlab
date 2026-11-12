@@ -39,7 +39,7 @@ services:
 
   preview:
     profiles: [preview]
-    image: ${ANTLAB_PREVIEW_IMAGE:-antlab-preview:local}
+    image: carthographie/antlab:latest
     build:
       context: .
       target: production

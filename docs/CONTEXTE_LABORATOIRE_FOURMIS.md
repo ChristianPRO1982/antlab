@@ -271,7 +271,7 @@ L'interface devra rester abordable pour une personne découvrant Langton, tout e
 - Seul `semantic-release` est automatisé sur `main` : tag `vX.Y.Z`, GitHub Release
   et `docs/CHANGELOG.md`. Aucun workflow de tests, de build/push Docker ou de déploiement.
 - Build, vérification de l'image, push **Docker Hub `carthographie/antlab`** et
-  déploiement restent manuels, depuis un tag de release.
+  déploiement restent manuels, avec l’image Docker `latest`.
 - La production est une image **Nginx statique sans privilèges**, derrière Traefik,
   prévue sur `https://antlab.carthographie.fr`. Le modèle Compose utilise le réseau
   externe `proxy` et n'expose aucun port hôte en production.

@@ -13,50 +13,52 @@ healthcheck HTTP. Aucun volume de données utilisateur n'est nécessaire.
 Les fichiers HTML sont revalidés ; seuls les assets nommés par empreinte reçoivent
 un cache long. Les chemins inconnus répondent 404 : le socle n'est pas un routeur SPA.
 
-## Vérification locale
-
-```sh
-docker compose --profile preview up --build --wait preview
-docker compose run --rm -e TEST_BASE_URL=http://preview:8080 test npm run test:e2e
-docker compose --profile preview down
-```
-
-La prévisualisation expose uniquement `127.0.0.1:8080`. Elle n'utilise ni Traefik
-ni le réseau de production. Les détails des contrôles sont dans [TESTS.md](TESTS.md).
-
 ## Construire et pousser vers Docker Hub
 
-Après une release, partir d'un checkout propre du tag publié. La version ci-dessous
-est un exemple à remplacer ; le dépôt Docker Hub est `carthographie/antlab`.
-L'image doit être accessible au VPS (ou y configurer manuellement l'authentification).
+Après les tests et contrôles locaux, depuis le code à livrer :
 
 ```sh
-git fetch --tags origin
-git switch --detach v1.0.0
-export ANTLAB_VERSION=1.0.0
-export ANTLAB_REPOSITORY=carthographie/antlab
-docker build --target production -t "$ANTLAB_REPOSITORY:$ANTLAB_VERSION" .
-export ANTLAB_PREVIEW_IMAGE="$ANTLAB_REPOSITORY:$ANTLAB_VERSION"
+docker build -t carthographie/antlab:latest .
+docker push carthographie/antlab:latest
+```
+
+Effectuer `docker login` une première fois si nécessaire. Le dépôt Docker Hub
+est `carthographie/antlab` ; l'image doit être accessible au VPS, avec une
+authentification sur celui-ci si elle est privée.
+
+Le VPS actuel utilise `linux/amd64`. Les commandes ci-dessus supposent une
+machine de build de même architecture. Depuis une autre architecture, utiliser
+un builder Buildx configuré pour `linux/amd64` :
+
+```sh
+docker buildx build --platform linux/amd64 -t carthographie/antlab:latest --push .
+```
+
+Cette commande remplace les deux commandes build/push précédentes. Aucun build
+n'est effectué sur le VPS. Les releases GitHub et les tags Git restent indépendants
+de la publication manuelle du tag Docker `latest`.
+
+## Vérification complémentaire de l'image Nginx
+
+La prévisualisation n'est pas une étape obligatoire de chaque mise à jour.
+Elle permet notamment de vérifier un changement de Dockerfile ou de configuration
+Nginx. Après le build local, démarrer exactement l'image construite :
+
+```sh
 docker compose --profile preview up --no-build --wait preview
 docker compose run --rm -e TEST_BASE_URL=http://preview:8080 test npm run test:e2e
+docker compose --profile preview down
 ```
 
-`--wait` attend le healthcheck de l'image ; `--no-build` garantit que le test
-porte sur l'image taguée, sans reconstruction implicite. Vérifier aussi
-<http://localhost:8080>. Ne pas pousser avant les vérifications.
+Pour construire une image destinée uniquement à cet aperçu :
 
 ```sh
-docker compose --profile preview down
-unset ANTLAB_PREVIEW_IMAGE
-docker login
-docker push "$ANTLAB_REPOSITORY:$ANTLAB_VERSION"
-git switch -
+docker compose --profile preview build preview
 ```
 
-Ne pas écraser un tag déjà publié. Conserver des versions précises et le digest
-retourné par le push pour les déploiements. Construire pour l'architecture du VPS ;
-si elle diffère de la machine locale, utiliser Docker Buildx et vérifier l'image
-sur l'architecture cible avant le déploiement.
+Le service utilise lui aussi `carthographie/antlab:latest`. La prévisualisation
+expose uniquement `127.0.0.1:8080`, sans Traefik ni réseau de production. Elle ne
+publie aucune image sur Docker Hub. Voir [TESTS.md](TESTS.md).
 
 ## Contrat avec l'infrastructure
 
@@ -67,36 +69,66 @@ Le dépôt propriétaire du VPS et de Traefik est :
 d'infrastructure distincte, dans la stack `/opt/stacks/apps/antlab`.
 Ce modèle ne configure aucun serveur ni réseau global.
 
-| Élément                  | Valeur attendue                                       |
-| ------------------------ | ----------------------------------------------------- |
-| Domaine                  | `antlab.carthographie.fr`                             |
-| Réseau Docker existant   | `proxy`                                               |
-| Entrée Traefik           | `websecure`                                           |
-| Résolveur TLS existant   | `letsencrypt`                                         |
-| Port interne             | `8080`                                                |
-| Ports publiés sur le VPS | Aucun                                                 |
-| Image                    | `ANTLAB_IMAGE` obligatoire, version précise ou digest |
+| Élément                  | Valeur attendue                                  |
+| ------------------------ | ------------------------------------------------ |
+| Domaine                  | `antlab.carthographie.fr`                        |
+| Réseau Docker existant   | `proxy`                                          |
+| Entrée Traefik           | `websecure`                                      |
+| Résolveur TLS existant   | `letsencrypt`                                    |
+| Port interne             | `8080`                                           |
+| Ports publiés sur le VPS | Aucun                                            |
+| Image                    | `carthographie/antlab:latest`, fixé dans le YAML |
 
 Le domaine DNS doit pointer vers le VPS et Traefik doit pouvoir délivrer son
 certificat. Aucun middleware de connexion ni service de base de données n'est requis.
 
-## Déployer et revenir en arrière
+## Déployer sur le VPS
 
-Dans la future stack VPS, après intégration validée dans le dépôt d'infrastructure :
+Après intégration du modèle dans le dépôt d'infrastructure, le fichier installé
+sur le VPS est `/opt/stacks/apps/antlab/docker-compose.yml`. Il référence
+`carthographie/antlab:latest` en dur, sans variable `ANTLAB_IMAGE` ni fichier `.env`
+pour sélectionner l'image.
+
+Lors de la préparation initiale, valider la configuration :
 
 ```sh
-export ANTLAB_IMAGE=carthographie/antlab:1.0.0
-docker compose -f compose.prod.yaml config --quiet
-docker compose -f compose.prod.yaml pull
-docker compose -f compose.prod.yaml up -d --wait
-docker compose -f compose.prod.yaml ps
+cd /opt/stacks/apps/antlab
+docker compose config --quiet
 ```
 
-Vérifier ensuite <https://antlab.carthographie.fr>, le healthcheck et les journaux.
-Pour revenir en arrière, remettre `ANTLAB_IMAGE` à la version précédente et répéter
-`pull` puis `up -d --wait`. Ne pas utiliser `down` pour remplacer une version.
+Pour le premier démarrage et les mises à jour suivantes :
 
-Le nom exact du fichier Compose dépendra de l'intégration dans le dépôt
-d'infrastructure ; adapter les commandes à cette convention. Ne jamais créer un
-second Traefik, publier un port public ou modifier la configuration globale depuis
-AntLab. Aucun push Docker Hub ni déploiement VPS n'est réalisé par les workflows.
+```sh
+cd /opt/stacks/apps/antlab
+docker compose pull antlab
+docker compose up -d --no-build antlab
+```
+
+Docker récupère l'image publiée et remplace le conteneur si elle a changé.
+Ne pas utiliser `down` pour mettre à jour. Vérifier ensuite
+<https://antlab.carthographie.fr>. Pour examiner l'état et les journaux :
+
+```sh
+docker compose ps
+docker compose logs --tail=50 antlab
+```
+
+## Retour à une image précédente
+
+Le tag `latest` est mutable. Avant une mise à jour, relever le digest de l'image
+actuellement exécutée et le conserver dans le suivi de déploiement :
+
+```sh
+docker inspect "$(docker compose ps -q antlab)" --format '{{.Image}}'
+docker image inspect "$(docker inspect "$(docker compose ps -q antlab)" --format '{{.Image}}')" --format '{{json .RepoDigests}}'
+```
+
+Pour revenir à cette image, remplacer temporairement la ligne `image` de la stack
+par `carthographie/antlab@sha256:...`, avec le digest conservé, puis répéter `pull`
+et `up -d --no-build`. Rétablir `carthographie/antlab:latest` pour reprendre les
+mises à jour courantes.
+
+Ces modifications de stack relèvent du dépôt d'infrastructure `cARThographie`.
+Ne jamais créer un second Traefik, publier un port public ou modifier la
+configuration globale depuis AntLab. Aucun push Docker Hub ni déploiement VPS
+n'est réalisé par les workflows.
