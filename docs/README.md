@@ -20,6 +20,28 @@ La session du jeu se pilote par interface ou API sous Vite et son Worker est inc
 build statique. Les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
+### Correctifs des étapes 01 à 07
+
+Sur `fix/stages-01-07`, les compléments suivants sont documentés :
+
+- Orientation de Lanto vérifiée dans les quatre directions avec le vrai sprite ;
+  aucun changement de l’ordre scientifique ni animation supplémentaire.
+- Suppression des sauts du panneau par réservation de l’étape affichée et de la
+  barre de cible ; compteurs et statut disposés de façon stable.
+- Contours renforcés des croix en bleu `#064894`, teinte ajustée par l’utilisateur ;
+  quadrillage fin toujours gris.
+- Quatre boutons d’affichage indépendants, tous actifs par défaut, sur une seule
+  rangée : grille simple, grille « + », origine et Lanto. Les libellés s’adaptent
+  à la place disponible et les choix sont conservés en mémoire.
+
+Le comportement actuel est décrit dans [Interface](INTERFACE.md), les validations
+et limites dans [Tests](TESTS.md). Le dernier contrôle global a réussi pour les
+1 187 tests unitaires et 61 parcours navigateur sur 62 ; le test complémentaire
+de conservation ajouté ensuite a aussi réussi en exécution ciblée. Le seul échec
+global concerne la fixture de scènes/cadrage déjà identifiée, à traiter séparément.
+Lint, format et build ont réussi. Ces correctifs ne clôturent aucune nouvelle
+étape de roadmap et n’ont donné lieu à aucune publication dans cette session.
+
 | Document                                           | Usage                                    |
 | -------------------------------------------------- | ---------------------------------------- |
 | [Contexte](CONTEXTE_LABORATOIRE_FOURMIS.md)        | Intention et principes scientifiques     |

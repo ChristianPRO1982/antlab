@@ -59,6 +59,16 @@ dialogue et journal (08). Voir [l’interface](INTERFACE.md), les
 [bilan du lot 07](RECEPTION_ETAPE_07.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
 
+**Complément du 12 novembre 2026 — correctifs des étapes 01 à 07 :** la branche
+`fix/stages-01-07` renforce la vérification de l’orientation de Lanto, stabilise
+le panneau pendant les calculs et propose quatre boutons d’affichage indépendants
+sur une rangée. Les quatre options sont actives au départ ; les contours des
+croix utilisent la teinte utilisateur `#064894`. Le moteur et son ordre de
+transition restent inchangés. Les étapes 01 à 07 restent le périmètre utilisable,
+sans démarrage du lot 08. Voir la synthèse dans [l’index](README.md#correctifs-des-étapes-01-à-07),
+le comportement dans [Interface](INTERFACE.md) et les résultats et limites dans
+[Tests](TESTS.md), dont l’échec de cadrage préexistant restant à traiter.
+
 ## 1. Origine et intention
 
 Le projet est inspiré de la **fourmi de Langton** : un automate très simple dont les déplacements et les modifications d'un damier produisent des comportements parfois inattendus.

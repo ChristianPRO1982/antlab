@@ -187,9 +187,9 @@ puis rétrécissent » échoue : zoom obtenu 32 au lieu de 160. Son exécution i
 échoue également ; ce point de cadrage reste à traiter séparément. Le build Vite,
 relancé séparément car le contrôle global s’arrête au test en échec, réussit.
 
-La version sur laquelle l’utilisateur observe le défaut reste à identifier et
-à comparer au dépôt. Aucun test sur le site déployé ni sur un autre navigateur,
-aucune publication et aucune modification des critères de roadmap.
+L’utilisateur a validé ce point après la vérification. Aucun test sur le site
+déployé ni sur un autre navigateur, aucune publication et aucune modification
+des critères de roadmap.
 
 ## Stabilité du panneau pendant les calculs — 12 novembre 2026
 
@@ -229,6 +229,19 @@ Vérification manuelle proposée : lancer à 1 pas/s, observer le pied du pannea
 mettre en pause puis reprendre et atteindre une cible en Maximum ; refaire avec
 le panneau rétréci et sur téléphone. La validation automatisée porte sur Chromium
 sous Vite ; les autres navigateurs et les appareils physiques restent à vérifier.
+
+## Couleur des contours des croix — 12 novembre 2026
+
+Les contours renforcés ont été passés du gris sombre au bleu électrique, puis
+ajustés par l’utilisateur à `#064894`, valeur de référence actuelle. Les traits
+fins restent gris et les épaisseurs sont conservées.
+
+Le test de pavage a d’abord échoué sur l’absence de composante bleue des contours,
+puis les six parcours de `paving.spec.js` ont réussi après modification. Le test
+vérifie les pixels du contour et son épaisseur relative ; sa normalisation tient
+compte de la couleur. Sa requête de version GitHub est simulée pour éviter qu’un
+refus externe HTTP 403 ne fasse échouer ce contrôle graphique. Cette modification
+ne change ni les cellules ni les règles scientifiques.
 
 ## Quatre boutons d’affichage — 12 novembre 2026
 
