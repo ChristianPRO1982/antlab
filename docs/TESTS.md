@@ -155,3 +155,38 @@ validation, vitesse, pause/reprise, annulation, reset, clavier, mobile et pannes
 Ils sont également exécutables contre Nginx. Les fixtures de visualisation
 demandent explicitement la cadence maximale pour leurs longs calculs via API.
 Voir le [bilan du lot 07](RECEPTION_ETAPE_07.md).
+
+## Vérification de l’orientation de Lanto — 12 novembre 2026
+
+Le signalement « Lanto regarde toujours vers le haut » n’est pas reproduit sur
+`fix/stages-01-07` sous Chromium/Vite. Le rendu existant transmet l’orientation
+de l’instantané au Canvas et tourne le sprite, dont la tête pointe vers le haut,
+de 0°, 90°, 180° ou 270°. Aucun correctif de production n’a été nécessaire ;
+l’ordre scientifique et les trajectoires restent inchangés.
+
+Le nouveau parcours de `laboratory.spec.js` compare les silhouettes bleues
+effectivement dessinées à celles du vrai sprite tourné sur un Canvas de référence.
+Il vérifie les cinq premiers pas (les quatre directions), la pause et le retour
+au nord après réinitialisation. La comparaison tolère 3 % de différence sur les
+pixels bleus pour les contours composités sur fond blanc ou noir ; elle exige
+aussi la présence du sprite. Aucun délai ou animation n’est ajouté au produit.
+Les captures `test-results/lanto-orientation-1.png` à
+`test-results/lanto-orientation-4.png` montrent les quatre orientations ; celles
+des deux premiers pas ont été inspectées visuellement.
+
+Le parcours passe sur le code existant. Une désactivation temporaire de la
+rotation le fait échouer au premier déplacement (environ 82 % de différence,
+pour un seuil de 3 %). La rotation d’origine a ensuite été restaurée intégralement.
+Cet échec provoqué vérifie la sensibilité du test ; il ne reproduit pas un défaut
+présent dans le code actuel.
+
+Contrôles exécutés via Docker : ESLint et Prettier réussis, 1 187 tests Vitest
+réussis, 56 parcours Chromium réussis sur 57, dont le nouveau parcours. Le test
+existant « scènes remplacées atomiquement et cadrage des bornes qui grandissent
+puis rétrécissent » échoue : zoom obtenu 32 au lieu de 160. Son exécution isolée
+échoue également ; ce point de cadrage reste à traiter séparément. Le build Vite,
+relancé séparément car le contrôle global s’arrête au test en échec, réussit.
+
+La version sur laquelle l’utilisateur observe le défaut reste à identifier et
+à comparer au dépôt. Aucun test sur le site déployé ni sur un autre navigateur,
+aucune publication et aucune modification des critères de roadmap.

@@ -15,6 +15,103 @@ async function stepCount(page, count) {
   });
 }
 
+test('le vrai sprite suit les quatre orientations, la pause et le reset', async ({
+  page,
+}) => {
+  await open(page);
+  await page.getByLabel('Zoom', { exact: true }).fill('128');
+  await page.getByLabel('Grille', { exact: true }).selectOption('none');
+  await page.getByLabel('Repérer l’origine').uncheck();
+  await page
+    .getByRole('button', { name: 'Centrer sur la fourmi', exact: true })
+    .dblclick();
+
+  async function expectSprite(count, direction) {
+    await stepCount(page, count);
+    await expect
+      .poll(() =>
+        page.evaluate(async (direction) => {
+          const canvas = document.querySelector('canvas');
+          const url = performance
+            .getEntriesByType('resource')
+            .find(
+              ({ name, initiatorType }) =>
+                initiatorType === 'img' && /Lanto-top.*\.webp/.test(name),
+            )?.name;
+          if (!url) return 1;
+          const sprite = new Image();
+          sprite.src = url;
+          await sprite.decode();
+          const expected = document.createElement('canvas');
+          expected.width = canvas.width;
+          expected.height = canvas.height;
+          const context = expected.getContext('2d');
+          const box = canvas.getBoundingClientRect();
+          context.fillStyle = 'white';
+          context.fillRect(0, 0, expected.width, expected.height);
+          context.setTransform(
+            canvas.width / box.width,
+            0,
+            0,
+            canvas.height / box.height,
+            canvas.width / 2,
+            canvas.height / 2,
+          );
+          context.rotate((direction * Math.PI) / 2);
+          const size = 0.9 * Number(document.querySelector('#zoom').value);
+          context.drawImage(sprite, -size / 2, -size / 2, size, size);
+          const actual = canvas
+            .getContext('2d')
+            .getImageData(0, 0, canvas.width, canvas.height).data;
+          const reference = context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          ).data;
+          const blue = (pixels, i) =>
+            pixels[i + 2] > pixels[i] + 30 &&
+            pixels[i + 2] > pixels[i + 1] + 10;
+          let mismatch = 0;
+          let total = 0;
+          for (let i = 0; i < actual.length; i += 4) {
+            const a = blue(actual, i);
+            const b = blue(reference, i);
+            if (a || b) total++;
+            if (a !== b) mismatch++;
+          }
+          return total ? mismatch / total : 1;
+        }, direction),
+      )
+      .toBeLessThan(0.03);
+  }
+
+  await expectSprite(0, 0);
+  for (let step = 1; step <= 5; step++) {
+    await page.locator('[data-action="step"]').click();
+    await expectSprite(step, [0, 1, 2, 3, 0, 3][step]);
+    if (step <= 4)
+      await page.locator('canvas').screenshot({
+        path: `test-results/lanto-orientation-${step}.png`,
+      });
+  }
+  await page.getByLabel('Vitesse d’exécution').selectOption('1');
+  await page.locator('[data-action="play"]').click();
+  await page.locator('[data-action="play"]').click();
+  await expect(page.locator('#simulation-status')).toHaveText('En pause');
+  const count = Number(await page.locator('#step-count').textContent());
+  const reference = new LangtonEngine();
+  reference.advance(count);
+  await expectSprite(
+    count,
+    ['north', 'east', 'south', 'west'].indexOf(
+      reference.getState().ant.orientation,
+    ),
+  );
+  await page.locator('[data-action="reset"]').click();
+  await expectSprite(0, 0);
+});
+
 test('règles, incompatibilités, premiers pas et réinitialisation', async ({
   page,
 }) => {
