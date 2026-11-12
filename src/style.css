@@ -835,15 +835,25 @@ input[type='range'] {
   overflow-wrap: anywhere;
 }
 .simulation-counts {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 3px 12px;
   font-size: 10px;
 }
+.simulation-counts span {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
 .simulation-counts output {
   font-weight: 650;
+  font-variant-numeric: tabular-nums;
 }
-#displayed-step:empty,
+/* Réserver le retard de dessin, même lorsque le Canvas a rattrapé le moteur. */
+#displayed-step {
+  min-block-size: 1lh;
+  font-variant-numeric: tabular-nums;
+}
 #simulation-error:empty,
 #rules-notice:empty,
 #target-error:empty,
@@ -857,6 +867,10 @@ input[type='range'] {
 }
 #rules-lock {
   color: #333;
+}
+.target-progress-slot {
+  display: flow-root;
+  min-block-size: 16px;
 }
 #target-progress {
   display: block;
@@ -902,12 +916,19 @@ canvas:focus-visible {
     padding-block: 1px;
   }
 }
-@container (max-width: 220px) {
+@container (max-width: 280px) {
   .simulation-counts {
-    display: block;
+    grid-template-columns: minmax(0, 1fr);
   }
-  .simulation-counts span {
-    display: block;
+}
+@container (max-width: 220px) {
+  #displayed-step {
+    min-block-size: 2lh;
+  }
+  .simulation-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
   }
   .transport {
     gap: 3px;
@@ -947,6 +968,16 @@ canvas:focus-visible {
 @media (max-height: 600px) {
   .panel-heading {
     display: none;
+  }
+  @container (min-width: 221px) {
+    .simulation-counts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .simulation-counts span {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 4px;
+    }
   }
 }
 

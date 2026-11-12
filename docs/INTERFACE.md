@@ -205,6 +205,14 @@ Le statut, le compteur calculé et les cases noires proviennent d’une progress
 réelle. Une barre indique le numéro atteint sur la cible absolue ; son texte
 accessible précise aussi l’étape de départ. L’étape dessinée est indiquée
 séparément lorsqu’elle diffère du calcul. Aucun maximum ni nouveau KPI n’est ajouté.
+Son emplacement reste réservé même lorsqu’elle est vide : une ligne sur panneau
+large, deux sous 220 pixels de largeur intérieure du panneau. La barre de cible
+possède aussi un emplacement permanent ; elle reste masquée hors calcul ciblé.
+Ces réservations empêchent les sauts du panneau quand le Canvas rattrape le moteur
+ou lorsqu’une tâche commence. Les compteurs utilisent des chiffres tabulaires,
+des nombres sans retour à la ligne et deux colonnes, empilées sous 280 pixels.
+À faible hauteur, libellés et nombres partagent une ligne lorsque la largeur le
+permet. Sur panneau étroit, le statut reste sous le titre pour stabiliser sa hauteur.
 Une erreur utilisateur reste près du champ ; une erreur scientifique ou une panne
 reste visible. En panne, le dernier compteur connu est conservé, ou `—` si le
 Worker n’a jamais répondu. Seul un reset explicite crée un nouveau Worker.

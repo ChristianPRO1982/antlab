@@ -190,3 +190,42 @@ relancé séparément car le contrôle global s’arrête au test en échec, ré
 La version sur laquelle l’utilisateur observe le défaut reste à identifier et
 à comparer au dépôt. Aucun test sur le site déployé ni sur un autre navigateur,
 aucune publication et aucune modification des critères de roadmap.
+
+## Stabilité du panneau pendant les calculs — 12 novembre 2026
+
+Le scintillement provenait de la hauteur variable du pied du panneau : la ligne
+« Étape affichée » apparaissait lorsque le Canvas était en retard, puis
+disparaissait à son rattrapage. La barre de cible ajoutait également de la hauteur,
+y compris lors d’un pas unique. Leurs emplacements sont désormais réservés.
+Les compteurs possèdent une disposition stable et des chiffres tabulaires ; les
+nombres restent sur une ligne jusqu’à `Number.MAX_SAFE_INTEGER`. Le statut est
+empilé sous le titre sur panneau étroit et les compteurs sont compacts à faible
+hauteur. Le moteur, les messages Worker et les cadences sont inchangés.
+
+Les quatre nouveaux parcours de `panel-stability.spec.js` ont d’abord échoué
+avant correction : déplacements des trois sections fixes de 34,94 pixels sur
+panneau large, mobile et faible hauteur, et de 58,44 pixels sur panneau étroit.
+Ils retiennent une vraie réponse d’instantané du Worker par une promesse de test,
+puis la libèrent explicitement : le retard ne dépend pas de la vitesse du CPU.
+Les positions sont mesurées à chaque frame, pendant le retard et le rattrapage.
+
+Après correction, les variations sont nulles dans les quatre dispositions :
+1440 × 900 à 28 %, 1000 × 800 à 15 %, mobile 390 × 700 et 1000 × 430 à 28 %.
+Les mêmes parcours vérifient lecture lente, pause/reprise, annulation et cible
+exacte à 5 000 en cadence Maximum. Une fixture modifie uniquement les textes
+des compteurs jusqu’à l’entier sûr maximal et vérifie stabilité, absence de
+débordement horizontal et maintien des commandes dans le panneau visible.
+Les captures `test-results/panneau-stable-*.png` sont produites ; celles du
+panneau étroit et de la faible hauteur ont été inspectées visuellement.
+
+Contrôles via Docker : ESLint et Prettier réussis, 1 187 tests Vitest réussis,
+60 parcours Chromium réussis sur 61, dont les quatre nouveaux. Le test existant
+de scènes/cadrage (`visualization.spec.js:90`), déjà en échec avant ce correctif,
+échoue encore : étape affichée 0 au lieu de la scène injectée à 11. Sa fixture
+reste à traiter séparément. Le contrôle global s’arrête donc avant le build ;
+le build Vite exécuté séparément réussit. Les critères de roadmap sont inchangés.
+
+Vérification manuelle proposée : lancer à 1 pas/s, observer le pied du panneau,
+mettre en pause puis reprendre et atteindre une cible en Maximum ; refaire avec
+le panneau rétréci et sur téléphone. La validation automatisée porte sur Chromium
+sous Vite ; les autres navigateurs et les appareils physiques restent à vérifier.
