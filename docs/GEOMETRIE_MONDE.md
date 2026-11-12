@@ -121,7 +121,7 @@ des bords droit/bas. Cet aperçu de présence évite leur disparition à très f
 échelle, sans modifier leurs coordonnées ni leur couleur dans le modèle.
 
 Cette vue ne change aucune couleur. La [refonte de l'interface](INTERFACE.md)
-ajoute les trois modes de grille, les centrages et suivis, et Lanto, dessiné au
+ajoute les deux grilles indépendantes, les centrages et suivis, et Lanto, dessiné au
 centre de sa case à 90 % de son côté, orienté selon l'état du moteur. La
 [synchronisation visuelle](VISUALISATION.md) reçoit des copies cohérentes du
 Worker, sans dépendance scientifique envers la caméra ou le rendu. Les gestes

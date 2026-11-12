@@ -98,7 +98,7 @@ et le panneau conservent leur défilement.
 
 Une navigation manuelle libère les modes automatiques. Les boutons de cadrage,
 leurs double-clics et raccourcis clavier conservent leur comportement existant.
-Le panneau mobile, les options visuelles et les trois modes de grille restent
+Le panneau mobile, les options visuelles et les deux grilles indépendantes restent
 décrits dans [Interface](INTERFACE.md).
 
 ## Visibilité et ressources

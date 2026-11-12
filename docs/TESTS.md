@@ -229,3 +229,26 @@ Vérification manuelle proposée : lancer à 1 pas/s, observer le pied du pannea
 mettre en pause puis reprendre et atteindre une cible en Maximum ; refaire avec
 le panneau rétréci et sur téléphone. La validation automatisée porte sur Chromium
 sous Vite ; les autres navigateurs et les appareils physiques restent à vérifier.
+
+## Quatre boutons d’affichage — 12 novembre 2026
+
+Le sélecteur exclusif et les cases à cocher sont remplacés par quatre boutons
+indépendants, tous actifs au départ. Les options visuelles booléennes sont
+`grid`, `outlines`, `origin` et `lanto`. Les contours seuls sont désormais
+possibles ; la teinte utilisateur `#064894` est conservée.
+
+Le parcours de `display-buttons.spec.js` a d’abord échoué sur l’absence des
+quatre boutons. Après implémentation, les deux parcours vérifient les quatre
+combinaisons par les pixels gris/bleus, l’activation clavier, les états accessibles,
+l’alignement bureau/mobile/faible hauteur, la conservation après navigation et
+reset, le refus d’un booléen invalide et l’absence de modification de l’état
+scientifique. Les anciens appels et parcours de grille sont adaptés.
+
+Contrôles Docker : lint, format et 1 187 tests Vitest réussis ; 61 parcours
+Chromium sur 62 réussis dans la suite complète, dont les quatre de stabilité du
+panneau. Le seul échec reste le test de cadrage préexistant (scène injectée à 11
+remplacée par l’étape 0). Le test complémentaire de conservation, ajouté ensuite,
+et le parcours d’affichage final passent ensemble (2/2). Build Vite séparé réussi.
+Captures produites dans `test-results/affichage-*.png`. La validation reste limitée
+à Chromium ; confort sur appareils physiques et autres navigateurs à vérifier.
+Aucune publication ni modification des critères de roadmap.

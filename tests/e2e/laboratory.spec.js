@@ -20,8 +20,13 @@ test('le vrai sprite suit les quatre orientations, la pause et le reset', async 
 }) => {
   await open(page);
   await page.getByLabel('Zoom', { exact: true }).fill('128');
-  await page.getByLabel('Grille', { exact: true }).selectOption('none');
-  await page.getByLabel('Repérer l’origine').uncheck();
+  await page
+    .getByRole('button', { name: 'Grille simple', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Grille « + »', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Repérer l’origine', exact: true })
+    .click();
   await page
     .getByRole('button', { name: 'Centrer sur la fourmi', exact: true })
     .dblclick();

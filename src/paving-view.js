@@ -1,5 +1,5 @@
 import { Camera } from './camera.js';
-import { drawPaving, GRID_MODES } from './renderer.js';
+import { drawPaving } from './renderer.js';
 import { ViewFraming } from './view-framing.js';
 import { PointerGestures } from './navigation-gestures.js';
 import { createScene } from './scene.js';
@@ -22,7 +22,7 @@ export function mountPaving(
   const camera = new Camera(initial.width, initial.height);
   const framing = new ViewFraming(camera);
   let scene = { world, ant, stepCount: null };
-  const options = { gridMode: 'crosses', origin: true, lanto: true };
+  const options = { grid: true, outlines: true, origin: true, lanto: true };
   let frame = null;
   let drawnStepCount = null;
   let active = true;
@@ -277,10 +277,8 @@ export function mountPaving(
       assertOpen();
       for (const [key, value] of Object.entries(changes)) {
         const valid =
-          key === 'gridMode'
-            ? GRID_MODES.includes(value)
-            : (key === 'origin' || key === 'lanto') &&
-              typeof value === 'boolean';
+          ['grid', 'outlines', 'origin', 'lanto'].includes(key) &&
+          typeof value === 'boolean';
         if (!valid) throw new TypeError('Réglage visuel invalide.');
       }
       Object.assign(options, changes);

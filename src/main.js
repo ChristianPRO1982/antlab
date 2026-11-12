@@ -48,7 +48,7 @@ export async function getGameSession() {
           gameLifecycle.abort();
           laboratory?.dispose();
           for (const control of document.querySelectorAll(
-            '#zoom, #grid-mode, [data-framing], [data-option]',
+            '#zoom, [data-framing], [data-option]',
           ))
             control.disabled = true;
         },
@@ -145,13 +145,12 @@ for (const button of framingButtons) {
     });
   }
 }
-listenGame(document.querySelector('#grid-mode'), 'change', (event) => {
-  view?.updateOptions({ gridMode: event.target.value });
-});
-for (const input of document.querySelectorAll('[data-option]')) {
-  listenGame(input, 'change', () =>
-    view?.updateOptions({ [input.dataset.option]: input.checked }),
-  );
+for (const button of document.querySelectorAll('[data-option]')) {
+  listenGame(button, 'click', () => {
+    const enabled = button.getAttribute('aria-pressed') !== 'true';
+    view?.updateOptions({ [button.dataset.option]: enabled });
+    button.setAttribute('aria-pressed', String(enabled));
+  });
 }
 window.addEventListener('hashchange', () => renderRoute(true));
 listenGame(document, 'visibilitychange', updateVisibility);

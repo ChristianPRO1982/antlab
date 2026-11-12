@@ -41,8 +41,13 @@ test('session unique, cinq premiers pas affichés et suivi de Lanto', async ({
   test.skip(external, 'Pilotage source par API sous Vite.');
   await openSession(page);
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
-  await page.getByLabel('Grille', { exact: true }).selectOption('none');
-  await page.getByLabel('Repérer l’origine').uncheck();
+  await page
+    .getByRole('button', { name: 'Grille simple', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Grille « + »', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Repérer l’origine', exact: true })
+    .click();
   const reference = new LangtonEngine();
   await page
     .getByRole('button', { name: 'Centrer sur la fourmi', exact: true })
@@ -409,7 +414,11 @@ test('le monde reste visible si le chargement de Lanto est retardé puis échoue
       batchSize: 1000,
       batchDelayMs: 0,
     });
-    window.sceneSession.view.updateOptions({ gridMode: 'none', origin: false });
+    window.sceneSession.view.updateOptions({
+      grid: false,
+      outlines: false,
+      origin: false,
+    });
     await window.sceneSession.simulation.advance(5);
   });
   await expect

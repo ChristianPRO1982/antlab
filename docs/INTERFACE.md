@@ -48,11 +48,19 @@ en mémoire, comme la largeur choisie sur ordinateur.
 
 ## Réglages visuels et Lanto
 
-Le sélecteur Grille propose trois modes exclusifs : **Pas de grille**, **Grille
-simple** (tous les traits fins) et **Grille simple + grille « + »** (contours des
-croix renforcés en bleu électrique moyen foncé `#0860c4`), choisi par défaut.
-Les traits fins restent gris. Le repère d'origine et Lanto disposent de
-deux interrupteurs indépendants, activés par défaut.
+Quatre boutons indépendants occupent une seule rangée : **Grille simple**,
+**Grille « + »**, **Repérer l’origine** et **Afficher Lanto**. Tous sont actifs
+par défaut. Les deux grilles peuvent être affichées ensemble, séparément ou
+masquées toutes les deux. Les contours « + » conservent le bleu `#064894` choisi
+par l’utilisateur ; les traits fins restent gris.
+
+Les boutons actifs ont un fond et une bordure bleus et `aria-pressed="true"`.
+Leurs icônes sont accompagnées de libellés sur deux lignes réservées au-delà de
+380 pixels de largeur de panneau. Sur panneau plus étroit ou à faible hauteur,
+seules les icônes restent visibles, avec infobulles et noms accessibles. Les
+choix sont conservés pendant la navigation et la réinitialisation scientifique.
+L’API visuelle `updateOptions` accepte les booléens `grid`, `outlines`, `origin`
+et `lanto` ; ils remplacent l’ancien mode exclusif `gridMode`.
 
 Les trois boutons de cadrage restent sur une seule ligne, au-dessus des commandes
 de simulation. Sur un panneau étroit ou une petite hauteur, leurs icônes restent

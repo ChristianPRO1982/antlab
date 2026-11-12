@@ -17,6 +17,13 @@
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+      <symbol id="grid-icon" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" />
+        <path d="M9 3v18M15 3v18M3 9h18M3 15h18" />
+      </symbol>
+      <symbol id="cross-icon" viewBox="0 0 24 24">
+        <path d="M8 2h8v6h6v8h-6v6H8v-6H2V8h6Z" />
+      </symbol>
       <symbol id="arrow" viewBox="0 0 24 24">
         <path d="M4 12h15m-6-6 6 6-6 6" />
       </symbol>
@@ -228,31 +235,50 @@
                   role="group"
                   aria-label="Affichage"
                 >
-                  <div class="grid-mode-row">
-                    <label for="grid-mode">Grille</label>
-                    <select id="grid-mode">
-                      <option value="none">Pas de grille</option>
-                      <option value="simple">Grille simple</option>
-                      <option value="crosses" selected>
-                        Grille simple + grille « + »
-                      </option>
-                    </select>
-                  </div>
-                  <div class="display-toggles">
-                    <label class="check-row"
-                      ><input
-                        type="checkbox"
-                        data-option="origin"
-                        checked
-                      /><span>Repérer l’origine</span></label
+                  <div class="display-buttons">
+                    <button
+                      class="secondary-action"
+                      data-option="grid"
+                      aria-label="Grille simple"
+                      title="Grille simple"
+                      aria-pressed="true"
                     >
-                    <label class="check-row"
-                      ><input
-                        type="checkbox"
-                        data-option="lanto"
-                        checked
-                      /><span>Afficher Lanto</span></label
+                      <svg class="icon" aria-hidden="true">
+                        <use href="#grid-icon" /></svg
+                      ><span class="display-label">Grille simple</span></button
+                    ><button
+                      class="secondary-action"
+                      data-option="outlines"
+                      aria-label="Grille « + »"
+                      title="Grille « + »"
+                      aria-pressed="true"
                     >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="#cross-icon" /></svg
+                      ><span class="display-label">Grille « + »</span></button
+                    ><button
+                      class="secondary-action"
+                      data-option="origin"
+                      aria-label="Repérer l’origine"
+                      title="Repérer l’origine"
+                      aria-pressed="true"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="#target" /></svg
+                      ><span class="display-label"
+                        >Repérer l’origine</span
+                      ></button
+                    ><button
+                      class="secondary-action"
+                      data-option="lanto"
+                      aria-label="Afficher Lanto"
+                      title="Afficher Lanto"
+                      aria-pressed="true"
+                    >
+                      <svg class="icon" aria-hidden="true">
+                        <use href="#ant-target" /></svg
+                      ><span class="display-label">Afficher Lanto</span>
+                    </button>
                   </div>
                 </div>
                 <div
