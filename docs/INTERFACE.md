@@ -50,7 +50,8 @@ en mémoire, comme la largeur choisie sur ordinateur.
 
 Le sélecteur Grille propose trois modes exclusifs : **Pas de grille**, **Grille
 simple** (tous les traits fins) et **Grille simple + grille « + »** (contours des
-croix renforcés), choisi par défaut. Le repère d'origine et Lanto disposent de
+croix renforcés en bleu électrique moyen foncé `#0860c4`), choisi par défaut.
+Les traits fins restent gris. Le repère d'origine et Lanto disposent de
 deux interrupteurs indépendants, activés par défaut.
 
 Les trois boutons de cadrage restent sur une seule ligne, au-dessus des commandes

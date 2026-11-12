@@ -53,7 +53,7 @@ function gridPattern(context, scale, density, grid, outlines) {
   if (grid) tileContext.stroke(inner);
   if (outlines) {
     tileContext.lineWidth = Math.min(2, scale / 4);
-    tileContext.strokeStyle = '#555555';
+    tileContext.strokeStyle = '#064894';
   }
   if (grid || outlines) tileContext.stroke(outer);
   const pattern = context.createPattern(tile, 'repeat');
