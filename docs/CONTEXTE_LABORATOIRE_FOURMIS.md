@@ -69,6 +69,21 @@ sans démarrage du lot 08. Voir la synthèse dans [l’index](README.md#correcti
 le comportement dans [Interface](INTERFACE.md) et les résultats et limites dans
 [Tests](TESTS.md), dont l’échec de cadrage préexistant restant à traiter.
 
+**Complément du 13 novembre 2026 — préparation documentaire du lot 07 bis :**
+l'édition manuelle des cases est **prévue, non implémentée**. Ce lot
+complémentaire s'insère avant le lot 08, sans renuméroter la roadmap. Il prévoit
+le clic d'inversion, le tracé continu et le remplissage de rectangle noir, blanc
+ou aléatoire reproductible (probabilité de noir de 1 à 99 %, défaut 50 %, graine
+visible initialement 1). L'édition sera disponible à l'arrêt ou en marche à
+1, 10 ou 100 pas/s demandés, avec calcul continu, écritures dans le Worker entre
+lots et journal minimal des interventions à étape exacte. Le plafond sera de
+100 000 cases par rectangle ou tracé ; Réinitialiser effacera dessin et journal
+pour revenir au blanc. Voir le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+et la [spécification d'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu).
+Les étapes 01 à 07 restent le périmètre implémenté ; la prochaine étape non
+clôturée est désormais 07 bis. Aucune réception historique n'est modifiée et
+le lot 08 n'est pas commencé.
+
 ## 1. Origine et intention
 
 Le projet est inspiré de la **fourmi de Langton** : un automate très simple dont les déplacements et les modifications d'un damier produisent des comportements parfois inattendus.

@@ -99,6 +99,68 @@ permettent les interruptions entre lots. Le Worker alimente maintenant le
 [Canvas synchronisé](VISUALISATION.md). Les commandes et règles sont maintenant
 accessibles dans le [poste de pilotage](INTERFACE.md).
 
+## Interventions manuelles — lot 07 bis prévu
+
+**Contrat prévu, non implémenté.** L'API actuelle décrite ci-dessus reste inchangée.
+Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+prévoit des opérations d'inversion d'un ensemble de cases et de remplissage d'un
+rectangle noir, blanc ou aléatoire. Elles modifieront le monde dans le moteur,
+sans appliquer les transformations du catalogue de règles. L'interface ne fera
+aucune écriture directe ; le [pilotage](EXECUTION.md#commandes-dédition--lot-07-bis-prévu)
+les exécutera dans le Worker entre deux lots de transitions.
+
+### Invariants et validation
+
+Une intervention ne sera pas une transition : compteur, position et orientation
+de la fourmi, sélection de règles et cible de calcul resteront inchangés. Les
+transitions suivantes liront les couleurs résultantes, y compris lorsque la
+case sous la fourmi aura été modifiée. Une intervention appliquée à l'étape N
+prendra effet pour la transition N → N+1, après les interventions précédentes
+à cette même étape.
+
+Les coordonnées suivront les entiers sûrs du monde. Les données et l'étendue
+seront validées avant toute écriture ; une commande invalide ne modifiera rien.
+Le rectangle couvrira les deux cases extrêmes et toutes les cases entre elles,
+bornes incluses ; ses dimensions et son aire seront vérifiées sans débordement
+numérique. Il sera appliqué atomiquement. Le blanc restera implicite dans le
+stockage clairsemé, avec suppression des cases redevenues blanches.
+
+Chaque rectangle ou tracé sera limité à **100 000 cases**. Un rectangle excessif
+sera refusé sans écriture. Le tracé sera transmis progressivement, sans trous,
+avec une seule inversion par case sur tout le geste ; arrivé au plafond, il
+s'arrêtera en conservant ses écritures précédentes. Chaque commande progressive
+sera validée avant ses écritures ; elle n'annulera pas les commandes déjà appliquées.
+
+### Aléatoire reproductible
+
+Pour chaque case du rectangle, le remplissage aléatoire choisira noir avec la
+probabilité entière demandée de 1 à 99 % (défaut 50 %), et blanc sinon,
+indépendamment de l'ancienne couleur. La graine sera visible et modifiable dans
+l'interface, initialement 1. Chaque remplissage repartira de la graine indiquée :
+les mêmes rectangle, probabilité et graine produiront exactement le même motif.
+
+Le générateur pseudo-aléatoire sera déterministe et versionné, avec un ordre de
+parcours stable et documenté des coordonnées. Ni l'horloge ni `Math.random`
+n'interviendront. L'algorithme, le domaine de la graine et les vecteurs de
+référence seront formalisés et testés lors du développement du lot, avant sa
+réception ; aucun générateur n'est ajouté par cette préparation documentaire.
+
+### Journal et réinitialisation
+
+Un journal minimal restera en mémoire pour les interventions appliquées. Chaque
+entrée conservera l'étape exacte, l'ordre d'application à étape égale, l'opération
+et les données nécessaires au rejeu : cases pour l'inversion, bornes et mode
+pour le rectangle, probabilité, graine et version du générateur pour l'aléatoire.
+Le rejeu aux mêmes étapes et dans le même ordre devra retrouver le même état
+scientifique complet. Ce journal sera distinct des changements de règles du
+lot 08 ; il n'ajoutera aucun export, import ou mécanisme d'annulation historique.
+
+À zéro, la première modification effective verrouillera la sélection des règles
+dans le poste de pilotage. Réinitialiser effacera les interventions et leur
+journal, y compris le dessin à zéro : nouvelle expérience au monde blanc, fourmi
+au départ et compteur zéro. Les règles choisies resteront conservées comme dans
+le comportement actuel. Aucun stockage persistant ne sera introduit.
+
 ## Vérification via Docker
 
 Après la préparation décrite dans [Développement](DEVELOPPEMENT.md), exécuter :

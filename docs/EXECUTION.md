@@ -130,6 +130,50 @@ en attente ; aucun calcul de secours n'est lancé sur le thread principal.
 Les `TypeError` et `RangeError` de commande sont rétablies côté client. La
 fermeture est idempotente ; toute opération sur une instance fermée est refusée.
 
+## Commandes d'édition — lot 07 bis prévu
+
+**Extension prévue, non implémentée.** Les commandes ci-dessous expriment les
+capacités à ajouter ; elles ne font pas encore partie de l'API ni du protocole
+actuels. Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+prévoit l'inversion de cases et le remplissage d'un rectangle noir, blanc ou
+aléatoire reproductible, conformément au [contrat du moteur](MOTEUR.md#interventions-manuelles--lot-07-bis-prévu).
+
+Le client transmettra les demandes au Worker avec la corrélation et les erreurs
+explicites du protocole existant. Le contrôleur les appliquera entre lots,
+après validation avant écriture. Il acquittera chaque intervention avec l'étape
+exacte et son ordre d'application à cette étape, issus du moteur et non du Canvas.
+Une demande reçue pendant un lot attendra la fin de ce lot ; aucune transition
+ne sera interrompue. L'ordre des interventions appliquées à une même étape sera
+conservé dans le journal minimal en mémoire pour permettre leur rejeu.
+
+Le rectangle sera une opération atomique après validation de toute sa zone,
+avec un maximum de 100 000 cases. Le tracé transmettra progressivement les
+nouvelles cases, en garantissant une seule inversion par case et par geste et
+un plafond total de 100 000 cases. Terminer le geste ne restaurera pas les
+couleurs antérieures ; les écritures déjà appliquées seront conservées. Le refus
+d'une demande sera signalé sans masquer l'état atteint ni détruire l'expérience.
+
+Les interventions ne changeront ni compteur, fourmi, règles, cible, ni tâche
+de calcul. En marche autorisée, le calcul continuera ; en pause, il restera
+suspendu et la cible sera conservée. La progression et les instantanés devront
+refléter les nouvelles couleurs même si le compteur ne change pas. Une panne
+ne déclenchera ni écriture de secours côté interface ni répétition automatique
+d'une inversion dont l'acquittement serait inconnu.
+
+L'autorisation dépendra de la vitesse **demandée**, non du débit observé :
+édition à l'arrêt quelle que soit la vitesse choisie, ou en marche à 1, 10 ou
+100 pas/s. Les états de préparation, fermeture et erreur ne permettront pas
+d'édition. Une reprise ou un changement vers une vitesse supérieure à 100 pas/s
+en marche désactivera l'outil et mettra fin au geste selon les
+[règles de l'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu).
+Les vérifications d'autorisation devront rester cohérentes entre interface et
+contrôleur, y compris si une commande d'édition croise un changement de vitesse.
+
+Réinitialiser remplacera l'expérience et effacera son journal d'interventions.
+Les commandes et réponses de l'ancienne session ne devront pas modifier la
+nouvelle. Aucun calcul après fermeture, sauvegarde persistante, export ou import
+ne sera ajouté dans ce lot.
+
 ## Exemples et vérification manuelle
 
 Depuis la racine après la [préparation Docker](DEVELOPPEMENT.md) :

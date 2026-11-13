@@ -111,6 +111,76 @@ Le masquage du jeu annule le rendu en attente et termine le glissement éventuel
 le retour reprend la même caméra et son mode. Il n'y a aucune boucle au repos.
 Les limites numériques sont conservées ; un cadrage refusé affiche son erreur.
 
+## Édition manuelle des cases — lot 07 bis prévu
+
+**Spécification prévue, non implémentée.** Le
+[lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+ajoutera une section **Modifier les cases**, en dernier dans la partie défilante
+du panneau, après règles et cible. Les réglages fixes restent en bas. Les
+comportements actuels et réceptions historiques décrits ailleurs restent inchangés.
+
+### Outils et remplissage
+
+Trois toggles exclusifs, tous désactivés initialement, sélectionneront l'outil.
+Recliquer le toggle actif le désactivera pour retrouver la navigation habituelle.
+Leur état actif et leur indisponibilité auront un libellé accessible.
+
+| Outil | Geste et résultat prévus |
+| ----- | ----------------------- |
+| Case | Un clic inverse blanc/noir sur la case visée. |
+| Tracé continu | L'appui inverse la première case ; le déplacement inverse les cases traversées, sans trous entre deux positions du pointeur, jusqu'au relâchement. Chaque case est inversée au maximum une fois par geste, même si l'on repasse dessus. |
+| Rectangle | Le glissement prévisualise la zone sans modifier le monde ; le relâchement remplit toutes les cases entre les deux cases extrêmes, bornes incluses, dans toutes les directions. Sans déplacement, une seule case est traitée. |
+
+Le rectangle proposera **Tout en noir**, **Tout en blanc** ou **Aléatoire**.
+Le mode aléatoire remplacera la couleur de chaque case par noir avec une
+probabilité entière réglable de **1 à 99 %**, **50 % par défaut**, et par blanc
+sinon : il ne s'agit pas d'une probabilité d'inversion. La **graine**, visible et
+modifiable, vaudra **1 initialement**. Les mêmes rectangle, probabilité et graine
+produiront le même motif, indépendamment des anciennes couleurs.
+
+### Disponibilité et coexistence avec la navigation
+
+À l'arrêt, y compris en pause, l'édition sera autorisée quelle que soit la
+vitesse sélectionnée. En marche, elle sera autorisée uniquement à **1, 10 ou
+100 pas/s demandés**, d'après la vitesse sélectionnée et non le débit mesuré.
+Le calcul continuera pendant l'édition à ces vitesses ; éditer en pause ne
+reprendra pas le calcul. L'édition sera indisponible pendant la préparation,
+après fermeture ou en cas d'erreur de simulation.
+
+En marche, le passage au-delà de 100 pas/s ou à Maximum désactivera l'outil,
+abandonnera le rectangle non validé et terminera le tracé en conservant les
+écritures déjà appliquées. La même règle s'appliquera lors d'un lancement ou
+d'une reprise avec une vitesse élevée choisie à l'arrêt.
+
+Le bouton gauche de la souris ou un doigt utilisera l'outil actif. Un second
+contact terminera le tracé ou annulera le rectangle ; il faudra relâcher les
+contacts avant de commencer une nouvelle interaction. Échap, perte de focus,
+changement de page ou annulation du pointeur abandonneront le rectangle et
+termineront le tracé sans annuler les écritures déjà acquittées.
+
+Pendant le geste, la caméra sera figée : aucun déplacement, zoom ou mouvement
+automatique ne changera les cases visées. À la fin du geste, le cadrage sélectionné
+sera rétabli. Désactiver l'outil rendra les gestes de navigation habituels.
+
+### État scientifique, limites et reset
+
+L'interface transmettra les demandes au Worker ; elle ne modifiera ni son cache
+de scène ni le monde directement. Le rectangle sera appliqué atomiquement au
+relâchement ; le tracé transmettra progressivement les nouvelles cases.
+L'[acquittement du Worker](EXECUTION.md#commandes-dédition--lot-07-bis-prévu)
+indiquera l'étape exacte d'application, qui peut différer de l'étape affichée.
+
+Le plafond sera de **100 000 cases par rectangle ou tracé**. Un rectangle trop
+grand sera refusé avant toute écriture. Un tracé s'arrêtera au plafond en
+conservant les écritures précédentes. Un message explicite signalera ces limites.
+
+Une première modification effective à l'étape zéro verrouillera le choix des
+règles, pour éviter qu'un changement de configuration efface le dessin.
+**Réinitialiser** effacera toutes les interventions, même celles faites à zéro,
+ainsi que leur journal : monde blanc, fourmi au départ, compteur zéro, règles
+et vitesse conservées comme aujourd'hui. Le dessin ne deviendra pas une nouvelle
+condition initiale. Aucun retour arrière historique ou sauvegarde ne sera ajouté.
+
 ## Historique des lots de design et de visualisation
 
 La refonte visuelle demandée après l’étape 02 a anticipé des éléments des
