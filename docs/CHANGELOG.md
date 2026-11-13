@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/ChristianPRO1982/antlab/compare/v1.6.0...v1.7.0) (2026-11-13)
+
+
+### Features
+
+* implement manual cell editing tools including toggle, rectangle fill, and stroke ([47be7da](https://github.com/ChristianPRO1982/antlab/commit/47be7da0f60a2e1cbeddad909db210c4bc4337ff))
+
 # [1.6.0](https://github.com/ChristianPRO1982/antlab/compare/v1.5.0...v1.6.0) (2026-11-13)
 
 
