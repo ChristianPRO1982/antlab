@@ -130,13 +130,12 @@ en attente ; aucun calcul de secours n'est lancé sur le thread principal.
 Les `TypeError` et `RangeError` de commande sont rétablies côté client. La
 fermeture est idempotente ; toute opération sur une instance fermée est refusée.
 
-## Commandes d'édition — lot 07 bis prévu
+## Commandes d'édition — lot 07 bis
 
-**Extension prévue, non implémentée.** Les commandes ci-dessous expriment les
-capacités à ajouter ; elles ne font pas encore partie de l'API ni du protocole
+**Extension implémentée.** Les commandes d’édition complètent l’API et le protocole
 actuels. Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
 prévoit l'inversion de cases et le remplissage d'un rectangle noir, blanc ou
-aléatoire reproductible, conformément au [contrat du moteur](MOTEUR.md#interventions-manuelles--lot-07-bis-prévu).
+aléatoire reproductible, conformément au [contrat du moteur](MOTEUR.md#interventions-manuelles--lot-07-bis).
 
 Le client transmettra les demandes au Worker avec la corrélation et les erreurs
 explicites du protocole existant. Le contrôleur les appliquera entre lots,
@@ -165,7 +164,7 @@ L'autorisation dépendra de la vitesse **demandée**, non du débit observé :
 100 pas/s. Les états de préparation, fermeture et erreur ne permettront pas
 d'édition. Une reprise ou un changement vers une vitesse supérieure à 100 pas/s
 en marche désactivera l'outil et mettra fin au geste selon les
-[règles de l'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu).
+[règles de l'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis).
 Les vérifications d'autorisation devront rester cohérentes entre interface et
 contrôleur, y compris si une commande d'édition croise un changement de vitesse.
 
@@ -240,3 +239,14 @@ Les fixtures de pilotage important les sources sont explicitement ignorées
 avec `TEST_BASE_URL` vers une image de production. Depuis le lot 06, le Worker
 du site et les gestes tactiles possèdent aussi des parcours sans import de
 sources, exécutés contre Vite ou Nginx.
+
+### API d’édition disponible
+
+Le contrôleur et le client exposent `toggleCells(cells)`, `fillRectangle(options)`
+et `getInterventions()`. Le tracé utilise `beginStroke(id)`,
+`extendStroke({ id, cells })`, puis `endStroke(id)`. Un seul tracé est actif ;
+le Worker déduplique ses cases et contrôle son plafond cumulé. Les arguments
+d’édition passent dans le champ `payload` du protocole existant.
+La progression ajoute `editRevision` sans modifier le format de `getState()`.
+La cadence autorisée du contrôleur vérifie un délai non nul et
+`batchSize * 1000 <= 100 * batchDelayMs` pendant la marche.

@@ -1,3 +1,8 @@
+import {
+  cellsValidated,
+  editingAllowed,
+  EDIT_LIMIT,
+} from './manual-editing.js';
 import { LangtonEngine } from './engine.js';
 import { coordinate } from './coordinates.js';
 
@@ -37,6 +42,7 @@ function executionOptions(options, previous = {}) {
 
 export class ExecutionController {
   #engine;
+  #stroke = null;
   #options;
   #status = 'ready';
   #targetStep = null;
@@ -165,6 +171,51 @@ export class ExecutionController {
     return result;
   }
 
+  #assertEditable() {
+    this.#assertOpen();
+    if (!editingAllowed(this.#status, this.#options))
+      throw new Error('Édition autorisée à l’arrêt ou jusqu’à 100 pas/s.');
+  }
+  async toggleCells(cells) {
+    this.#assertEditable();
+    const result = this.#engine.toggleCells(cells);
+    this.#emit(true);
+    return result;
+  }
+  async fillRectangle(options) {
+    this.#assertEditable();
+    const result = this.#engine.fillRectangle(options);
+    this.#emit(true);
+    return result;
+  }
+  async getInterventions() {
+    this.#assertOpen();
+    return this.#engine.getInterventions();
+  }
+  async beginStroke(id) {
+    this.#assertEditable();
+    if (!Number.isSafeInteger(id) || id < 1)
+      throw new TypeError('Tracé invalide.');
+    this.#stroke = { id, seen: new Set() };
+  }
+  async extendStroke({ id, cells }) {
+    this.#assertEditable();
+    if (this.#stroke?.id !== id) throw new Error('Tracé terminé.');
+    const stroke = this.#stroke;
+    const fresh = cellsValidated(cells).filter(
+      (c) => !this.#stroke.seen.has(`${c.x},${c.y}`),
+    );
+    if (fresh.length + this.#stroke.seen.size > EDIT_LIMIT)
+      throw new RangeError('Maximum : 100 000 cases.');
+    const result = await this.toggleCells(fresh);
+    for (const c of fresh) stroke.seen.add(`${c.x},${c.y}`);
+    return result;
+  }
+  async endStroke(id) {
+    this.#assertOpen();
+    if (this.#stroke?.id === id) this.#stroke = null;
+  }
+
   step() {
     return this.advance(1);
   }
@@ -213,6 +264,7 @@ export class ExecutionController {
     if (this.#status !== 'paused')
       throw new Error('Aucune tâche en pause à reprendre.');
     this.#status = 'running';
+    if (!editingAllowed(this.#status, this.#options)) this.#stroke = null;
     this.#emit(true);
     this.#schedule();
     return this.#progress();
@@ -245,6 +297,7 @@ export class ExecutionController {
     const next = executionOptions(options, this.#options);
     this.#invalidateTimer();
     this.#options = next;
+    if (!editingAllowed(this.#status, next)) this.#stroke = null;
     this.#schedule();
     return { ...next };
   }

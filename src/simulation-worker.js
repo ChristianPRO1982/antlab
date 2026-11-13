@@ -1,6 +1,12 @@
 import { ExecutionController } from './execution-controller.js';
 
 const COMMAND_FIELDS = {
+  toggleCells: ['payload'],
+  fillRectangle: ['payload'],
+  getInterventions: [],
+  beginStroke: ['payload'],
+  extendStroke: ['payload'],
+  endStroke: ['payload'],
   initialize: ['configuration', 'execution'],
   step: [],
   advance: ['count'],
@@ -60,8 +66,9 @@ self.addEventListener('message', ({ data }) => {
       result = controller.getProgress();
     } else {
       if (!controller) throw new Error('L’expérience doit être initialisée.');
-      const argument =
-        data.command === 'setExecutionOptions'
+      const argument = Object.hasOwn(data, 'payload')
+        ? data.payload
+        : data.command === 'setExecutionOptions'
           ? data.options
           : data.command === 'advance'
             ? data.count

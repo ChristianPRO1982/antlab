@@ -156,6 +156,24 @@ class SimulationClient {
     });
   }
 
+  toggleCells(cells) {
+    return this.#request('toggleCells', { payload: cells });
+  }
+  fillRectangle(options) {
+    return this.#request('fillRectangle', { payload: options });
+  }
+  getInterventions() {
+    return this.#request('getInterventions');
+  }
+  beginStroke(id) {
+    return this.#request('beginStroke', { payload: id });
+  }
+  extendStroke(payload) {
+    return this.#request('extendStroke', { payload });
+  }
+  endStroke(id) {
+    return this.#request('endStroke', { payload: id });
+  }
   step() {
     return this.#request('step');
   }

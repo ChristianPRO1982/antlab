@@ -43,24 +43,24 @@
 
 ## Vue d'ensemble
 
-| Étape | Lot                               | Livrable central                                           | Jalons           |
-| ----- | --------------------------------- | ---------------------------------------------------------- | ---------------- |
-| 01    | Fondations                        | Application locale exécutable et architecture minimale     | Socle            |
-| 02    | Géométrie et monde                | Pavage en croix + état clairsemé fiable                    | Socle            |
-| 03    | Moteur déterministe               | Simulation de Langton testée, pas à pas                    | Socle            |
-| 04    | Catalogue de règles               | Cinq règles centrales et compatibilités                    | Socle            |
-| 05    | Exécution intensive               | Moteur pilotable sans affichage, Worker, pause et cible    | Simulation       |
-| 06    | Visualisation du monde            | Canvas, zoom, caméra et suivi                              | Simulation       |
-| 07    | Poste de pilotage                 | Interface des règles et des commandes                      | MVP interactif   |
+| Étape  | Lot                               | Livrable central                                              | Jalons                |
+| ------ | --------------------------------- | ------------------------------------------------------------- | --------------------- |
+| 01     | Fondations                        | Application locale exécutable et architecture minimale        | Socle                 |
+| 02     | Géométrie et monde                | Pavage en croix + état clairsemé fiable                       | Socle                 |
+| 03     | Moteur déterministe               | Simulation de Langton testée, pas à pas                       | Socle                 |
+| 04     | Catalogue de règles               | Cinq règles centrales et compatibilités                       | Socle                 |
+| 05     | Exécution intensive               | Moteur pilotable sans affichage, Worker, pause et cible       | Simulation            |
+| 06     | Visualisation du monde            | Canvas, zoom, caméra et suivi                                 | Simulation            |
+| 07     | Poste de pilotage                 | Interface des règles et des commandes                         | MVP interactif        |
 | 07 bis | Édition manuelle des cases        | Clic, tracé continu et remplissage de rectangle reproductible | Complément interactif |
-| 08    | Changements en cours d'expérience | Confirmation et journal des changements                    | MVP scientifique |
-| 09    | Indicateurs exacts                | KPI, encadrements, maxima historiques                      | Observatoire     |
-| 10    | Graphiques temporels              | Courbes échantillonnées et événements                      | Observatoire     |
-| 11    | Rapports et exports               | Formats individuels et de campagne, JSON/Markdown/CSV      | Portabilité      |
-| 12    | Import et reprise                 | Restaurer/rejouer une expérience fidèlement                | Reproductibilité |
-| 13    | Campagnes en série et comparaison | Exploration exhaustive de règles, résultats et comparaison | Exploration      |
-| 14    | Robustesse et validation          | Tests globaux, performances et accessibilité               | Prépublication   |
-| 15    | Partage et mise en ligne          | URL de configuration + site public documenté               | Publication      |
+| 08     | Changements en cours d'expérience | Confirmation et journal des changements                       | MVP scientifique      |
+| 09     | Indicateurs exacts                | KPI, encadrements, maxima historiques                         | Observatoire          |
+| 10     | Graphiques temporels              | Courbes échantillonnées et événements                         | Observatoire          |
+| 11     | Rapports et exports               | Formats individuels et de campagne, JSON/Markdown/CSV         | Portabilité           |
+| 12     | Import et reprise                 | Restaurer/rejouer une expérience fidèlement                   | Reproductibilité      |
+| 13     | Campagnes en série et comparaison | Exploration exhaustive de règles, résultats et comparaison    | Exploration           |
+| 14     | Robustesse et validation          | Tests globaux, performances et accessibilité                  | Prépublication        |
+| 15     | Partage et mise en ligne          | URL de configuration + site public documenté                  | Publication           |
 
 ---
 
@@ -306,56 +306,56 @@ changements en cours d’expérience restent au lot 08.
 
 ## 07 bis — Modifier manuellement les cases
 
-**Statut : prévu, non implémenté.** Ce lot complète le moteur actuel avant le
+**Statut : implémenté et clôturé ; réception détaillée ci-dessous.** Ce lot complète le moteur actuel avant le
 lot 08, sans modifier la clôture des étapes 01 à 07 ni commencer les changements
-de règles en cours d'expérience. La préparation documentaire ne vaut pas réception.
+de règles en cours d'expérience. Voir le [bilan de réception](RECEPTION_ETAPE_07_BIS.md).
 
 **Périmètre.** Ajouter l'édition du monde depuis une section « Modifier les cases »
 en dernier dans la zone défilante du panneau. Trois toggles exclusifs, tous
 désactivés initialement, sélectionnent Case, Tracé continu ou Rectangle.
 Recliquer le toggle actif revient à la navigation habituelle.
 
-Les [gestes et leur disponibilité](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu),
-le [contrat scientifique](MOTEUR.md#interventions-manuelles--lot-07-bis-prévu)
-et le [pilotage dans le Worker](EXECUTION.md#commandes-dédition--lot-07-bis-prévu)
-définissent le comportement attendu. Ces extensions ne sont pas encore disponibles.
+Les [gestes et leur disponibilité](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis),
+le [contrat scientifique](MOTEUR.md#interventions-manuelles--lot-07-bis)
+et le [pilotage dans le Worker](EXECUTION.md#commandes-dédition--lot-07-bis)
+définissent le comportement attendu. Ces extensions sont disponibles dans le jeu et par API.
 
 **Points à réaliser**
 
-- [ ] Ajouter les trois outils exclusifs dans la dernière section défilante, avec leurs états et erreurs accessibles.
-- [ ] Inverser une case au clic ; en tracé continu, inverser dès l'appui puis toutes les cases traversées sans trous, une seule fois par case et par geste.
-- [ ] Prévisualiser le rectangle puis le remplir au relâchement, bornes incluses ; sans déplacement, traiter une seule case.
-- [ ] Proposer Tout en noir, Tout en blanc et Aléatoire : probabilité entière de noir de 1 à 99 %, défaut 50 %, blanc sinon ; graine visible et modifiable, initialement 1.
-- [ ] Autoriser l'édition à l'arrêt quelle que soit la vitesse sélectionnée, et en marche uniquement à 1, 10 ou 100 pas/s demandés, sans pause automatique ni reprise d'une tâche suspendue.
-- [ ] Désactiver l'outil en marche au-delà de 100 pas/s, y compris lors d'une reprise à vitesse élevée ; abandonner le rectangle et terminer le tracé en conservant les écritures déjà appliquées.
-- [ ] Gérer bouton gauche et un doigt, second contact, Échap, perte de focus, changement de page et annulation du pointeur ; figer la caméra pendant le geste puis rétablir le cadrage sélectionné.
-- [ ] Faire passer toutes les écritures par le moteur dans le Worker entre lots, avec validation avant écriture, rectangle atomique et étape exacte acquittée ; transmettre progressivement les nouvelles cases du tracé.
-- [ ] Conserver compteur, fourmi, règles et cible ; ordonner les interventions à une même étape et journaliser en mémoire les données nécessaires au rejeu.
-- [ ] Utiliser un générateur pseudo-aléatoire déterministe versionné et un parcours stable des coordonnées, sans horloge ni `Math.random` ; garantir le même motif pour les mêmes rectangle, probabilité et graine.
-- [ ] Limiter chaque rectangle ou tracé à 100 000 cases : refuser un rectangle excessif sans écriture et arrêter un tracé au plafond en conservant les écritures précédentes, avec message explicite.
-- [ ] Verrouiller le choix des règles après la première modification effective à zéro ; Réinitialiser efface dessin et journal et revient au monde blanc, fourmi au départ, compteur zéro.
+- [x] Ajouter les trois outils exclusifs dans la dernière section défilante, avec leurs états et erreurs accessibles.
+- [x] Inverser une case au clic ; en tracé continu, inverser dès l'appui puis toutes les cases traversées sans trous, une seule fois par case et par geste.
+- [x] Prévisualiser le rectangle puis le remplir au relâchement, bornes incluses ; sans déplacement, traiter une seule case.
+- [x] Proposer Tout en noir, Tout en blanc et Aléatoire : probabilité entière de noir de 1 à 99 %, défaut 50 %, blanc sinon ; graine visible et modifiable, initialement 1.
+- [x] Autoriser l'édition à l'arrêt quelle que soit la vitesse sélectionnée, et en marche uniquement à 1, 10 ou 100 pas/s demandés, sans pause automatique ni reprise d'une tâche suspendue.
+- [x] Désactiver l'outil en marche au-delà de 100 pas/s, y compris lors d'une reprise à vitesse élevée ; abandonner le rectangle et terminer le tracé en conservant les écritures déjà appliquées.
+- [x] Gérer bouton gauche et un doigt, second contact, Échap, perte de focus, changement de page et annulation du pointeur ; figer la caméra pendant le geste puis rétablir le cadrage sélectionné.
+- [x] Faire passer toutes les écritures par le moteur dans le Worker entre lots, avec validation avant écriture, rectangle atomique et étape exacte acquittée ; transmettre progressivement les nouvelles cases du tracé.
+- [x] Conserver compteur, fourmi, règles et cible ; ordonner les interventions à une même étape et journaliser en mémoire les données nécessaires au rejeu.
+- [x] Utiliser un générateur pseudo-aléatoire déterministe versionné et un parcours stable des coordonnées, sans horloge ni `Math.random` ; garantir le même motif pour les mêmes rectangle, probabilité et graine.
+- [x] Limiter chaque rectangle ou tracé à 100 000 cases : refuser un rectangle excessif sans écriture et arrêter un tracé au plafond en conservant les écritures précédentes, avec message explicite.
+- [x] Verrouiller le choix des règles après la première modification effective à zéro ; Réinitialiser efface dessin et journal et revient au monde blanc, fourmi au départ, compteur zéro.
 
 **Livrable attendu.** Édition souris/tactile utilisable à l'arrêt ou à faible
 vitesse, sans calcul scientifique dans l'interface. Le journal des interventions
 est distinct du futur journal des changements de règles du lot 08. Aucun export,
 import, mécanisme d'annulation historique ou stockage persistant dans ce lot.
 
-**Vérifications de réception à réaliser en TDD via Docker**
+**Vérifications de réception en TDD via Docker**
 
-- [ ] Vérifier les inversions au clic, le tracé sans trous et sans double inversion, les rectangles dans toutes les directions et les coordonnées négatives.
-- [ ] Vérifier les probabilités 1, 50 et 99 %, les graines et le motif reproductible avec des résultats déterministes, sans attente statistique fluctuante.
-- [ ] Vérifier validation atomique, plafond de 100 000 cases, compteur/fourmi/règles/cible inchangés, verrouillage à zéro et reset au blanc avec journal vidé.
-- [ ] Vérifier l'application entre lots, l'étape acquittée, l'ordre à étape égale et le rejeu des interventions aux mêmes étapes, avec comparaison de l'état scientifique complet.
-- [ ] Vérifier dans le navigateur l'exclusivité, la prévisualisation, les annulations et les gestes souris/tactiles, le gel puis le rétablissement du cadrage et le retour à la navigation.
-- [ ] Vérifier les seuils 1, 10, 100 et 1 000 pas/s, Maximum, les changements de vitesse et la reprise ; en pause avec Maximum sélectionné, éditer sans relancer le calcul.
+- [x] Vérifier les inversions au clic, le tracé sans trous et sans double inversion, les rectangles dans toutes les directions et les coordonnées négatives.
+- [x] Vérifier les probabilités 1, 50 et 99 %, les graines et le motif reproductible avec des résultats déterministes, sans attente statistique fluctuante.
+- [x] Vérifier validation atomique, plafond de 100 000 cases, compteur/fourmi/règles/cible inchangés, verrouillage à zéro et reset au blanc avec journal vidé.
+- [x] Vérifier l'application entre lots, l'étape acquittée, l'ordre à étape égale et le rejeu des interventions aux mêmes étapes, avec comparaison de l'état scientifique complet.
+- [x] Vérifier dans le navigateur l'exclusivité, la prévisualisation, les annulations et les gestes souris/tactiles, le gel puis le rétablissement du cadrage et le retour à la navigation.
+- [x] Vérifier les seuils 1, 10, 100 et 1 000 pas/s, Maximum, les changements de vitesse et la reprise ; en pause avec Maximum sélectionné, éditer sans relancer le calcul.
 
-**Prompt Codex pour le développement ultérieur**
+**Prompt Codex du lot**
 
 ```text
 Lis AGENTS.md, le contexte, la roadmap et les spécifications du lot 07 bis dans Interface, Moteur et Exécution. Réalise uniquement le lot 07 bis : édition manuelle des cases au clic, par tracé continu et par rectangle noir/blanc/aléatoire reproductible. Respecte les gestes souris/tactiles, le seuil de vitesse demandée, les écritures dans le Worker entre lots, les acquittements à étape exacte, le journal minimal de rejeu et le plafond de 100 000 cases. Travaille en TDD via Docker et vérifie les invariants scientifiques et les comportements navigateur. N'implémente ni le lot 08, ni export/import, ni annulation historique, ni persistance. Termine par les fonctionnalités, tests, résultats, limites et vérifications manuelles restantes ; ne coche que les critères réellement vérifiés.
 ```
 
-- [ ] **Lot 07 bis clôturé :** tous les points et toutes les vérifications ci-dessus sont cochés.
+- [x] **Lot 07 bis clôturé :** tous les points et toutes les vérifications ci-dessus sont cochés.
 
 ## 08 — Changer les règles pendant une expérience, sans perdre l'historique
 
