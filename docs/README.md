@@ -20,9 +20,9 @@ La session du jeu se pilote par interface ou API sous Vite et son Worker est inc
 build statique. Les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
 
-### Prochain lot : 07 bis, édition manuelle des cases
+### Lot 07 bis : édition manuelle des cases
 
-**Prévu, non implémenté.** Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+**Implémenté et clôturé sur `feat/manual-cell-editing`.** Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
 complète les étapes 01 à 07 avant le lot 08, sans renumérotation. Il prévoit
 trois outils exclusifs : inversion au clic, tracé continu et rectangle noir,
 blanc ou aléatoire reproductible (1 à 99 % de noir, défaut 50 %, graine visible
@@ -31,11 +31,11 @@ sélectionnée, ou en marche à 1, 10 ou 100 pas/s demandés, sans suspendre le 
 Les écritures seront appliquées dans le Worker entre lots, avec journal minimal
 à étape exacte et plafond de 100 000 cases par rectangle ou tracé.
 
-Spécifications : [Interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu),
-[Moteur](MOTEUR.md#interventions-manuelles--lot-07-bis-prévu) et
-[Pilotage](EXECUTION.md#commandes-dédition--lot-07-bis-prévu).
-Cette préparation est uniquement documentaire : aucun critère de réception
-du lot n'est validé et aucun développement du lot 08 n'est engagé.
+Spécifications : [Interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis),
+[Moteur](MOTEUR.md#interventions-manuelles--lot-07-bis) et
+[Pilotage](EXECUTION.md#commandes-dédition--lot-07-bis).
+Le bilan est dans [Réception du lot 07 bis](RECEPTION_ETAPE_07_BIS.md).
+Le lot 08 reste hors périmètre.
 
 ### Correctifs des étapes 01 à 07
 

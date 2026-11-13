@@ -97,26 +97,35 @@ test('scènes remplacées atomiquement et cadrage des bornes qui grandissent pui
 }) => {
   test.skip(external, 'Fixtures de scène sous Vite.');
   await openSession(page);
+  await page.evaluate(async () => {
+    window.fixtureState = await window.sceneSession.simulation.getState();
+    window.sceneSession.simulation.getState = async () =>
+      structuredClone(window.fixtureState);
+  });
   await page.evaluate(() =>
-    window.sceneSession.view.updateScene({
-      ant: { x: -3, y: -1, orientation: 'west' },
-      stepCount: 10,
-      blackCells: [
-        { x: -3, y: -1 },
-        { x: 100, y: 40 },
-      ],
-    }),
+    window.sceneSession.view.updateScene(
+      (window.fixtureState = {
+        ant: { x: -3, y: -1, orientation: 'west' },
+        stepCount: 10,
+        blackCells: [
+          { x: -3, y: -1 },
+          { x: 100, y: 40 },
+        ],
+      }),
+    ),
   );
   await page.getByRole('button', { name: 'Taille max', exact: true }).click();
   const large = Number(
     await page.getByLabel('Zoom', { exact: true }).inputValue(),
   );
   await page.evaluate(() =>
-    window.sceneSession.view.updateScene({
-      ant: { x: -3, y: -1, orientation: 'south' },
-      stepCount: 11,
-      blackCells: [{ x: -3, y: -1 }],
-    }),
+    window.sceneSession.view.updateScene(
+      (window.fixtureState = {
+        ant: { x: -3, y: -1, orientation: 'south' },
+        stepCount: 11,
+        blackCells: [{ x: -3, y: -1 }],
+      }),
+    ),
   );
   await expect(page.getByLabel('Zoom', { exact: true })).toHaveValue('160');
   expect(large).toBeLessThan(160);
@@ -133,15 +142,17 @@ test('scènes remplacées atomiquement et cadrage des bornes qui grandissent pui
       }
     }),
   ).toBe('TypeError');
-  expect(await page.evaluate(() => window.sceneSession.view.stepCount)).toBe(
-    11,
-  );
+  await expect
+    .poll(() => page.evaluate(() => window.sceneSession.view.stepCount))
+    .toBe(11);
   await page.evaluate(() =>
-    window.sceneSession.view.updateScene({
-      ant: { x: 0, y: 0, orientation: 'north' },
-      stepCount: 12,
-      blackCells: [],
-    }),
+    window.sceneSession.view.updateScene(
+      (window.fixtureState = {
+        ant: { x: 0, y: 0, orientation: 'north' },
+        stepCount: 12,
+        blackCells: [],
+      }),
+    ),
   );
   await expect(page.getByLabel('Zoom', { exact: true })).toHaveValue('32');
 });

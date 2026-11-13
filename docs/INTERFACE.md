@@ -111,9 +111,9 @@ Le masquage du jeu annule le rendu en attente et termine le glissement éventuel
 le retour reprend la même caméra et son mode. Il n'y a aucune boucle au repos.
 Les limites numériques sont conservées ; un cadrage refusé affiche son erreur.
 
-## Édition manuelle des cases — lot 07 bis prévu
+## Édition manuelle des cases — lot 07 bis
 
-**Spécification prévue, non implémentée.** Le
+**Fonctionnalité implémentée sur `feat/manual-cell-editing`.** Le
 [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
 ajoutera une section **Modifier les cases**, en dernier dans la partie défilante
 du panneau, après règles et cible. Les réglages fixes restent en bas. Les
@@ -125,11 +125,11 @@ Trois toggles exclusifs, tous désactivés initialement, sélectionneront l'outi
 Recliquer le toggle actif le désactivera pour retrouver la navigation habituelle.
 Leur état actif et leur indisponibilité auront un libellé accessible.
 
-| Outil | Geste et résultat prévus |
-| ----- | ----------------------- |
-| Case | Un clic inverse blanc/noir sur la case visée. |
+| Outil         | Geste et résultat prévus                                                                                                                                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Case          | Un clic inverse blanc/noir sur la case visée.                                                                                                                                                                                           |
 | Tracé continu | L'appui inverse la première case ; le déplacement inverse les cases traversées, sans trous entre deux positions du pointeur, jusqu'au relâchement. Chaque case est inversée au maximum une fois par geste, même si l'on repasse dessus. |
-| Rectangle | Le glissement prévisualise la zone sans modifier le monde ; le relâchement remplit toutes les cases entre les deux cases extrêmes, bornes incluses, dans toutes les directions. Sans déplacement, une seule case est traitée. |
+| Rectangle     | Le glissement prévisualise la zone sans modifier le monde ; le relâchement remplit toutes les cases entre les deux cases extrêmes, bornes incluses, dans toutes les directions. Sans déplacement, une seule case est traitée.           |
 
 Le rectangle proposera **Tout en noir**, **Tout en blanc** ou **Aléatoire**.
 Le mode aléatoire remplacera la couleur de chaque case par noir avec une
@@ -167,7 +167,7 @@ sera rétabli. Désactiver l'outil rendra les gestes de navigation habituels.
 L'interface transmettra les demandes au Worker ; elle ne modifiera ni son cache
 de scène ni le monde directement. Le rectangle sera appliqué atomiquement au
 relâchement ; le tracé transmettra progressivement les nouvelles cases.
-L'[acquittement du Worker](EXECUTION.md#commandes-dédition--lot-07-bis-prévu)
+L'[acquittement du Worker](EXECUTION.md#commandes-dédition--lot-07-bis)
 indiquera l'étape exacte d'application, qui peut différer de l'étape affichée.
 
 Le plafond sera de **100 000 cases par rectangle ou tracé**. Un rectangle trop

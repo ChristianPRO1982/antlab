@@ -79,10 +79,16 @@ visible initialement 1). L'édition sera disponible à l'arrêt ou en marche à
 lots et journal minimal des interventions à étape exacte. Le plafond sera de
 100 000 cases par rectangle ou tracé ; Réinitialiser effacera dessin et journal
 pour revenir au blanc. Voir le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
-et la [spécification d'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu).
+et la [spécification d'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis).
 Les étapes 01 à 07 restent le périmètre implémenté ; la prochaine étape non
 clôturée est désormais 07 bis. Aucune réception historique n'est modifiée et
 le lot 08 n'est pas commencé.
+
+**Complément du 13 novembre 2026 — implémentation du lot 07 bis :**
+les outils d’édition sont maintenant présents sur `feat/manual-cell-editing`.
+Le repère documentaire précédent décrit leur préparation historique. Voir
+[le bilan et les limites de réception](RECEPTION_ETAPE_07_BIS.md). Le lot 07 bis est clôturé ; la prochaine étape est le lot 08,
+qui reste non commencé.
 
 ## 1. Origine et intention
 

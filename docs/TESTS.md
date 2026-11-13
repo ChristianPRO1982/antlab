@@ -265,3 +265,11 @@ et le parcours d’affichage final passent ensemble (2/2). Build Vite séparé r
 Captures produites dans `test-results/affichage-*.png`. La validation reste limitée
 à Chromium ; confort sur appareils physiques et autres navigateurs à vérifier.
 Aucune publication ni modification des critères de roadmap.
+
+## Édition manuelle (lot 07 bis)
+
+Les tests de `manual-editing.test.js` couvrent le moteur et son contrôleur ;
+`editing.spec.js` utilise le vrai Worker pour les outils souris et tactiles.
+Voir les résultats et limites dans le [bilan du lot 07 bis](RECEPTION_ETAPE_07_BIS.md).
+Le test de cadrage historique utilise désormais une source de scènes contrôlée,
+sans modifier ses valeurs attendues.

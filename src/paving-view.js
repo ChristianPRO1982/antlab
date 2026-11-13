@@ -21,6 +21,7 @@ export function mountPaving(
   const initial = canvas.getBoundingClientRect();
   const camera = new Camera(initial.width, initial.height);
   const framing = new ViewFraming(camera);
+  let editingGesture = null;
   let scene = { world, ant, stepCount: null };
   const options = { grid: true, outlines: true, origin: true, lanto: true };
   let frame = null;
@@ -67,7 +68,7 @@ export function mountPaving(
       if (disposed || !active || width <= 0 || height <= 0) return;
       try {
         camera.resize(width, height);
-        framing.apply(scene);
+        if (!editingGesture) framing.apply(scene);
         const density = window.devicePixelRatio || 1;
         const pixelWidth = Math.round(width * density);
         const pixelHeight = Math.round(height * density);
@@ -84,6 +85,24 @@ export function mountPaving(
           0,
         );
         drawPaving(context, camera, scene.world, options, sprite, scene.ant);
+        if (editingGesture?.rectangle !== false) {
+          if (editingGesture) {
+            const a = camera.worldToScreen(
+              Math.min(editingGesture.start.x, editingGesture.end.x),
+              Math.max(editingGesture.start.y, editingGesture.end.y) + 1,
+            );
+            context.strokeStyle = '#087bff';
+            context.lineWidth = 2;
+            context.strokeRect(
+              a.x,
+              a.y,
+              (Math.abs(editingGesture.end.x - editingGesture.start.x) + 1) *
+                camera.scale,
+              (Math.abs(editingGesture.end.y - editingGesture.start.y) + 1) *
+                camera.scale,
+            );
+          }
+        }
         drawnStepCount = scene.stepCount;
         notify();
         onSceneChange();
@@ -96,6 +115,7 @@ export function mountPaving(
   }
 
   function navigate(operation, manual = false) {
+    if (editingGesture) return;
     try {
       operation();
       if (manual) framing.release();
@@ -238,6 +258,14 @@ export function mountPaving(
   notify();
   requestDraw();
   return {
+    cellAt(x, y) {
+      const p = camera.screenToWorld(x, y);
+      return { x: Math.floor(p.x), y: Math.floor(p.y) };
+    },
+    setEditingGesture(value) {
+      editingGesture = value;
+      requestDraw();
+    },
     get drawnStepCount() {
       return drawnStepCount;
     },

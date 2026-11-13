@@ -1,3 +1,4 @@
+import { cellsValidated, rectangleChanges } from './manual-editing.js';
 import { coordinate } from './coordinates.js';
 import { SparseWorld } from './world.js';
 import { resolveRules } from './rules.js';
@@ -23,6 +24,7 @@ export class LangtonEngine {
   #direction;
   #stepCount = 0;
   #rules;
+  #interventions = [];
 
   constructor(options = {}) {
     requireObject(options, 'La configuration');
@@ -50,6 +52,52 @@ export class LangtonEngine {
       requireObject(cell, 'Une case noire');
       this.#world.setColor(cell.x, cell.y, 'black');
     }
+  }
+
+  getInterventions() {
+    return structuredClone(this.#interventions);
+  }
+
+  #edit(operation, changes) {
+    const recorded = structuredClone(operation);
+    const changed = changes.filter(
+      (cell) => this.#world.getColor(cell.x, cell.y) !== cell.color,
+    );
+    const order = changed.length ? this.#interventions.length + 1 : null;
+    if (changed.length) {
+      for (const cell of changed)
+        this.#world.setColor(cell.x, cell.y, cell.color);
+      this.#interventions.push({
+        stepCount: this.#stepCount,
+        order,
+        ...recorded,
+      });
+    }
+    return {
+      stepCount: this.#stepCount,
+      order,
+      changedCellCount: changed.length,
+    };
+  }
+
+  toggleCells(cells) {
+    cells = cellsValidated(cells);
+    return this.#edit(
+      { type: 'toggle', cells },
+      cells.map((cell) => ({
+        ...cell,
+        color:
+          this.#world.getColor(cell.x, cell.y) === 'black' ? 'white' : 'black',
+      })),
+    );
+  }
+
+  fillRectangle(options) {
+    const changes = rectangleChanges(options);
+    return this.#edit(
+      { type: 'rectangle', options, generator: 'mulberry32-v1' },
+      changes,
+    );
   }
 
   step() {
@@ -105,6 +153,7 @@ export class LangtonEngine {
       },
       stepCount: this.#stepCount,
       blackCellCount: this.#world.blackCellCount,
+      editRevision: this.#interventions.length,
     };
   }
 

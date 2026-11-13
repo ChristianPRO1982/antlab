@@ -1,3 +1,4 @@
+import { mountEditing } from './editing-controls.js';
 import { getRuleCatalog } from './rules.js';
 
 const SPEEDS = {
@@ -157,6 +158,7 @@ export function mountLaboratory(session) {
       launching = false;
     }
     locked =
+      (next?.editRevision ?? 0) > 0 ||
       next?.stepCount > 0 ||
       next?.status === 'running' ||
       next?.status === 'paused';
@@ -278,9 +280,14 @@ export function mountLaboratory(session) {
         );
       }
     });
+  const editing = mountEditing(session);
   return {
-    refresh: render,
+    refresh() {
+      render();
+      editing.refresh();
+    },
     dispose() {
+      editing.dispose();
       lifecycle.abort();
       unsubscribe();
     },

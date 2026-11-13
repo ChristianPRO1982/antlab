@@ -1000,3 +1000,9 @@ canvas:focus-visible {
     height: 36px;
   }
 }
+
+[data-tool][aria-pressed='true'] {
+  background: #087bff;
+  color: white;
+  border-color: #087bff;
+}

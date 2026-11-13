@@ -83,6 +83,7 @@ test('lecture compacte indépendante du moteur et sans copie du monde', async ()
     ant: { x: 0, y: 0, orientation: 'north' },
     stepCount: 0,
     blackCellCount: 0,
+    editRevision: 0,
   });
   const copy = engine.getProgress();
   copy.ant.x = 100;

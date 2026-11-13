@@ -99,14 +99,14 @@ permettent les interruptions entre lots. Le Worker alimente maintenant le
 [Canvas synchronisé](VISUALISATION.md). Les commandes et règles sont maintenant
 accessibles dans le [poste de pilotage](INTERFACE.md).
 
-## Interventions manuelles — lot 07 bis prévu
+## Interventions manuelles — lot 07 bis
 
-**Contrat prévu, non implémenté.** L'API actuelle décrite ci-dessus reste inchangée.
+**Contrat implémenté.** Les opérations ci-dessous complètent l’API décrite plus haut.
 Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
 prévoit des opérations d'inversion d'un ensemble de cases et de remplissage d'un
 rectangle noir, blanc ou aléatoire. Elles modifieront le monde dans le moteur,
 sans appliquer les transformations du catalogue de règles. L'interface ne fera
-aucune écriture directe ; le [pilotage](EXECUTION.md#commandes-dédition--lot-07-bis-prévu)
+aucune écriture directe ; le [pilotage](EXECUTION.md#commandes-dédition--lot-07-bis)
 les exécutera dans le Worker entre deux lots de transitions.
 
 ### Invariants et validation
@@ -141,9 +141,19 @@ les mêmes rectangle, probabilité et graine produiront exactement le même moti
 
 Le générateur pseudo-aléatoire sera déterministe et versionné, avec un ordre de
 parcours stable et documenté des coordonnées. Ni l'horloge ni `Math.random`
-n'interviendront. L'algorithme, le domaine de la graine et les vecteurs de
-référence seront formalisés et testés lors du développement du lot, avant sa
-réception ; aucun générateur n'est ajouté par cette préparation documentaire.
+n'interviendront. Le générateur est **Mulberry32 v1**, avec une graine entière de 0 à
+4294967295, réinitialisée pour chaque rectangle. Le parcours suit Y croissant,
+puis X croissant. Les valeurs uint32 supérieures ou égales à 4294967200 sont
+rejetées ; les autres donnent un tirage modulo 100, comparé à la probabilité.
+Pour la graine 1, à 50 %, les dix premières cases d’une ligne sont
+blanc, noir, blanc, noir, noir, blanc, blanc, noir, blanc, noir.
+
+`toggleCells(cells)` et `fillRectangle({ minX, maxX, minY, maxY, mode,
+probability = 50, seed = 1 })` retournent `{ stepCount, order, changedCellCount }`.
+Les modes sont `black`, `white`, `random`. Les bornes inversées sont normalisées.
+`getInterventions()` copie le journal ; `editRevision` dans `getProgress()` compte
+les interventions effectives. Une opération sans changement ne crée pas d’entrée
+et retourne `order: null`. L’ordre est croissant pour toute l’expérience.
 
 ### Journal et réinitialisation
 
