@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/ChristianPRO1982/antlab/compare/v1.5.0...v1.6.0) (2026-11-13)
+
+
+### Features
+
+* add test for sprite orientation and movement in laboratory simulation ([b7db638](https://github.com/ChristianPRO1982/antlab/commit/b7db638060826e3ba6093668218434168e52d3e6))
+* document fixes for stages 01 to 07, including Lanto orientation, panel stability, and independent display buttons ([0c8c0b7](https://github.com/ChristianPRO1982/antlab/commit/0c8c0b721316a2fee4af7429290dd43e2743dfc0))
+* document preparation for lot 07 bis, including manual case editing and new tools ([5923d1d](https://github.com/ChristianPRO1982/antlab/commit/5923d1d659d938b33d54e33a7aa239ac09812c45))
+* enhance panel stability during calculations and add corresponding tests ([1667859](https://github.com/ChristianPRO1982/antlab/commit/16678592b6f1ecb84d52275519eb0170c47b009a))
+* implement independent display buttons for grid options and update related tests ([a969760](https://github.com/ChristianPRO1982/antlab/commit/a96976039f772bb5a7d7557820ba4a56431523d6))
+* implement laboratory interface with execution options and session management ([a861fd0](https://github.com/ChristianPRO1982/antlab/commit/a861fd0375262b9aaac125bf89cc655dcf4331ab))
+* update Docker image references to use 'latest' tag and clarify deployment instructions ([e7f95fa](https://github.com/ChristianPRO1982/antlab/commit/e7f95fa422fa083cf9711b4187c45fb3112e1065))
+* update grid outline color and enhance test coverage for cross rendering ([4add91e](https://github.com/ChristianPRO1982/antlab/commit/4add91eed8c3f53cd1b7ba3717df584819017ac9))
+
 # [1.5.0](https://github.com/ChristianPRO1982/antlab/compare/v1.4.0...v1.5.0) (2026-11-10)
 
 
