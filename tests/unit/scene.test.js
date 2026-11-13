@@ -66,7 +66,7 @@ test.each([
           { x: 1000000, y: 0 },
         ].values(),
     };
-    const options = { gridMode: 'none', origin: false };
+    const options = { grid: false, outlines: false, origin: false };
     const sprite = { complete: true, naturalWidth: 100 };
     drawPaving(context, camera, world, options, sprite, {
       x: 0,

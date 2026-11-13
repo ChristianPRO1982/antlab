@@ -9,6 +9,74 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+test('cadence modifiable atomiquement sans changer la cible ni laisser agir un ancien timer', async () => {
+  const scheduled = vi.spyOn(globalThis, 'setTimeout');
+  const runner = new ExecutionController(
+    {},
+    { batchSize: 2, batchDelayMs: 50 },
+  );
+  const operation = runner.runUntil(17);
+  const stale = scheduled.mock.calls.at(-1)[0];
+  const initial = await runner.getState();
+  expect(await runner.setExecutionOptions({ batchSize: 5 })).toEqual({
+    batchSize: 5,
+    batchDelayMs: 50,
+    progressIntervalMs: 100,
+  });
+  stale();
+  expect(await runner.getState()).toEqual(initial);
+  await expect(
+    runner.setExecutionOptions({ batchSize: 7, batchDelayMs: -1 }),
+  ).rejects.toThrow();
+  await vi.advanceTimersToNextTimerAsync();
+  expect((await runner.getProgress()).stepCount).toBe(5);
+  await runner.pause();
+  const frozen = await runner.getState();
+  await runner.setExecutionOptions({ batchSize: 3, batchDelayMs: 0 });
+  await vi.runAllTimersAsync();
+  expect(await runner.getState()).toEqual(frozen);
+  await runner.resume();
+  await vi.runAllTimersAsync();
+  expect(await operation).toMatchObject({
+    status: 'completed',
+    targetStep: 17,
+    stepCount: 17,
+  });
+  const reference = new LangtonEngine();
+  reference.advance(17);
+  expect(await runner.getState()).toEqual(reference.getState());
+  for (const invalid of [
+    null,
+    [],
+    { unknown: 1 },
+    { batchSize: 0 },
+    { batchDelayMs: '1' },
+  ]) {
+    await expect(runner.setExecutionOptions(invalid)).rejects.toThrow();
+  }
+  await runner.dispose();
+  await expect(runner.setExecutionOptions({})).rejects.toThrow(/fermé/);
+});
+
+test.each([
+  [1, 1000],
+  [1, 100],
+  [10, 100],
+  [100, 100],
+  [1000, 100],
+  [1000, 0],
+])('cadence %i/%i : même état logique', async (batchSize, batchDelayMs) => {
+  const runner = new ExecutionController();
+  await runner.setExecutionOptions({ batchSize, batchDelayMs });
+  const operation = runner.runUntil(123);
+  await vi.runAllTimersAsync();
+  await operation;
+  const reference = new LangtonEngine();
+  reference.advance(123);
+  expect(await runner.getState()).toEqual(reference.getState());
+  await runner.dispose();
+});
+
 test('lecture compacte indépendante du moteur et sans copie du monde', async () => {
   const engine = new LangtonEngine();
   expect(engine.getProgress()).toEqual({

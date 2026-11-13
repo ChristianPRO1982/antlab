@@ -44,18 +44,45 @@ réception. Si ces sources ou le code se contredisent, signaler l'écart avant d
 prendre une décision qui changerait le sens scientifique de l'expérience.
 
 **Repère au 10 novembre 2026 :** le socle technique a été livré en `v1.0.0`.
-Les étapes 01 à 06 sont clôturées ; le lot 06 raccorde le Worker au Canvas et
-complète les gestes tactiles sur `feat/world-visualization`, sans nouvelle release.
-Les pages Accueil, Jeu et Aide, Lanto et le panneau redimensionnable sont présents ; les commandes de
-simulation restent désactivées. Voir [l'interface et son périmètre](INTERFACE.md).
-Le moteur calcule les cinq règles centrales et la rotation horaire facultative
-des branches, sans affichage ou avec la vue synchronisée et Lanto orienté.
-Le pilotage des calculs longs est disponible par API, avec pause, reprise et
-annulation conservant l'état. La prochaine étape est le poste de pilotage (07).
-Voir les [conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
+Les étapes 01 à 07 sont clôturées ; le lot 07 assemble le poste de pilotage sur
+`feat/laboratory-interface`, sans nouvelle release. Les pages Accueil, Jeu et
+Aide, Lanto, le panneau redimensionnable, la navigation souris/tactile et les
+commandes scientifiques sont présents. Le formulaire choisit les cinq règles
+centrales, les seuils et la rotation compatible à zéro, puis se verrouille.
+Pas, lecture/pause/reprise, vitesse, annulation, reset et cibles exactes pilotent
+le même moteur dans le Worker. Une réinitialisation conserve règles, vitesse et
+vue et recrée une expérience à zéro ; aucune continuation avec nouvelle règle
+n’est encore disponible. La prochaine étape est le changement de règles avec
+dialogue et journal (08). Voir [l’interface](INTERFACE.md), les
+[conventions du moteur](MOTEUR.md), le [catalogue](REGLES.md), le
 [pilotage](EXECUTION.md), la [visualisation](VISUALISATION.md) et le
-[bilan du lot 06](RECEPTION_ETAPE_06.md). Ce repère est une
+[bilan du lot 07](RECEPTION_ETAPE_07.md). Ce repère est une
 photographie : revérifier Git, le code et la roadmap lors de toute reprise.
+
+**Complément du 12 novembre 2026 — correctifs des étapes 01 à 07 :** la branche
+`fix/stages-01-07` renforce la vérification de l’orientation de Lanto, stabilise
+le panneau pendant les calculs et propose quatre boutons d’affichage indépendants
+sur une rangée. Les quatre options sont actives au départ ; les contours des
+croix utilisent la teinte utilisateur `#064894`. Le moteur et son ordre de
+transition restent inchangés. Les étapes 01 à 07 restent le périmètre utilisable,
+sans démarrage du lot 08. Voir la synthèse dans [l’index](README.md#correctifs-des-étapes-01-à-07),
+le comportement dans [Interface](INTERFACE.md) et les résultats et limites dans
+[Tests](TESTS.md), dont l’échec de cadrage préexistant restant à traiter.
+
+**Complément du 13 novembre 2026 — préparation documentaire du lot 07 bis :**
+l'édition manuelle des cases est **prévue, non implémentée**. Ce lot
+complémentaire s'insère avant le lot 08, sans renuméroter la roadmap. Il prévoit
+le clic d'inversion, le tracé continu et le remplissage de rectangle noir, blanc
+ou aléatoire reproductible (probabilité de noir de 1 à 99 %, défaut 50 %, graine
+visible initialement 1). L'édition sera disponible à l'arrêt ou en marche à
+1, 10 ou 100 pas/s demandés, avec calcul continu, écritures dans le Worker entre
+lots et journal minimal des interventions à étape exacte. Le plafond sera de
+100 000 cases par rectangle ou tracé ; Réinitialiser effacera dessin et journal
+pour revenir au blanc. Voir le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+et la [spécification d'interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu).
+Les étapes 01 à 07 restent le périmètre implémenté ; la prochaine étape non
+clôturée est désormais 07 bis. Aucune réception historique n'est modifiée et
+le lot 08 n'est pas commencé.
 
 ## 1. Origine et intention
 
@@ -269,7 +296,7 @@ L'interface devra rester abordable pour une personne découvrant Langton, tout e
 - Seul `semantic-release` est automatisé sur `main` : tag `vX.Y.Z`, GitHub Release
   et `docs/CHANGELOG.md`. Aucun workflow de tests, de build/push Docker ou de déploiement.
 - Build, vérification de l'image, push **Docker Hub `carthographie/antlab`** et
-  déploiement restent manuels, depuis un tag de release.
+  déploiement restent manuels, avec l’image Docker `latest`.
 - La production est une image **Nginx statique sans privilèges**, derrière Traefik,
   prévue sur `https://antlab.carthographie.fr`. Le modèle Compose utilise le réseau
   externe `proxy` et n'expose aucun port hôte en production.

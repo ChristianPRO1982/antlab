@@ -1,5 +1,5 @@
 import { Camera } from './camera.js';
-import { drawPaving, GRID_MODES } from './renderer.js';
+import { drawPaving } from './renderer.js';
 import { ViewFraming } from './view-framing.js';
 import { PointerGestures } from './navigation-gestures.js';
 import { createScene } from './scene.js';
@@ -12,6 +12,7 @@ export function mountPaving(
     sprite = null,
     ant = { x: 0, y: 0 },
     onScaleChange = () => {},
+    onSceneChange = () => {},
     onFramingChange = () => {},
   } = {},
 ) {
@@ -21,8 +22,9 @@ export function mountPaving(
   const camera = new Camera(initial.width, initial.height);
   const framing = new ViewFraming(camera);
   let scene = { world, ant, stepCount: null };
-  const options = { gridMode: 'crosses', origin: true, lanto: true };
+  const options = { grid: true, outlines: true, origin: true, lanto: true };
   let frame = null;
+  let drawnStepCount = null;
   let active = true;
   let disposed = false;
   let externalError = null;
@@ -82,7 +84,9 @@ export function mountPaving(
           0,
         );
         drawPaving(context, camera, scene.world, options, sprite, scene.ant);
+        drawnStepCount = scene.stepCount;
         notify();
+        onSceneChange();
         report('Pavage prêt.');
       } catch (error) {
         if (!(error instanceof RangeError)) throw error;
@@ -107,6 +111,30 @@ export function mountPaving(
     const rect = canvas.getBoundingClientRect();
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
   }
+  listen(canvas, 'keydown', (event) => {
+    if (!active || event.altKey || event.ctrlKey || event.metaKey) return;
+    const movement = {
+      ArrowLeft: [40, 0],
+      ArrowRight: [-40, 0],
+      ArrowUp: [0, 40],
+      ArrowDown: [0, -40],
+    }[event.key];
+    if (movement) {
+      event.preventDefault();
+      navigate(() => camera.moveBy(...movement), true);
+    } else if (['+', '=', '-', '−'].includes(event.key)) {
+      event.preventDefault();
+      navigate(
+        () =>
+          camera.zoomAt(
+            camera.width / 2,
+            camera.height / 2,
+            ['-', '−'].includes(event.key) ? 1 / 1.2 : 1.2,
+          ),
+        true,
+      );
+    }
+  });
   listen(canvas, 'pointerdown', (event) => {
     const kind = event.pointerType === 'touch' ? 'touch' : 'mouse';
     if (
@@ -210,6 +238,9 @@ export function mountPaving(
   notify();
   requestDraw();
   return {
+    get drawnStepCount() {
+      return drawnStepCount;
+    },
     get stepCount() {
       return scene.stepCount;
     },
@@ -246,10 +277,8 @@ export function mountPaving(
       assertOpen();
       for (const [key, value] of Object.entries(changes)) {
         const valid =
-          key === 'gridMode'
-            ? GRID_MODES.includes(value)
-            : (key === 'origin' || key === 'lanto') &&
-              typeof value === 'boolean';
+          ['grid', 'outlines', 'origin', 'lanto'].includes(key) &&
+          typeof value === 'boolean';
         if (!valid) throw new TypeError('Réglage visuel invalide.');
       }
       Object.assign(options, changes);

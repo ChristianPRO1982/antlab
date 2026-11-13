@@ -5,7 +5,7 @@
 Le point d'entrée HTML charge un module JavaScript et une feuille CSS dans `src`.
 Il affiche le pavage en croix dans un Canvas 2D navigable. La géométrie et le monde
 clairsemé sont implémentés. Le moteur peut simuler sans affichage ou alimenter
-le Canvas via le Worker ; les boutons scientifiques restent réservés au lot 07.
+le Canvas via le Worker ; les boutons scientifiques pilotent ce Worker depuis le lot 07.
 
 `geometry.js` définit les croix, `world.js` stocke les cases noires et
 `coordinates.js` valide leur domaine numérique commun. Ces modules ne dépendent
@@ -37,7 +37,7 @@ Il ne dépend ni du DOM ni du Worker et peut être appelé sans affichage.
 gère les abonnements et libère le Worker à la fermeture. La progression utilise
 `LangtonEngine.getProgress()` en coût constant, sans copier le monde.
 Voir le [contrat de pilotage](EXECUTION.md). Le client est maintenant importé
-par `main.js`, et Vite embarque le Worker dans le build du site.
+par la session du jeu, et Vite embarque le Worker dans le build du site.
 
 `simulation-view.js` coalesce les demandes d'instantanés complets, avec une
 requête en vol et dix demandes par seconde au maximum. `scene.js` valide et
@@ -46,6 +46,11 @@ Le masquage arrête les demandes et dessins sans arrêter le calcul.
 `navigation-gestures.js` calcule les transformations à un/deux contacts sans
 DOM ; `Camera.panZoomAt` les valide avant modification. Les pannes du client,
 y compris au repos, sont observables via `subscribeErrors`.
+
+`game-session.js` possède le client courant et sa synchronisation : remplacement
+explicite à zéro, désabonnements, notifications et fermeture.
+`laboratory-controls.js` construit le formulaire depuis le catalogue et raccorde
+les actions au Worker ; aucune transition scientifique n’est calculée dans le DOM.
 
 `main.js` pilote trois sections via les fragments `#/accueil`, `#/jeu` et `#/aide`,
 sans routeur ni rechargement de page. Le Canvas est monté à la première visite

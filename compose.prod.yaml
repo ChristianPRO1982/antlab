@@ -3,7 +3,7 @@ name: antlab
 
 services:
   antlab:
-    image: ${ANTLAB_IMAGE:?Définir ANTLAB_IMAGE avec un tag de release précis}
+    image: carthographie/antlab:latest
     restart: unless-stopped
     networks:
       - proxy

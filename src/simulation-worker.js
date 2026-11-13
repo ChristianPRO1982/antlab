@@ -12,6 +12,7 @@ const COMMAND_FIELDS = {
   getProgress: [],
   getState: [],
   getRules: [],
+  setExecutionOptions: ['options'],
   dispose: [],
 };
 let controller = null;
@@ -60,7 +61,11 @@ self.addEventListener('message', ({ data }) => {
     } else {
       if (!controller) throw new Error('L’expérience doit être initialisée.');
       const argument =
-        data.command === 'advance' ? data.count : data.targetStep;
+        data.command === 'setExecutionOptions'
+          ? data.options
+          : data.command === 'advance'
+            ? data.count
+            : data.targetStep;
       result = controller[data.command](argument);
     }
     // Ne pas attendre une tâche longue avant de recevoir les commandes suivantes.

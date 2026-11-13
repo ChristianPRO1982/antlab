@@ -64,17 +64,26 @@ test('trois grilles distinctes et commandes fixes pendant le défilement des rè
   page,
 }) => {
   await page.goto('/#/jeu');
-  const selector = page.getByLabel('Grille', { exact: true });
-  await expect(selector).toHaveValue('crosses');
-  await page.getByLabel('Afficher Lanto').uncheck();
-  await page.getByLabel('Repérer l’origine').uncheck();
+  const selector = page.getByRole('button', {
+    name: 'Grille « + »',
+    exact: true,
+  });
+  await expect(selector).toHaveAttribute('aria-pressed', 'true');
+  await page
+    .getByRole('button', { name: 'Afficher Lanto', exact: true })
+    .click();
+  await page
+    .getByRole('button', { name: 'Repérer l’origine', exact: true })
+    .click();
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
   const picture = () => canvas.evaluate((element) => element.toDataURL());
   const crosses = await picture();
-  await selector.selectOption('simple');
+  await selector.click();
   await expect.poll(picture).not.toBe(crosses);
   const simple = await picture();
-  await selector.selectOption('none');
+  await page
+    .getByRole('button', { name: 'Grille simple', exact: true })
+    .click();
   await expect.poll(picture).not.toBe(simple);
   await expect
     .poll(() =>
@@ -120,7 +129,7 @@ test('bouton flottant agrandi en bas à droite et suivi conservé au repli', asy
   });
   await handle.click();
   const button = page.getByRole('button', {
-    name: 'Lecture / pause flottante',
+    name: 'Lancer flottante',
   });
   await expect(button).toBeVisible();
   const box = await button.boundingBox();

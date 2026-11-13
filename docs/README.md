@@ -13,12 +13,51 @@ La vue de l'étape 06 est raccordée au Worker : position et orientation de Lant
 cases noires, suivi, cadrage du monde et navigation souris/tactile.
 Les pages Accueil, Jeu et Aide partagent une identité minimaliste autour de Lanto.
 Le jeu possède un panneau redimensionnable et des réglages visuels fonctionnels ;
-les commandes de simulation restent désactivées en attendant l'étape 07.
+les commandes de simulation pilotent le Worker depuis le lot 07.
 L'étape 05 fournit un contrôleur asynchrone et une API Worker testée sous Vite,
 avec calcul par lots, pause, reprise, annulation et progression compacte.
-La session du jeu se pilote par API sous Vite et son Worker est inclus dans le
-build statique. Les commandes graphiques, les campagnes et les formats
+La session du jeu se pilote par interface ou API sous Vite et son Worker est inclus dans le
+build statique. Les campagnes et les formats
 d'échange restent à développer dans les lots correspondants de la roadmap.
+
+### Prochain lot : 07 bis, édition manuelle des cases
+
+**Prévu, non implémenté.** Le [lot 07 bis](ROADMAP_CODEX_LABORATOIRE_FOURMIS_V2.md#07-bis--modifier-manuellement-les-cases)
+complète les étapes 01 à 07 avant le lot 08, sans renumérotation. Il prévoit
+trois outils exclusifs : inversion au clic, tracé continu et rectangle noir,
+blanc ou aléatoire reproductible (1 à 99 % de noir, défaut 50 %, graine visible
+initialement 1). L'édition sera possible à l'arrêt quelle que soit la vitesse
+sélectionnée, ou en marche à 1, 10 ou 100 pas/s demandés, sans suspendre le calcul.
+Les écritures seront appliquées dans le Worker entre lots, avec journal minimal
+à étape exacte et plafond de 100 000 cases par rectangle ou tracé.
+
+Spécifications : [Interface](INTERFACE.md#édition-manuelle-des-cases--lot-07-bis-prévu),
+[Moteur](MOTEUR.md#interventions-manuelles--lot-07-bis-prévu) et
+[Pilotage](EXECUTION.md#commandes-dédition--lot-07-bis-prévu).
+Cette préparation est uniquement documentaire : aucun critère de réception
+du lot n'est validé et aucun développement du lot 08 n'est engagé.
+
+### Correctifs des étapes 01 à 07
+
+Sur `fix/stages-01-07`, les compléments suivants sont documentés :
+
+- Orientation de Lanto vérifiée dans les quatre directions avec le vrai sprite ;
+  aucun changement de l’ordre scientifique ni animation supplémentaire.
+- Suppression des sauts du panneau par réservation de l’étape affichée et de la
+  barre de cible ; compteurs et statut disposés de façon stable.
+- Contours renforcés des croix en bleu `#064894`, teinte ajustée par l’utilisateur ;
+  quadrillage fin toujours gris.
+- Quatre boutons d’affichage indépendants, tous actifs par défaut, sur une seule
+  rangée : grille simple, grille « + », origine et Lanto. Les libellés s’adaptent
+  à la place disponible et les choix sont conservés en mémoire.
+
+Le comportement actuel est décrit dans [Interface](INTERFACE.md), les validations
+et limites dans [Tests](TESTS.md). Le dernier contrôle global a réussi pour les
+1 187 tests unitaires et 61 parcours navigateur sur 62 ; le test complémentaire
+de conservation ajouté ensuite a aussi réussi en exécution ciblée. Le seul échec
+global concerne la fixture de scènes/cadrage déjà identifiée, à traiter séparément.
+Lint, format et build ont réussi. Ces correctifs ne clôturent aucune nouvelle
+étape de roadmap et n’ont donné lieu à aucune publication dans cette session.
 
 | Document                                           | Usage                                    |
 | -------------------------------------------------- | ---------------------------------------- |
@@ -41,6 +80,7 @@ d'échange restent à développer dans les lots correspondants de la roadmap.
 | [Réception de l'étape 04](RECEPTION_ETAPE_04.md)   | Règles et combinaisons testées           |
 | [Réception de l'étape 05](RECEPTION_ETAPE_05.md)   | Calculs longs et interruptions           |
 | [Réception de l'étape 06](RECEPTION_ETAPE_06.md)   | Monde simulé et navigation tactile       |
+| [Réception de l'étape 07](RECEPTION_ETAPE_07.md)   | Poste de pilotage et commandes réelles   |
 
 ## Décisions validées
 
@@ -64,3 +104,7 @@ Le fonctionnement des trois pages et du panneau est décrit dans
 Toutes les explications détaillées sur le fonctionnement et le développement
 restent ici. Le README racine est un point d'entrée ; `AGENTS.md` contient les
 instructions pour les contributeurs et agents.
+
+Le [poste de pilotage du lot 07](INTERFACE.md#poste-de-pilotage--étape-07)
+propose les règles à zéro, pas/lecture/pause/reprise, annulation, réinitialisation,
+vitesses et cibles exactes. Voir sa [réception](RECEPTION_ETAPE_07.md).

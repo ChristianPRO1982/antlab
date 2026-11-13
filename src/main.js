@@ -3,8 +3,11 @@ import lantoTopURL from './assets/lanto/Lanto-top.webp';
 import { SparseWorld } from './world.js';
 import { mountPaving } from './paving-view.js';
 import { mountOptionsPanel } from './options-panel.js';
-import { createSimulationClient } from './simulation-client.js';
-import { connectSimulationView } from './simulation-view.js';
+import { createGameSession } from './game-session.js';
+import { mountLaboratory } from './laboratory-controls.js';
+import { updateReleaseLink } from './release-link.js';
+
+void updateReleaseLink(document.querySelector('.release-link'));
 
 const pages = [...document.querySelectorAll('[data-page]')];
 const links = [...document.querySelectorAll('[data-route]')];
@@ -17,7 +20,8 @@ const sprite = new Image();
 sprite.src = lantoTopURL;
 let view = null;
 let sessionPromise = null;
-let synchronizer = null;
+let session = null;
+let laboratory = null;
 let sessionDisposed = false;
 const gameLifecycle = new AbortController();
 
@@ -28,7 +32,7 @@ function listenGame(target, type, callback) {
 function updateVisibility() {
   if (sessionDisposed) return;
   const active = document.body.dataset.page === 'jeu' && !document.hidden;
-  if (synchronizer) synchronizer.setActive(active);
+  if (session) session.setActive(active);
   else view?.setActive(active);
 }
 
@@ -38,32 +42,20 @@ export async function getGameSession() {
     throw new Error('Ouvrir la page Jeu avant de demander sa session.');
   if (!sessionPromise) {
     sessionPromise = (async () => {
-      const simulation = await createSimulationClient();
-      try {
-        synchronizer = connectSimulationView(simulation, view);
-        updateVisibility();
-        return {
-          simulation,
-          view,
-          async dispose() {
-            if (sessionDisposed) return;
-            sessionDisposed = true;
-            gameLifecycle.abort();
-            synchronizer.dispose();
-            view.setError('La session de simulation est fermée.');
-            view.dispose();
-            for (const control of document.querySelectorAll(
-              '#zoom, #grid-mode, [data-framing], [data-option]',
-            )) {
-              control.disabled = true;
-            }
-            await simulation.dispose();
-          },
-        };
-      } catch (error) {
-        await simulation.dispose();
-        throw error;
-      }
+      session = await createGameSession(view, {
+        onClose() {
+          sessionDisposed = true;
+          gameLifecycle.abort();
+          laboratory?.dispose();
+          for (const control of document.querySelectorAll(
+            '#zoom, [data-framing], [data-option]',
+          ))
+            control.disabled = true;
+        },
+      });
+      laboratory = mountLaboratory(session);
+      updateVisibility();
+      return session;
     })();
   }
   return sessionPromise;
@@ -82,7 +74,7 @@ function renderRoute(focus = false) {
     ? requested
     : 'accueil';
   panel.cancel();
-  if (synchronizer) synchronizer.setActive(false);
+  if (session) session.setActive(false);
   else view?.setActive(false);
   for (const page of pages) page.hidden = page.dataset.page !== route;
   for (const link of links) {
@@ -96,6 +88,9 @@ function renderRoute(focus = false) {
       if (!view)
         view = mountPaving(document.querySelector('canvas'), status, world, {
           sprite,
+          onSceneChange() {
+            laboratory?.refresh();
+          },
           onScaleChange(scale, minimumScale) {
             zoom.min = String(minimumScale);
             zoom.value = String(scale);
@@ -150,13 +145,12 @@ for (const button of framingButtons) {
     });
   }
 }
-listenGame(document.querySelector('#grid-mode'), 'change', (event) => {
-  view?.updateOptions({ gridMode: event.target.value });
-});
-for (const input of document.querySelectorAll('[data-option]')) {
-  listenGame(input, 'change', () =>
-    view?.updateOptions({ [input.dataset.option]: input.checked }),
-  );
+for (const button of document.querySelectorAll('[data-option]')) {
+  listenGame(button, 'click', () => {
+    const enabled = button.getAttribute('aria-pressed') !== 'true';
+    view?.updateOptions({ [button.dataset.option]: enabled });
+    button.setAttribute('aria-pressed', String(enabled));
+  });
 }
 window.addEventListener('hashchange', () => renderRoute(true));
 listenGame(document, 'visibilitychange', updateVisibility);

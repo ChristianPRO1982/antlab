@@ -1,7 +1,7 @@
 import { LangtonEngine } from './engine.js';
 import { coordinate } from './coordinates.js';
 
-function executionOptions(options) {
+function executionOptions(options, previous = {}) {
   if (
     options === null ||
     typeof options !== 'object' ||
@@ -20,7 +20,7 @@ function executionOptions(options) {
   const result = {};
   for (const [key, fallback] of Object.entries(defaults)) {
     const value = coordinate(
-      options[key] === undefined ? fallback : options[key],
+      options[key] === undefined ? (previous[key] ?? fallback) : options[key],
       key,
     );
     const minimum = key === 'batchSize' ? 1 : 0;
@@ -238,6 +238,15 @@ export class ExecutionController {
   async getRules() {
     this.#assertOpen();
     return this.#engine.getRules();
+  }
+
+  async setExecutionOptions(options) {
+    this.#assertOpen();
+    const next = executionOptions(options, this.#options);
+    this.#invalidateTimer();
+    this.#options = next;
+    this.#schedule();
+    return { ...next };
   }
 
   subscribe(callback) {

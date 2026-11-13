@@ -78,11 +78,12 @@ test('toutes les commandes publiques utilisent le transport', async () => {
     ['cancel'],
     ['getState'],
     ['getRules'],
+    ['setExecutionOptions', { batchSize: 10 }, 'options'],
   ]) {
     const operation = client[method](argument);
     const request = worker.sent.at(-1);
     expect(request.command).toBe(method);
-    if (field) expect(request[field]).toBe(argument);
+    if (field) expect(request[field]).toEqual(argument);
     worker.respond(request, ready);
     expect(await operation).toEqual(ready);
   }

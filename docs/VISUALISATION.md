@@ -3,14 +3,23 @@
 ## Session et scène affichée
 
 La première ouverture de la page Jeu crée une unique session Worker avec la
-configuration de Langton par défaut. Elle est conservée pendant la navigation
-entre Accueil, Jeu et Aide. Les boutons de simulation restent désactivés : leur
-raccordement et la sélection des règles relèvent de l'étape 07.
+configuration de Langton par défaut, à 100 pas/s demandés. Elle est conservée pendant la navigation
+entre Accueil, Jeu et Aide. Les commandes et les règles sont disponibles dans le
+[poste de pilotage](INTERFACE.md#poste-de-pilotage--étape-07).
 
 Sous Vite, après ouverture du jeu, `getGameSession()` exporté par `src/main.js`
 renvoie une promesse donnant `{ simulation, view, dispose }`. `simulation` est
 le [client Worker](EXECUTION.md). Appeler cette fonction plusieurs fois donne
 accès à la même expérience ; avant la première ouverture du jeu, elle est refusée.
+`simulation` est un accesseur vers le client courant : un changement de règles
+à zéro ou `reset(rules?)` remplace ce client, sans remplacer la vue. Ne pas garder
+une référence détachée au client après reset. `rules` est la sélection normalisée ;
+`progress`, `error`, `busy` et `closed` décrivent la session, et `subscribe(callback)`
+notifie leurs changements avec désabonnement.
+`setExecutionOptions(options)` ajuste et conserve la cadence pour les resets.
+`reset()` reprend les règles courantes et le départ standard ; une sélection
+invalide est refusée avant destruction. Une panne conserve le dernier état connu
+ou des compteurs inconnus à l’initialisation ; une reprise exige un reset explicite.
 `dispose()` ferme la synchronisation, la vue et le Worker. Aucune nouvelle
 expérience n'est recréée silencieusement après une panne ou cette fermeture.
 La fermeture retire aussi les écouteurs des commandes visuelles et de visibilité,
@@ -40,7 +49,9 @@ couleurs appartiennent ainsi à la même étape. `scene.js` construit un cache
 immuable ne proposant que la lecture des cases noires.
 
 `view.stepCount` est l'étape de la dernière scène acceptée, ou `null` avant la
-première réception. Le dessin est ensuite regroupé par `requestAnimationFrame`.
+première réception. `view.drawnStepCount` donne l’étape effectivement dessinée,
+ou `null` avant le premier dessin de scène ; le panneau signale son retard
+par rapport au compteur calculé. Le dessin est ensuite regroupé par `requestAnimationFrame`.
 `setError(message)` affiche une erreur persistante de session ; `null` la retire.
 Une erreur de navigation ne modifie ni les données du Worker ni sa tâche.
 Le client fournit aussi `subscribeErrors(callback)`, avec désabonnement, pour
@@ -87,7 +98,7 @@ et le panneau conservent leur défilement.
 
 Une navigation manuelle libère les modes automatiques. Les boutons de cadrage,
 leurs double-clics et raccourcis clavier conservent leur comportement existant.
-Le panneau mobile, les options visuelles et les trois modes de grille restent
+Le panneau mobile, les options visuelles et les deux grilles indépendantes restent
 décrits dans [Interface](INTERFACE.md).
 
 ## Visibilité et ressources
@@ -112,13 +123,16 @@ sûrs reste indépendant de la limite visuelle ±2^40.
 
 ## Vérification manuelle
 
-Lancer Vite selon [Développement](DEVELOPPEMENT.md), ouvrir Jeu, puis utiliser
+Pour une vérification sans console, suivre le parcours décrit dans
+[Interface](INTERFACE.md#poste-de-pilotage--étape-07). Pour vérifier l’API,
+lancer Vite selon [Développement](DEVELOPPEMENT.md), ouvrir Jeu, puis utiliser
 la console du navigateur :
 
 ```js
 const { getGameSession } = await import('/src/main.js');
 const { simulation, view } = await getGameSession();
 view.selectFraming('follow-ant');
+await simulation.setExecutionOptions({ batchSize: 1000, batchDelayMs: 0 });
 await simulation.runUntil(10000);
 await simulation.start();
 // Naviguer entre les pages, déplacer la vue et essayer le zoom.

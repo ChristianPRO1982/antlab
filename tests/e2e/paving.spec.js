@@ -26,6 +26,11 @@ async function expectMarker(canvas, x, y) {
 test('pavage chargé, point origine et frontières des croix', async ({
   page,
 }) => {
+  // Ce parcours graphique ne dépend pas de la disponibilité de l’API GitHub.
+  await page.route(
+    'https://api.github.com/repos/ChristianPRO1982/antlab/releases/latest',
+    (route) => route.fulfill({ json: { tag_name: 'v1.5.0' } }),
+  );
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('console', (message) => {
@@ -43,6 +48,13 @@ test('pavage chargé, point origine et frontières des croix', async ({
   const canvas = page.getByRole('img', { name: 'Pavage en croix navigable' });
   const box = await canvas.boundingBox();
   await expectMarker(canvas, box.width / 2 - 10, box.height / 2 + 10);
+  const [outlineRed, outlineGreen, outlineBlue] = await pixel(
+    canvas,
+    box.width / 2 + 5 * 32 + 4,
+    box.height / 2 - 48,
+  );
+  expect(outlineBlue).toBeGreaterThan(outlineGreen);
+  expect(outlineGreen).toBeGreaterThan(outlineRed);
   // Comparer les bandes réellement dessinées, loin des intersections.
   const bands = await canvas.evaluate((element) => {
     const { width, height } = element.getBoundingClientRect();
@@ -66,7 +78,7 @@ test('pavage chargé, point origine et frontières des croix', async ({
   });
   expect(bands.inner).toBeGreaterThan(0);
   // Normaliser par les couleurs pour mesurer aussi l'épaisseur, pas seulement le contraste.
-  expect(bands.outer / (255 - 85)).toBeGreaterThan(
+  expect(bands.outer / (255 - 8)).toBeGreaterThan(
     (bands.inner / (255 - 204)) * 1.6,
   );
   const [red, , blue] = await pixel(canvas, box.width / 2, box.height / 2);

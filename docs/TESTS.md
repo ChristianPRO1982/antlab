@@ -42,8 +42,8 @@ permettent une inspection visuelle sans figer un instantané de référence.
 Les parcours de la [refonte](INTERFACE.md) couvrent aussi les trois pages,
 l'historique, le logo/favicon, les réglages visuels, la conservation de la caméra
 et du panneau, le défilement des options sans déplacement des commandes, le
-panneau à 15 % et le tiroir mobile. Les commandes de simulation sont vérifiées
-comme désactivées. Les captures `test-results/design-*.png` présentent les pages
+panneau à 15 % et le tiroir mobile. Les commandes de simulation sont raccordées au Worker et testées par les
+parcours du laboratoire. Les captures `test-results/design-*.png` présentent les pages
 sur ordinateur et mobile.
 
 Les corrections du panneau ajoutent les trois modes de grille, les boutons de
@@ -141,3 +141,127 @@ Les fixtures qui importent les sources sont ignorées avec `TEST_BASE_URL` sur
 Nginx. Les parcours du site, y compris le chargement de son Worker compilé et
 la navigation tactile, s'y exécutent sans ces imports. Les futures campagnes
 et les KPI restent à vérifier lors de leurs lots.
+
+## Poste de pilotage (lot 07)
+
+Vitest vérifie les six cadences avec timers virtuels et comparaison scientifique,
+la modification atomique des options et l’invalidation des timers, les
+remplacements de session, les notifications tardives, les pannes et la fermeture.
+Le transport du client couvre aussi `setExecutionOptions`.
+
+Les parcours `laboratory.spec.js` utilisent le vrai Worker sans import de sources :
+règles et incompatibilités, seuils, verrouillage, premiers pas, cibles exactes,
+validation, vitesse, pause/reprise, annulation, reset, clavier, mobile et pannes.
+Ils sont également exécutables contre Nginx. Les fixtures de visualisation
+demandent explicitement la cadence maximale pour leurs longs calculs via API.
+Voir le [bilan du lot 07](RECEPTION_ETAPE_07.md).
+
+## Vérification de l’orientation de Lanto — 12 novembre 2026
+
+Le signalement « Lanto regarde toujours vers le haut » n’est pas reproduit sur
+`fix/stages-01-07` sous Chromium/Vite. Le rendu existant transmet l’orientation
+de l’instantané au Canvas et tourne le sprite, dont la tête pointe vers le haut,
+de 0°, 90°, 180° ou 270°. Aucun correctif de production n’a été nécessaire ;
+l’ordre scientifique et les trajectoires restent inchangés.
+
+Le nouveau parcours de `laboratory.spec.js` compare les silhouettes bleues
+effectivement dessinées à celles du vrai sprite tourné sur un Canvas de référence.
+Il vérifie les cinq premiers pas (les quatre directions), la pause et le retour
+au nord après réinitialisation. La comparaison tolère 3 % de différence sur les
+pixels bleus pour les contours composités sur fond blanc ou noir ; elle exige
+aussi la présence du sprite. Aucun délai ou animation n’est ajouté au produit.
+Les captures `test-results/lanto-orientation-1.png` à
+`test-results/lanto-orientation-4.png` montrent les quatre orientations ; celles
+des deux premiers pas ont été inspectées visuellement.
+
+Le parcours passe sur le code existant. Une désactivation temporaire de la
+rotation le fait échouer au premier déplacement (environ 82 % de différence,
+pour un seuil de 3 %). La rotation d’origine a ensuite été restaurée intégralement.
+Cet échec provoqué vérifie la sensibilité du test ; il ne reproduit pas un défaut
+présent dans le code actuel.
+
+Contrôles exécutés via Docker : ESLint et Prettier réussis, 1 187 tests Vitest
+réussis, 56 parcours Chromium réussis sur 57, dont le nouveau parcours. Le test
+existant « scènes remplacées atomiquement et cadrage des bornes qui grandissent
+puis rétrécissent » échoue : zoom obtenu 32 au lieu de 160. Son exécution isolée
+échoue également ; ce point de cadrage reste à traiter séparément. Le build Vite,
+relancé séparément car le contrôle global s’arrête au test en échec, réussit.
+
+L’utilisateur a validé ce point après la vérification. Aucun test sur le site
+déployé ni sur un autre navigateur, aucune publication et aucune modification
+des critères de roadmap.
+
+## Stabilité du panneau pendant les calculs — 12 novembre 2026
+
+Le scintillement provenait de la hauteur variable du pied du panneau : la ligne
+« Étape affichée » apparaissait lorsque le Canvas était en retard, puis
+disparaissait à son rattrapage. La barre de cible ajoutait également de la hauteur,
+y compris lors d’un pas unique. Leurs emplacements sont désormais réservés.
+Les compteurs possèdent une disposition stable et des chiffres tabulaires ; les
+nombres restent sur une ligne jusqu’à `Number.MAX_SAFE_INTEGER`. Le statut est
+empilé sous le titre sur panneau étroit et les compteurs sont compacts à faible
+hauteur. Le moteur, les messages Worker et les cadences sont inchangés.
+
+Les quatre nouveaux parcours de `panel-stability.spec.js` ont d’abord échoué
+avant correction : déplacements des trois sections fixes de 34,94 pixels sur
+panneau large, mobile et faible hauteur, et de 58,44 pixels sur panneau étroit.
+Ils retiennent une vraie réponse d’instantané du Worker par une promesse de test,
+puis la libèrent explicitement : le retard ne dépend pas de la vitesse du CPU.
+Les positions sont mesurées à chaque frame, pendant le retard et le rattrapage.
+
+Après correction, les variations sont nulles dans les quatre dispositions :
+1440 × 900 à 28 %, 1000 × 800 à 15 %, mobile 390 × 700 et 1000 × 430 à 28 %.
+Les mêmes parcours vérifient lecture lente, pause/reprise, annulation et cible
+exacte à 5 000 en cadence Maximum. Une fixture modifie uniquement les textes
+des compteurs jusqu’à l’entier sûr maximal et vérifie stabilité, absence de
+débordement horizontal et maintien des commandes dans le panneau visible.
+Les captures `test-results/panneau-stable-*.png` sont produites ; celles du
+panneau étroit et de la faible hauteur ont été inspectées visuellement.
+
+Contrôles via Docker : ESLint et Prettier réussis, 1 187 tests Vitest réussis,
+60 parcours Chromium réussis sur 61, dont les quatre nouveaux. Le test existant
+de scènes/cadrage (`visualization.spec.js:90`), déjà en échec avant ce correctif,
+échoue encore : étape affichée 0 au lieu de la scène injectée à 11. Sa fixture
+reste à traiter séparément. Le contrôle global s’arrête donc avant le build ;
+le build Vite exécuté séparément réussit. Les critères de roadmap sont inchangés.
+
+Vérification manuelle proposée : lancer à 1 pas/s, observer le pied du panneau,
+mettre en pause puis reprendre et atteindre une cible en Maximum ; refaire avec
+le panneau rétréci et sur téléphone. La validation automatisée porte sur Chromium
+sous Vite ; les autres navigateurs et les appareils physiques restent à vérifier.
+
+## Couleur des contours des croix — 12 novembre 2026
+
+Les contours renforcés ont été passés du gris sombre au bleu électrique, puis
+ajustés par l’utilisateur à `#064894`, valeur de référence actuelle. Les traits
+fins restent gris et les épaisseurs sont conservées.
+
+Le test de pavage a d’abord échoué sur l’absence de composante bleue des contours,
+puis les six parcours de `paving.spec.js` ont réussi après modification. Le test
+vérifie les pixels du contour et son épaisseur relative ; sa normalisation tient
+compte de la couleur. Sa requête de version GitHub est simulée pour éviter qu’un
+refus externe HTTP 403 ne fasse échouer ce contrôle graphique. Cette modification
+ne change ni les cellules ni les règles scientifiques.
+
+## Quatre boutons d’affichage — 12 novembre 2026
+
+Le sélecteur exclusif et les cases à cocher sont remplacés par quatre boutons
+indépendants, tous actifs au départ. Les options visuelles booléennes sont
+`grid`, `outlines`, `origin` et `lanto`. Les contours seuls sont désormais
+possibles ; la teinte utilisateur `#064894` est conservée.
+
+Le parcours de `display-buttons.spec.js` a d’abord échoué sur l’absence des
+quatre boutons. Après implémentation, les deux parcours vérifient les quatre
+combinaisons par les pixels gris/bleus, l’activation clavier, les états accessibles,
+l’alignement bureau/mobile/faible hauteur, la conservation après navigation et
+reset, le refus d’un booléen invalide et l’absence de modification de l’état
+scientifique. Les anciens appels et parcours de grille sont adaptés.
+
+Contrôles Docker : lint, format et 1 187 tests Vitest réussis ; 61 parcours
+Chromium sur 62 réussis dans la suite complète, dont les quatre de stabilité du
+panneau. Le seul échec reste le test de cadrage préexistant (scène injectée à 11
+remplacée par l’étape 0). Le test complémentaire de conservation, ajouté ensuite,
+et le parcours d’affichage final passent ensemble (2/2). Build Vite séparé réussi.
+Captures produites dans `test-results/affichage-*.png`. La validation reste limitée
+à Chromium ; confort sur appareils physiques et autres navigateurs à vérifier.
+Aucune publication ni modification des critères de roadmap.

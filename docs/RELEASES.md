@@ -63,3 +63,23 @@ représentatifs. Ne pas lancer une release réelle pour vérifier le socle.
 Références : [semantic-release](https://semantic-release.org/usage/configuration/),
 [plugin changelog](https://github.com/semantic-release/changelog),
 [plugin Git](https://github.com/semantic-release/git).
+
+## Lien de version dans le bandeau
+
+Entre Lanto et Accueil, le bandeau affiche la dernière release stable publiée
+sur GitHub, sans le préfixe `v`, et ouvre ses notes dans un nouvel onglet.
+Par exemple, `1.5.0` renvoie à
+`https://github.com/ChristianPRO1982/antlab/releases/tag/v1.5.0`.
+
+Une unique requête publique à l’API GitHub `releases/latest` est effectuée au
+chargement de la page, avec un délai maximal de cinq secondes, sans jeton ni
+cookie. Le numéro suit les prochaines releases de semantic-release sans valeur
+codée en dur, sans changement des manifestes ni workflow supplémentaire.
+Il désigne la dernière release publiée, pas nécessairement le code de la branche
+locale ou la version de l’image déployée. Il n’est pas relu lors de la navigation
+entre les pages ; recharger actualise l’information.
+
+En cas de panne réseau, limitation GitHub ou réponse invalide, le bandeau garde
+un lien « Releases » vers la liste et indique l’erreur dans son infobulle et son
+libellé accessible. Le laboratoire reste utilisable. Aucun résultat n’est stocké
+par l’application. Les tests interceptent l’API pour rester indépendants du réseau.

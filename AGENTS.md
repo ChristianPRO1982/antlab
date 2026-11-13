@@ -74,6 +74,6 @@ Ne pas ajouter de mécanismes complexes uniquement pour faciliter les tests.
   compatible si elle est fusionnée par squash.
 - Uniquement `semantic-release` est automatisé sur `main` : tag, GitHub Release
   et `docs/CHANGELOG.md`. Ne pas lancer une vraie release pour la tester.
-- Build, push Docker Hub et déploiement sont manuels, depuis un tag de release.
+- Build, push Docker Hub et déploiement sont manuels, avec l’image Docker `latest`.
 - Ne pas créer de workflows de tests, de build/push Docker ou de déploiement
   sans nouvelle demande.

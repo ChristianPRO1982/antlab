@@ -13,7 +13,8 @@ test.each([1, 2])(
     };
     const world = { blackCells: () => [{ x: 0, y: 0 }].values() };
     drawPaving(context, camera, world, {
-      gridMode: 'none',
+      grid: false,
+      outlines: false,
       origin: false,
       lanto: false,
     });

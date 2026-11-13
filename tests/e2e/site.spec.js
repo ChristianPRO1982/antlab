@@ -69,14 +69,14 @@ test('panneau redimensionnable, seuil, commandes et clavier', async ({
   );
   await page.screenshot({ path: 'test-results/design-jeu-initial.png' });
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause', exact: true }),
-  ).toBeDisabled();
+    page.getByRole('button', { name: 'Lancer', exact: true }),
+  ).toBeEnabled();
   await expect(
     page.getByRole('button', { name: 'Réinitialiser la simulation' }),
-  ).toBeDisabled();
-  await expect(page.getByLabel('Vitesse d’exécution')).toBeDisabled();
+  ).toBeEnabled();
+  await expect(page.getByLabel('Vitesse d’exécution')).toBeEnabled();
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause flottante' }),
+    page.getByRole('button', { name: 'Lancer flottante' }),
   ).toBeHidden();
   const handleBox = await handle.boundingBox();
   await page.mouse.move(handleBox.x + 7, handleBox.y + 150);
@@ -90,7 +90,7 @@ test('panneau redimensionnable, seuil, commandes et clavier', async ({
   await handle.click();
   await expect(panel).toBeHidden();
   await expect(
-    page.getByRole('button', { name: 'Lecture / pause flottante' }),
+    page.getByRole('button', { name: 'Lancer flottante' }),
   ).toBeVisible();
   await handle.press('Enter');
   await expect(panel).toBeVisible();
@@ -152,10 +152,17 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
   );
   const image = () => canvas.evaluate((element) => element.toDataURL());
   const before = await image();
-  await page.getByLabel('Afficher Lanto').uncheck();
+  await page
+    .getByRole('button', { name: 'Afficher Lanto', exact: true })
+    .click();
   await expect.poll(image).not.toBe(before);
-  await page.getByLabel('Grille', { exact: true }).selectOption('none');
-  await page.getByLabel('Repérer l’origine').uncheck();
+  await page
+    .getByRole('button', { name: 'Grille simple', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Grille « + »', exact: true }).click();
+  await page
+    .getByRole('button', { name: 'Repérer l’origine', exact: true })
+    .click();
   await expect
     .poll(() =>
       canvas.evaluate((element) => {
@@ -166,7 +173,10 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
       }),
     )
     .toBe(true);
-  await page.getByLabel('Grille', { exact: true }).selectOption('crosses');
+  await page
+    .getByRole('button', { name: 'Grille simple', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Grille « + »', exact: true }).click();
   const zoom = page.getByLabel('Zoom', { exact: true });
   await zoom.fill('64');
   const box = await canvas.boundingBox();
@@ -185,7 +195,9 @@ test('options visuelles, zoom synchronisé et conservation entre pages', async (
     .click();
   await page.getByRole('navigation').getByRole('link', { name: 'Jeu' }).click();
   await expect.poll(image).toBe(moved);
-  await expect(page.getByLabel('Afficher Lanto')).not.toBeChecked();
+  await expect(
+    page.getByRole('button', { name: 'Afficher Lanto', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'false');
   const zoomBeforeCenter = await zoom.inputValue();
   await page
     .getByRole('button', { name: 'Centrer le monde', exact: true })
